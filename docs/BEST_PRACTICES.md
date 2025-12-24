@@ -179,45 +179,219 @@ model Profile {
 
 ---
 
-## 4. Base UI + shadcn/ui (basecn.dev)
+## 4. basecn (shadcn/ui + Base UI)
 
-### Installation Composants
+### Installation Composants via Registry
 
-```bash
-# Initialiser avec Base UI
-bunx shadcn@latest init --base-ui
+**Configuration initiale :** Le projet utilise la registry basecn pour installer les composants shadcn/ui basés sur Base UI au lieu de Radix UI.
 
-# Ajouter composants
-bunx shadcn@latest add button card form
-```
-
-### 3-Layer Architecture
-
-1. **Primitive (Base UI)** : Accessibilité, keyboard nav
-2. **Component (shadcn)** : Styling Tailwind
-3. **Business Logic** : Votre code
-
-```typescript
-// components/ui/button.tsx (shadcn/ui)
-import * as BaseButton from '@base-ui/react/Button'
-
-export const Button = ({ children, ...props }: ButtonProps) => (
-  <BaseButton.Root className="px-4 py-2 bg-blue-500 hover:bg-blue-600" {...props}>
-    {children}
-  </BaseButton.Root>
-)
-
-// Votre composant business
-import { Button } from '@/components/ui/button'
-
-export function CreateProfileButton() {
-  return <Button onClick={handleCreate}>Créer un profil</Button>
+```json
+// components.json
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": true,
+  "tsx": true,
+  "registries": {
+    "@basecn": "https://basecn.dev/r/{name}.json"
+  }
 }
 ```
 
+**Installation des composants :**
+```bash
+# Installer un composant basecn
+npx shadcn@latest add @basecn/button --yes
+
+# Installer plusieurs composants
+npx shadcn@latest add @basecn/card @basecn/input @basecn/form --yes
+```
+
+### Composants Disponibles (55+)
+
+**Composants d'interface :**
+- **Alert** - Messages d'alerte avec variantes (default, destructive)
+- **Button** - Boutons avec variantes et états
+- **Card** - Conteneurs de contenu avec Header, Title, Description, Content
+- **Empty** - État vide avec icône, titre, description
+- **Field** - Structure de champ formulaire (Label + Input + Description + Error)
+- **Form** - Formulaires react-hook-form
+- **Input** - Champs de texte
+- **Label** - Labels de formulaire
+- **Separator** - Séparateurs visuels
+
+**Composants de navigation :**
+- **Breadcrumb**, **Menubar**, **Navigation Menu**, **Sidebar**, **Tabs**
+
+**Composants de feedback :**
+- **Dialog**, **Drawer**, **Alert Dialog**, **Hover Card**, **Popover**, **Tooltip**
+
+**Composants de saisie :**
+- **Autocomplete**, **Checkbox**, **Combobox**, **Radio Group**, **Select**, **Slider**, **Switch**, **Textarea**
+
+**Composants de données :**
+- **Table**, **Badge**, **Avatar**, **Skeleton**, **Progress**, **Spinner**
+
+**Liste complète :** https://github.com/akash3444/basecn/blob/main/registry.json
+
+### ⚠️ RÈGLE CRITIQUE : Toujours utiliser les composants basecn
+
+**❌ NE JAMAIS faire :**
+```typescript
+// Coder manuellement un message d'erreur
+<div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+  {error}
+</div>
+
+// Coder manuellement un champ de formulaire
+<div className="space-y-2">
+  <label htmlFor="email">Email</label>
+  <input id="email" type="email" />
+</div>
+```
+
+**✅ TOUJOURS faire :**
+```typescript
+// Utiliser le composant Alert de basecn
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { AlertCircle } from 'lucide-react'
+
+<Alert variant="destructive">
+  <AlertCircle />
+  <AlertDescription>{error}</AlertDescription>
+</Alert>
+
+// Utiliser le composant Field de basecn
+import { Field, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+
+<Field>
+  <FieldLabel htmlFor="email">Email</FieldLabel>
+  <Input id="email" type="email" />
+</Field>
+```
+
+### Exemples de Composants Clés
+
+**1. Alert (Messages d'erreur/succès)**
+```typescript
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { AlertCircle, CheckCircle } from 'lucide-react'
+
+// Message d'erreur
+<Alert variant="destructive">
+  <AlertCircle />
+  <AlertDescription>Email ou mot de passe incorrect</AlertDescription>
+</Alert>
+
+// Message de succès
+<Alert>
+  <CheckCircle />
+  <AlertTitle>Profil créé</AlertTitle>
+  <AlertDescription>Votre profil a été créé avec succès</AlertDescription>
+</Alert>
+```
+
+**2. Field (Champs de formulaire)**
+```typescript
+import { Field, FieldLabel, FieldDescription, FieldError } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+
+<Field>
+  <FieldLabel htmlFor="password">Mot de passe</FieldLabel>
+  <Input id="password" type="password" />
+  <FieldDescription>Minimum 8 caractères</FieldDescription>
+  <FieldError>{error?.message}</FieldError>
+</Field>
+```
+
+**3. Empty (États vides)**
+```typescript
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
+import { Users } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+
+<Empty>
+  <EmptyHeader>
+    <EmptyMedia variant="icon">
+      <Users />
+    </EmptyMedia>
+    <EmptyTitle>Aucun profil pour le moment</EmptyTitle>
+    <EmptyDescription>
+      Créez votre premier profil pour commencer
+    </EmptyDescription>
+  </EmptyHeader>
+  <EmptyContent>
+    <Button asChild>
+      <Link href="/profile/create">Créer mon premier profil</Link>
+    </Button>
+  </EmptyContent>
+</Empty>
+```
+
+**4. Card (Conteneurs de contenu)**
+```typescript
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+
+<Card>
+  <CardHeader>
+    <CardTitle>Titre</CardTitle>
+    <CardDescription>Description</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p>Contenu de la carte</p>
+  </CardContent>
+</Card>
+```
+
+### Architecture 3-Layers
+
+1. **Primitive (Base UI)** : Accessibilité WAI-ARIA, keyboard navigation, focus management
+2. **Component (basecn)** : Styling Tailwind, variants, responsive design
+3. **Business Logic** : Votre code applicatif
+
+```typescript
+// Layer 1+2 : components/ui/button.tsx (installé via basecn)
+import { Button as ButtonPrimitive } from "@base-ui/react/button"
+
+export const Button = ({ children, ...props }: ButtonProps) => (
+  <ButtonPrimitive className="px-4 py-2 bg-primary..." {...props}>
+    {children}
+  </ButtonPrimitive>
+)
+
+// Layer 3 : Votre composant business
+import { Button } from '@/components/ui/button'
+
+export function CreateProfileButton() {
+  const { execute, isExecuting } = useAction(createProfileAction)
+  return (
+    <Button onClick={execute} disabled={isExecuting}>
+      Créer un profil
+    </Button>
+  )
+}
+```
+
+### Workflow de Développement
+
+**Avant d'écrire du JSX :**
+1. Chercher si un composant basecn existe : https://github.com/akash3444/basecn/blob/main/registry.json
+2. Installer le composant : `npx shadcn@latest add @basecn/component-name --yes`
+3. Utiliser le composant dans votre code
+4. **NE JAMAIS** coder manuellement des divs avec des classes Tailwind pour des patterns UI standards
+
+**Exemples de recherche :**
+- "Je veux afficher un message d'erreur" → Utiliser `Alert` variant="destructive"
+- "Je veux un champ de formulaire" → Utiliser `Field` + `FieldLabel` + `Input`
+- "Je veux afficher un état vide" → Utiliser `Empty` + `EmptyHeader` + `EmptyContent`
+- "Je veux une carte de contenu" → Utiliser `Card` + `CardHeader` + `CardContent`
+
 **Sources :**
-- [basecn.dev](https://basecn.dev/)
+- [basecn.dev - Registry officielle](https://basecn.dev/)
+- [GitHub - akash3444/basecn](https://github.com/akash3444/basecn)
 - [Base UI Documentation](https://base-ui.com/)
+- [shadcn/ui Documentation](https://ui.shadcn.com/)
 
 ---
 

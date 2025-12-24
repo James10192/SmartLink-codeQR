@@ -53,3 +53,27 @@ export async function requireUser() {
   const session = await requireAuth()
   return session.user
 }
+
+/**
+ * Get current user with relations (Server Components)
+ * Includes profiles and subscription
+ */
+export async function getCurrentUser() {
+  const session = await requireAuth()
+
+  const { prisma } = await import('@/lib/db/prisma')
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    include: {
+      profiles: true,
+      subscription: true,
+    },
+  })
+
+  if (!user) {
+    throw new Error('User not found')
+  }
+
+  return user
+}
