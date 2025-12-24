@@ -22,12 +22,15 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Skeleton } from '@/components/ui/skeleton'
+import { CVUpload } from '@/components/profile/cv-upload'
+import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
 
 export default function EditProfilePage({ params }: { params: { id: string } }) {
   const router = useRouter()
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(true)
+  const [cvUrl, setCvUrl] = useState<string | null>(null)
 
   const form = useForm({
     resolver: zodResolver(ProfileUpdateSchema),
@@ -65,6 +68,7 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
           isPublic: profile.isPublic,
           showCV: profile.showCV,
         })
+        setCvUrl(profile.cvFileUrl)
       } catch (err: any) {
         setError(err.message || 'Erreur lors du chargement du profil')
       } finally {
@@ -348,6 +352,23 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
                         </FormControl>
                       </FormItem>
                     )}
+                  />
+                </div>
+
+                {/* Section CV */}
+                <Separator />
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-lg font-medium">Curriculum Vitae</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Téléchargez votre CV pour le rendre disponible sur votre profil public
+                    </p>
+                  </div>
+                  <CVUpload
+                    profileId={params.id}
+                    currentCvUrl={cvUrl}
+                    onUploadSuccess={(url) => setCvUrl(url)}
+                    onDeleteSuccess={() => setCvUrl(null)}
                   />
                 </div>
 
