@@ -1,0 +1,179 @@
+// SmartLink - Prisma Schema
+// Database: Supabase PostgreSQL
+// ORM: Prisma 7.2.0
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// AUTHENTICATION (Better-Auth)
+// ==========================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  profiles      Profile[]
+  subscription  Subscription?
+  sessions      Session[]
+  accounts      Account[]
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionToken String   @unique
+  expires      DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+// ==========================================
+// PROFILS (Multi-profils limités)
+// ==========================================
+
+model Profile {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Slug pour URL publique (ex: /u/jean-kouassi)
+  slug          String    @unique
+
+  // Données vCard
+  fullName      String
+  jobTitle      String?
+  company       String?
+  phoneNumber   String
+  email         String
+  website       String?
+  address       String?
+
+  // Médias
+  avatarUrl     String?
+  cvFileUrl     String?   // URL du PDF sur Supabase Storage
+
+  // Réseaux sociaux
+  linkedinUrl   String?
+  twitterUrl    String?
+  facebookUrl   String?
+  whatsappNumber String?
+
+  // Paramètres
+  isPublic      Boolean   @default(true)
+  showCV        Boolean   @default(true)
+
+  // Analytics (compteurs en DB)
+  viewsCount    Int       @default(0)
+  cvDownloads   Int       @default(0)
+  contactSaves  Int       @default(0)  // Téléchargements vCard
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([slug])
+}
+
+// ==========================================
+// ABONNEMENTS (Paiements)
+// ==========================================
+
+model Subscription {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  plan          SubscriptionPlan @default(FREE)
+  status        SubscriptionStatus @default(ACTIVE)
+
+  // Paiement
+  paymentMethod PaymentMethod?
+  paymentId     String?           // CinetPay transaction_id ou Lemon Squeezy order_id
+
+  startDate     DateTime  @default(now())
+  endDate       DateTime?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+enum SubscriptionPlan {
+  FREE             // 1 profil
+  PRO_DIGITAL      // 3 profils, stats, personnalisation
+  PACK_STARTER     // 3 profils + 50 cartes papier
+  CORPORATE        // Profils illimités, gestion entreprise
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  PENDING         // En attente de confirmation paiement
+}
+
+enum PaymentMethod {
+  CINETPAY_WAVE         // Wave via CinetPay (annuel uniquement)
+  CINETPAY_ORANGE_MONEY // Orange Money via CinetPay (annuel)
+  CINETPAY_MTN          // MTN via CinetPay (annuel)
+  LEMON_SQUEEZY_CARD    // Carte bancaire via Lemon Squeezy (mensuel ou annuel)
+}
+
+// ==========================================
+// ANALYTICS (PostHog + DB)
+// ==========================================
+// Note : Les compteurs de base sont dans Profile (viewsCount, cvDownloads, contactSaves)
+// Les événements détaillés sont envoyés à PostHog
+// Cette table Analytics est optionnelle (peut être retirée si PostHog suffit)
+
+model Analytics {
+  id            String    @id @default(cuid())
+  profileId     String
+
+  event         AnalyticsEvent
+  metadata      Json?     // IP, User-Agent, pays, etc.
+
+  createdAt     DateTime  @default(now())
+
+  @@index([profileId, createdAt])
+}
+
+enum AnalyticsEvent {
+  PROFILE_VIEW
+  CV_DOWNLOAD
+  CONTACT_SAVE
+  QR_GENERATED
+}
