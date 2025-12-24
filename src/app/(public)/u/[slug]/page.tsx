@@ -175,7 +175,7 @@ export default async function PublicProfilePage({
 
                 {profile.showCV && profile.cvFileUrl !== null && (
                   <Button variant="outline" className="flex-1 gap-2" size="lg" asChild>
-                    <a href={profile.cvFileUrl} download>
+                    <a href={`/api/cv/${profile.slug}`} download>
                       <Download className="h-4 w-4" />
                       Télécharger CV
                     </a>
