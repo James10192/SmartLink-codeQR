@@ -16,7 +16,8 @@ const publicRoutes = [
 // Dynamic public routes (profils publics)
 const publicPatterns = [
   /^\/u\/[^/]+$/, // /u/[slug] - public profile pages
-  /^\/api\/vcard\/[^/]+$/, // /api/vcard/[id] - vCard download
+  /^\/api\/vcard\/[^/]+$/, // /api/vcard/[slug] - vCard download
+  /^\/api\/qr\/[^/]+$/, // /api/qr/[slug] - QR code generation
   /^\/api\/webhooks\//, // Webhooks (CinetPay, Lemon Squeezy)
 ]
 
@@ -37,27 +38,27 @@ function isPublicRoute(pathname: string): boolean {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Allow public routes
-  if (isPublicRoute(pathname)) {
-    return NextResponse.next()
-  }
-
-  // Check authentication for protected routes
+  // Check authentication first
   try {
     const session = await auth.api.getSession({
       headers: request.headers,
     })
+
+    // If authenticated and trying to access auth pages, redirect to dashboard
+    if (session && (pathname === "/login" || pathname === "/signup")) {
+      return NextResponse.redirect(new URL("/dashboard", request.url))
+    }
+
+    // Allow public routes (including auth pages for non-authenticated users)
+    if (isPublicRoute(pathname)) {
+      return NextResponse.next()
+    }
 
     // If no session and trying to access protected route, redirect to login
     if (!session) {
       const loginUrl = new URL("/login", request.url)
       loginUrl.searchParams.set("from", pathname)
       return NextResponse.redirect(loginUrl)
-    }
-
-    // If authenticated and trying to access auth pages, redirect to dashboard
-    if (pathname === "/login" || pathname === "/signup") {
-      return NextResponse.redirect(new URL("/dashboard", request.url))
     }
 
     return NextResponse.next()
