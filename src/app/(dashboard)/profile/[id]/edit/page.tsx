@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/form'
 import { Skeleton } from '@/components/ui/skeleton'
 import { CVUpload } from '@/components/profile/cv-upload'
+import { AvatarUpload } from '@/components/profile/avatar-upload'
 import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
 
@@ -31,6 +32,7 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [cvUrl, setCvUrl] = useState<string | null>(null)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   const form = useForm({
     resolver: zodResolver(ProfileUpdateSchema),
@@ -69,6 +71,7 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
           showCV: profile.showCV,
         })
         setCvUrl(profile.cvFileUrl)
+        setAvatarUrl(profile.avatarUrl)
       } catch (err: any) {
         setError(err.message || 'Erreur lors du chargement du profil')
       } finally {
@@ -352,6 +355,23 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
                         </FormControl>
                       </FormItem>
                     )}
+                  />
+                </div>
+
+                {/* Section Photo de profil */}
+                <Separator />
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-lg font-medium">Photo de profil</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Ajoutez une photo pour personnaliser votre profil
+                    </p>
+                  </div>
+                  <AvatarUpload
+                    profileId={params.id}
+                    currentAvatarUrl={avatarUrl}
+                    onUploadSuccess={(url) => setAvatarUrl(url)}
+                    onDeleteSuccess={() => setAvatarUrl(null)}
                   />
                 </div>
 
