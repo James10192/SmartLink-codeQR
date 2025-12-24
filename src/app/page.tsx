@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { HeroGeometric } from '@/components/ui/shape-landing-hero'
+import { BentoGrid, type BentoItem } from '@/components/ui/bento-grid'
 import {
   Smartphone,
   QrCode,
@@ -18,9 +19,50 @@ import {
   Shield,
   Globe,
   ArrowRight,
+  Share2,
+  FileText,
+  BarChart3,
 } from 'lucide-react'
 
 export default function Home() {
+  const bentoItems: BentoItem[] = [
+    {
+      title: "QR Code Intelligent",
+      meta: "Scan instantané",
+      description:
+        "Générez votre QR Code personnalisable en un clic. Vos contacts scannent et enregistrent votre profil automatiquement.",
+      icon: <QrCode className="w-4 h-4 text-blue-500" />,
+      status: "Actif",
+      tags: ["QR", "Partage", "Mobile"],
+      colSpan: 2,
+      hasPersistentHover: true,
+    },
+    {
+      title: "vCard Automatique",
+      meta: "Format standard",
+      description: "Téléchargement direct au format .vcf compatible avec tous les téléphones. Fini la saisie manuelle.",
+      icon: <Download className="w-4 h-4 text-emerald-500" />,
+      status: "Disponible",
+      tags: ["vCard", "Contact"],
+    },
+    {
+      title: "CV Accessible 24/7",
+      meta: "Cloud storage",
+      description: "Téléversez votre CV une fois, accessible partout depuis votre profil public en ligne.",
+      icon: <FileText className="w-4 h-4 text-purple-500" />,
+      tags: ["PDF", "Cloud"],
+      colSpan: 2,
+    },
+    {
+      title: "Analytics Pro",
+      meta: "Statistiques",
+      description: "Suivez vos vues, téléchargements CV et contacts sauvegardés avec des analytics détaillés.",
+      icon: <BarChart3 className="w-4 h-4 text-sky-500" />,
+      status: "Pro",
+      tags: ["Stats", "Insights"],
+    },
+  ]
+
   return (
     <div className="min-h-screen">
       {/* Hero Section with Geometric Shapes */}
@@ -50,6 +92,19 @@ export default function Home() {
               </Button>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Bento Grid Features */}
+      <section className="py-16 sm:py-24">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-3xl text-center mb-12">
+            <h2 className="mb-4 text-3xl font-bold">Fonctionnalités Modernes</h2>
+            <p className="text-lg text-muted-foreground">
+              Tout ce dont vous avez besoin pour un networking professionnel efficace
+            </p>
+          </div>
+          <BentoGrid items={bentoItems} />
         </div>
       </section>
 
