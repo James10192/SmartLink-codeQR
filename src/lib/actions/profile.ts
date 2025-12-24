@@ -174,6 +174,8 @@ export async function getPublicProfile(slug: string) {
       whatsappNumber: true,
       showCV: true,
       viewsCount: true,
+      cvDownloads: true,
+      contactSaves: true,
     },
   })
 
