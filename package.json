@@ -10,13 +10,30 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@prisma/client": "^7.2.0",
+    "@supabase/supabase-js": "^2.89.0",
+    "@tanstack/react-query": "^5.90.12",
+    "@upstash/ratelimit": "^2.0.7",
+    "@upstash/redis": "^1.35.8",
+    "better-auth": "^1.4.9",
+    "clsx": "^2.1.1",
     "next": "^16.1.1",
+    "posthog-js": "^1.310.1",
+    "prisma": "^7.2.0",
+    "qrcode": "^1.5.4",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "react-hook-form": "^7.69.0",
+    "tailwind-merge": "^3.4.0",
+    "vcards-js": "^2.10.0",
+    "zod": "^4.2.1"
   },
   "devDependencies": {
+    "@tanstack/react-query-devtools": "^5.91.1",
     "@types/bun": "latest",
     "@types/node": "^25.0.3",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.4.23",
