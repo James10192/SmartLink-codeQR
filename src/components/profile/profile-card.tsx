@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { QRCodeDialog } from '@/components/profile/qr-code-dialog'
 import { deleteProfileAction } from '@/lib/actions/profile'
 import { useRouter } from 'next/navigation'
 
@@ -84,6 +85,8 @@ export function ProfileCard({ profile }: ProfileCardProps) {
               <Link href={`/profile/${profile.id}/edit`}>Modifier</Link>
             </Button>
           </div>
+
+          <QRCodeDialog slug={profile.slug} fullName={profile.fullName} />
 
           {showDeleteConfirm ? (
             <div className="flex gap-2">
