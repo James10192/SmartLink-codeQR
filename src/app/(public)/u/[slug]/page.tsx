@@ -166,9 +166,11 @@ export default async function PublicProfilePage({
               {/* Actions */}
               <Separator />
               <div className="flex flex-col gap-2 sm:flex-row">
-                <Button className="flex-1 gap-2" size="lg">
-                  <Download className="h-4 w-4" />
-                  Enregistrer le contact
+                <Button className="flex-1 gap-2" size="lg" asChild>
+                  <a href={`/api/vcard/${profile.slug}`} download>
+                    <Download className="h-4 w-4" />
+                    Enregistrer le contact
+                  </a>
                 </Button>
 
                 {profile.showCV && profile.cvFileUrl !== null && (
