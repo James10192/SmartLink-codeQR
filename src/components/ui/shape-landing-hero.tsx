@@ -155,29 +155,16 @@ function HeroGeometric({
                         variants={fadeUpVariants}
                         initial="hidden"
                         animate="visible"
-                        className="mb-6 md:mb-8"
+                        className="mb-8 md:mb-12"
                     >
                         <Image
                             src="/logo.png"
                             alt="SmartLink Logo"
-                            width={120}
-                            height={120}
-                            className="mx-auto"
+                            width={200}
+                            height={200}
+                            className="mx-auto rounded-3xl"
                             priority
                         />
-                    </motion.div>
-
-                    <motion.div
-                        custom={0}
-                        variants={fadeUpVariants}
-                        initial="hidden"
-                        animate="visible"
-                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] mb-8 md:mb-12"
-                    >
-                        <Circle className="h-2 w-2 fill-rose-500/80" />
-                        <span className="text-sm text-white/60 tracking-wide">
-                            {badge}
-                        </span>
                     </motion.div>
 
                     <motion.div
