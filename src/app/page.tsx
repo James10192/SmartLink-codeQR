@@ -13,7 +13,9 @@ import { PricingCard, type PricingCardProps } from '@/components/ui/animated-gla
 import { GlowingEffect } from '@/components/ui/glowing-effect'
 import { ImageComparison } from '@/components/ui/image-comparison'
 import { ContactCard } from '@/components/ui/contact-card'
+import { ContactForm } from '@/components/contact-form'
 import { ContactDialog } from '@/components/contact-dialog'
+import { Mail, Phone } from 'lucide-react'
 import { PricingDialog } from '@/components/pricing-dialogs'
 import {
   Smartphone,
@@ -177,21 +179,25 @@ export default function Home() {
       {/* Contact Section - REPLACES Problem Section */}
       <section className="border-t border-white/10 bg-[#0a0a0a] py-16 sm:py-24">
         <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-3xl text-center mb-12">
-            <h2 className="mb-4 text-3xl font-bold text-white">Contactez-nous</h2>
-            <p className="mb-8 text-lg text-white/60">
-              Une question ? Besoin d'aide ? Notre équipe est là pour vous accompagner.
-            </p>
-          </div>
-          <ContactCard email="marcel-_12@outlook.fr" phone="+225 07 08 41 34 84" />
-
-          {/* Contact Form Button */}
-          <div className="mx-auto max-w-md text-center mt-8">
-            <ContactDialog trigger={
-              <Button size="lg" className="bg-cyan-400 hover:bg-cyan-300 text-black">
-                Envoyez-nous un message
-              </Button>
-            } />
+          <div className="mx-auto max-w-5xl">
+            <ContactCard
+              title="Contactez-nous"
+              description="Une question ? Besoin d'aide ? Notre équipe est là pour vous accompagner. Remplissez le formulaire et nous vous répondrons dans les plus brefs délais."
+              contactInfo={[
+                {
+                  icon: Mail,
+                  label: 'Email',
+                  value: 'marcel-_12@outlook.fr',
+                },
+                {
+                  icon: Phone,
+                  label: 'Téléphone',
+                  value: '+225 07 08 41 34 84',
+                },
+              ]}
+            >
+              <ContactForm />
+            </ContactCard>
           </div>
         </div>
       </section>

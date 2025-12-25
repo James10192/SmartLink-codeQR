@@ -1,73 +1,88 @@
-'use client'
+import React from 'react';
+import { cn } from '@/lib/utils';
+import {
+    LucideIcon,
+    PlusIcon,
+} from 'lucide-react';
 
-import { Mail, Phone } from 'lucide-react'
-import { GlowingEffect } from '@/components/ui/glowing-effect'
+type ContactInfoProps = React.ComponentProps<'div'> & {
+    icon: LucideIcon;
+    label: string;
+    value: string;
+};
 
-interface ContactCardProps {
-  email: string
-  phone: string
+type ContactCardProps = React.ComponentProps<'div'> & {
+    // Content props
+    title?: string;
+    description?: string;
+    contactInfo?: ContactInfoProps[];
+    formSectionClassName?: string;
+};
+
+export function ContactCard({
+    title = 'Contact With Us',
+    description = 'If you have any questions regarding our Services or need help, please fill out the form here. We do our best to respond within 1 business day.',
+    contactInfo,
+    className,
+    formSectionClassName,
+    children,
+    ...props
+}: ContactCardProps) {
+    return (
+        <div
+            className={cn(
+                'bg-card border relative grid h-full w-full shadow md:grid-cols-2 lg:grid-cols-3',
+                className,
+            )}
+            {...props}
+        >
+            <PlusIcon className="absolute -top-3 -left-3 h-6 w-6" />
+            <PlusIcon className="absolute -top-3 -right-3 h-6 w-6" />
+            <PlusIcon className="absolute -bottom-3 -left-3 h-6 w-6" />
+            <PlusIcon className="absolute -right-3 -bottom-3 h-6 w-6" />
+            <div className="flex flex-col justify-between lg:col-span-2">
+                <div className="relative h-full space-y-4 px-4 py-8 md:p-8">
+                    <h1 className="text-3xl font-bold md:text-4xl lg:text-5xl">
+                        {title}
+                    </h1>
+                    <p className="text-muted-foreground max-w-xl text-sm md:text-base lg:text-lg">
+                        {description}
+                    </p>
+                    <div className="grid gap-4 md:grid md:grid-cols-2 lg:grid-cols-3">
+                        {contactInfo?.map((info, index) => (
+                            <ContactInfo key={index} {...info} />
+                        ))}
+                    </div>
+                </div>
+            </div>
+            <div
+                className={cn(
+                    'bg-muted/40 flex h-full w-full items-center border-t p-5 md:col-span-1 md:border-t-0 md:border-l',
+                    formSectionClassName,
+                )}
+            >
+                {children}
+            </div>
+        </div>
+    );
 }
 
-export function ContactCard({ email, phone }: ContactCardProps) {
-  return (
-    <div className="mx-auto max-w-4xl">
-      <div className="grid gap-6 sm:grid-cols-2">
-        {/* Email Card */}
-        <div className="min-h-[10rem]">
-          <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-white/10 p-2 md:rounded-[1.5rem] md:p-3">
-            <GlowingEffect
-              spread={40}
-              glow={true}
-              disabled={false}
-              proximity={64}
-              inactiveZone={0.01}
-              borderWidth={3}
-            />
-            <div className="relative flex h-full flex-col justify-between gap-4 overflow-hidden rounded-xl border-[0.75px] bg-black/40 backdrop-blur-sm p-6 shadow-sm border-white/10">
-              <div className="w-fit rounded-lg border-[0.75px] border-white/10 bg-white/5 p-3">
-                <Mail className="h-5 w-5 text-cyan-400" />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-white">Email</h3>
-                <a
-                  href={`mailto:${email}`}
-                  className="text-sm text-white/70 hover:text-cyan-400 transition-colors block break-all"
-                >
-                  {email}
-                </a>
-              </div>
+function ContactInfo({
+    icon: Icon,
+    label,
+    value,
+    className,
+    ...props
+}: ContactInfoProps) {
+    return (
+        <div className={cn('flex items-center gap-3 py-3', className)} {...props}>
+            <div className="bg-muted/40 rounded-lg p-3">
+                <Icon className="h-5 w-5" />
             </div>
-          </div>
-        </div>
-
-        {/* Phone Card */}
-        <div className="min-h-[10rem]">
-          <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-white/10 p-2 md:rounded-[1.5rem] md:p-3">
-            <GlowingEffect
-              spread={40}
-              glow={true}
-              disabled={false}
-              proximity={64}
-              inactiveZone={0.01}
-              borderWidth={3}
-            />
-            <div className="relative flex h-full flex-col justify-between gap-4 overflow-hidden rounded-xl border-[0.75px] bg-black/40 backdrop-blur-sm p-6 shadow-sm border-white/10">
-              <div className="w-fit rounded-lg border-[0.75px] border-white/10 bg-white/5 p-3">
-                <Phone className="h-5 w-5 text-emerald-400" />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-white">Téléphone</h3>
-                <a
-                  href={`tel:${phone}`}
-                  className="text-sm text-white/70 hover:text-emerald-400 transition-colors block"
-                >
-                  {phone}
-                </a>
-              </div>
+            <div>
+                <p className="font-medium">{label}</p>
+                <p className="text-muted-foreground text-xs">{value}</p>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  )
+    );
 }
