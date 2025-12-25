@@ -126,18 +126,18 @@ export function AuthModal({ open, onOpenChange, defaultTab = 'login' }: AuthModa
         </DialogHeader>
 
         {/* Animated Toggle */}
-        <div className="relative flex gap-0 p-1 bg-muted rounded-lg">
+        <div className="relative flex gap-0 p-1 bg-zinc-800/50 rounded-lg">
           {/* Sliding background indicator */}
           <motion.div
-            className="absolute inset-y-1 w-[calc(50%-4px)] bg-background shadow-sm rounded-md"
+            className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white/90 rounded-md shadow-lg"
             initial={false}
             animate={{
-              x: activeTab === 'login' ? 4 : 'calc(100% + 4px)',
+              left: activeTab === 'login' ? '4px' : 'calc(50% + 0px)',
             }}
             transition={{
               type: 'spring',
-              stiffness: 300,
-              damping: 30,
+              stiffness: 350,
+              damping: 35,
             }}
           />
 
@@ -146,8 +146,8 @@ export function AuthModal({ open, onOpenChange, defaultTab = 'login' }: AuthModa
             onClick={() => setActiveTab('login')}
             className={`relative z-10 flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
               activeTab === 'login'
-                ? 'text-foreground'
-                : 'text-muted-foreground hover:text-foreground'
+                ? 'text-black'
+                : 'text-white/60 hover:text-white/90'
             }`}
           >
             Connexion
@@ -156,8 +156,8 @@ export function AuthModal({ open, onOpenChange, defaultTab = 'login' }: AuthModa
             onClick={() => setActiveTab('signup')}
             className={`relative z-10 flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
               activeTab === 'signup'
-                ? 'text-foreground'
-                : 'text-muted-foreground hover:text-foreground'
+                ? 'text-black'
+                : 'text-white/60 hover:text-white/90'
             }`}
           >
             Inscription
