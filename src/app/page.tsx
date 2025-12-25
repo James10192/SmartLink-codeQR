@@ -147,8 +147,8 @@ export default function Home() {
           {/* Comparison Component */}
           <div className="mx-auto max-w-6xl">
             <ImageComparison
-              beforeImage="/traditional-card.png"
-              afterImage="/smartlink-qr-card.png"
+              beforeImage="/traditional-card-optimized.webp"
+              afterImage="/smartlink-qr-card-optimized.webp"
               beforeLabel="Traditionnel"
               afterLabel="SmartLink QR"
               className="shadow-2xl"

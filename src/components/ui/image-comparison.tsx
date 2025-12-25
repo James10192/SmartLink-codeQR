@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { GripVertical } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -38,13 +39,16 @@ export function ImageComparison({
       if (isDragging) handleMove(e.clientX)
     }
     const handleTouchMove = (e: TouchEvent) => {
-      if (isDragging && e.touches[0]) handleMove(e.touches[0].clientX)
+      if (isDragging && e.touches[0]) {
+        e.preventDefault() // Empêche scroll pendant drag
+        handleMove(e.touches[0].clientX)
+      }
     }
     const handleEnd = () => setIsDragging(false)
 
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove)
-      document.addEventListener('touchmove', handleTouchMove)
+      document.addEventListener('touchmove', handleTouchMove, { passive: false })
       document.addEventListener('mouseup', handleEnd)
       document.addEventListener('touchend', handleEnd)
 
@@ -58,29 +62,52 @@ export function ImageComparison({
   }, [isDragging])
 
   return (
-    <div className={cn("relative w-full max-w-4xl mx-auto", className)}>
-      {/* Labels */}
-      <div className="absolute top-4 left-4 z-10">
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{
+        duration: 0.6,
+        ease: [0.25, 0.4, 0.25, 1],
+      }}
+      className={cn("relative w-full max-w-4xl mx-auto", className)}
+    >
+      {/* Labels avec stagger animation */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.2, duration: 0.4 }}
+        className="absolute top-4 left-4 z-10"
+      >
         <Badge variant="secondary" className="bg-white/5 border-white/10 text-white">
           {beforeLabel}
         </Badge>
-      </div>
-      <div className="absolute top-4 right-4 z-10">
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.3, duration: 0.4 }}
+        className="absolute top-4 right-4 z-10"
+      >
         <Badge variant="secondary" className="bg-white/5 border-white/10 text-white">
           {afterLabel}
         </Badge>
-      </div>
+      </motion.div>
 
       {/* Image Container */}
       <div
         ref={containerRef}
-        className="relative w-full aspect-video overflow-hidden rounded-2xl border border-white/10 select-none"
+        className="relative w-full aspect-[3/2] sm:aspect-video overflow-hidden rounded-2xl border border-white/10 select-none"
       >
         {/* After Image (full, base layer) */}
         <Image
           src={afterImage}
           alt={afterLabel}
           fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+          quality={85}
           className="object-cover"
           priority
         />
@@ -94,6 +121,8 @@ export function ImageComparison({
             src={beforeImage}
             alt={beforeLabel}
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+            quality={85}
             className="object-cover"
             priority
           />
@@ -101,16 +130,35 @@ export function ImageComparison({
 
         {/* Slider Handle */}
         <div
-          className="absolute top-0 bottom-0 w-1 bg-white cursor-ew-resize"
+          className={cn(
+            "absolute top-0 bottom-0 bg-white cursor-ew-resize transition-all",
+            isDragging ? "w-1.5" : "w-1"
+          )}
           style={{ left: `${sliderPosition}%` }}
           onMouseDown={() => setIsDragging(true)}
           onTouchStart={() => setIsDragging(true)}
         >
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+          <div
+            className={cn(
+              "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center shadow-lg transition-all",
+              isDragging ? "w-12 h-12 bg-white" : "w-10 h-10 bg-white hover:scale-110"
+            )}
+          >
             <GripVertical className="w-5 h-5 text-black" />
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Accessibility: Respect prefers-reduced-motion */}
+      <style jsx>{`
+        @media (prefers-reduced-motion: reduce) {
+          * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
+      `}</style>
+    </motion.div>
   )
 }
