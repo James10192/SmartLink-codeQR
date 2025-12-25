@@ -104,7 +104,7 @@ export function AuthModal({ open, onOpenChange, defaultTab = 'login' }: AuthModa
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="sm:max-w-[480px] bg-zinc-950 border-zinc-800">
         <DialogHeader className="flex flex-col items-center space-y-4">
           <Image
             src="/logo.png"
