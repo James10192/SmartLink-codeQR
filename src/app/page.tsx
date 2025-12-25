@@ -1,12 +1,15 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { HeroGeometric } from '@/components/ui/shape-landing-hero'
 import { BentoGrid, type BentoItem } from '@/components/ui/bento-grid'
+import { PricingCard, type PricingCardProps } from '@/components/ui/animated-glassy-pricing'
+import { GlowingEffect } from '@/components/ui/glowing-effect'
 import {
   Smartphone,
   QrCode,
@@ -35,7 +38,6 @@ export default function Home() {
       status: "Actif",
       tags: ["QR", "Partage", "Mobile"],
       colSpan: 2,
-      hasPersistentHover: true,
     },
     {
       title: "vCard Automatique",
@@ -63,6 +65,49 @@ export default function Home() {
     },
   ]
 
+  const pricingPlans: PricingCardProps[] = [
+    {
+      planName: "Freemium",
+      description: "Pour tester SmartLink",
+      price: "0 FCFA",
+      features: [
+        "1 profil",
+        "QR Code basique",
+        "vCard download",
+        "CV téléchargeable"
+      ],
+      buttonText: "Commencer",
+      buttonVariant: "secondary"
+    },
+    {
+      planName: "Pro Digital",
+      description: "Pour les professionnels",
+      price: "1 000 FCFA",
+      features: [
+        "3 profils",
+        "QR Code personnalisable",
+        "Analytics avancés",
+        "Support prioritaire"
+      ],
+      buttonText: "Souscrire",
+      buttonVariant: "primary",
+      isPopular: true
+    },
+    {
+      planName: "Pack Starter",
+      description: "Digital + Physique",
+      price: "15 000 FCFA",
+      features: [
+        "Tout de Pro Digital",
+        "50 cartes papier QR",
+        "Design professionnel",
+        "Livraison incluse"
+      ],
+      buttonText: "Souscrire",
+      buttonVariant: "secondary"
+    }
+  ]
+
   return (
     <div className="min-h-screen">
       {/* Hero Section with Geometric Shapes */}
@@ -72,35 +117,12 @@ export default function Home() {
         title2="en 1 scan"
       />
 
-      {/* CTA Section */}
-      <section className="relative -mt-24 pb-16 sm:pb-24">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="mb-8 text-lg text-muted-foreground">
-              Créez votre carte de visite numérique avec QR Code. Partagez votre profil, CV et
-              contacts en un instant. Fini les cartes papier perdues.
-            </p>
-            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-              <Button size="lg" asChild>
-                <Link href="/signup">
-                  Commencer gratuitement
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/login">Se connecter</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Bento Grid Features */}
-      <section className="py-16 sm:py-24">
+      <section className="py-16 sm:py-24 bg-[#030303]">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center mb-12">
-            <h2 className="mb-4 text-3xl font-bold">Fonctionnalités Modernes</h2>
-            <p className="text-lg text-muted-foreground">
+            <h2 className="mb-4 text-3xl font-bold text-white">Fonctionnalités Modernes</h2>
+            <p className="text-lg text-white/60">
               Tout ce dont vous avez besoin pour un networking professionnel efficace
             </p>
           </div>
@@ -109,11 +131,11 @@ export default function Home() {
       </section>
 
       {/* Problem Section */}
-      <section className="border-t bg-muted/30 py-16 sm:py-24">
+      <section className="border-t border-white/10 bg-[#0a0a0a] py-16 sm:py-24">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center">
-            <h2 className="mb-4 text-3xl font-bold">Le problème avec les cartes papier</h2>
-            <p className="mb-12 text-lg text-muted-foreground">
+            <h2 className="mb-4 text-3xl font-bold text-white">Le problème avec les cartes papier</h2>
+            <p className="mb-12 text-lg text-white/60">
               Les cartes de visite traditionnelles sont coûteuses, obsolètes et inefficaces.
             </p>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -147,246 +169,228 @@ export default function Home() {
       </section>
 
       {/* Solution/Features Section */}
-      <section className="py-16 sm:py-24">
+      <section className="py-16 sm:py-24 bg-[#030303]">
         <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-3xl text-center">
-            <h2 className="mb-4 text-3xl font-bold">La solution moderne et écologique</h2>
-            <p className="mb-12 text-lg text-muted-foreground">
+          <div className="mx-auto max-w-3xl text-center mb-12">
+            <h2 className="mb-4 text-3xl font-bold text-white">La solution moderne et écologique</h2>
+            <p className="mb-8 text-lg text-white/60">
               SmartLink vous permet de créer, personnaliser et partager votre profil professionnel en quelques clics.
             </p>
           </div>
-          <div className="mx-auto grid max-w-5xl gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            <Card>
-              <CardHeader>
-                <QrCode className="mb-2 h-10 w-10 text-primary" />
-                <CardTitle>QR Code Personnalisé</CardTitle>
-                <CardDescription>
-                  Générez votre QR Code unique et partagez-le partout (email, réseaux sociaux, cartes).
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <Download className="mb-2 h-10 w-10 text-primary" />
-                <CardTitle>Contact en 1 Clic</CardTitle>
-                <CardDescription>
-                  Vos contacts téléchargent votre vCard (.vcf) directement. Fini la saisie manuelle.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <Smartphone className="mb-2 h-10 w-10 text-primary" />
-                <CardTitle>CV Accessible Partout</CardTitle>
-                <CardDescription>
-                  Téléversez votre CV une fois, accessible 24/7 via votre profil public.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <TrendingUp className="mb-2 h-10 w-10 text-primary" />
-                <CardTitle>Analytics Avancés</CardTitle>
-                <CardDescription>
-                  Suivez le nombre de vues, téléchargements CV et contacts enregistrés (Pro).
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <Zap className="mb-2 h-10 w-10 text-primary" />
-                <CardTitle>Multi-Profils</CardTitle>
-                <CardDescription>
-                  Créez jusqu'à 3 profils différents (Personnel, Pro, Side Project) avec le plan Pro.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <Shield className="mb-2 h-10 w-10 text-primary" />
-                <CardTitle>Toujours à Jour</CardTitle>
-                <CardDescription>
-                  Modifiez vos infos en temps réel. Pas besoin de réimprimer 500 cartes.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+
+          <div className="mx-auto grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {/* QR Code Personnalisé */}
+            <div className="min-h-[14rem]">
+              <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-white/10 p-2 md:rounded-[1.5rem] md:p-3">
+                <GlowingEffect
+                  spread={40}
+                  glow={true}
+                  disabled={false}
+                  proximity={64}
+                  inactiveZone={0.01}
+                  borderWidth={3}
+                />
+                <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-[0.75px] bg-black/40 backdrop-blur-sm p-6 shadow-sm">
+                  <div className="relative flex flex-1 flex-col justify-between gap-3">
+                    <div className="w-fit rounded-lg border-[0.75px] border-white/10 bg-white/5 p-2">
+                      <QrCode className="h-4 w-4 text-cyan-400" />
+                    </div>
+                    <div className="space-y-3">
+                      <h3 className="pt-0.5 text-xl leading-[1.375rem] font-semibold tracking-[-0.04em] md:text-2xl md:leading-[1.875rem] text-white">
+                        QR Code Personnalisé
+                      </h3>
+                      <p className="text-sm leading-[1.125rem] md:text-base md:leading-[1.375rem] text-white/60">
+                        Générez votre QR Code unique et partagez-le partout (email, réseaux sociaux, cartes).
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact en 1 Clic */}
+            <div className="min-h-[14rem]">
+              <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-white/10 p-2 md:rounded-[1.5rem] md:p-3">
+                <GlowingEffect
+                  spread={40}
+                  glow={true}
+                  disabled={false}
+                  proximity={64}
+                  inactiveZone={0.01}
+                  borderWidth={3}
+                />
+                <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-[0.75px] bg-black/40 backdrop-blur-sm p-6 shadow-sm">
+                  <div className="relative flex flex-1 flex-col justify-between gap-3">
+                    <div className="w-fit rounded-lg border-[0.75px] border-white/10 bg-white/5 p-2">
+                      <Download className="h-4 w-4 text-emerald-400" />
+                    </div>
+                    <div className="space-y-3">
+                      <h3 className="pt-0.5 text-xl leading-[1.375rem] font-semibold tracking-[-0.04em] md:text-2xl md:leading-[1.875rem] text-white">
+                        Contact en 1 Clic
+                      </h3>
+                      <p className="text-sm leading-[1.125rem] md:text-base md:leading-[1.375rem] text-white/60">
+                        Vos contacts téléchargent votre vCard (.vcf) directement. Fini la saisie manuelle.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* CV Accessible Partout */}
+            <div className="min-h-[14rem]">
+              <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-white/10 p-2 md:rounded-[1.5rem] md:p-3">
+                <GlowingEffect
+                  spread={40}
+                  glow={true}
+                  disabled={false}
+                  proximity={64}
+                  inactiveZone={0.01}
+                  borderWidth={3}
+                />
+                <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-[0.75px] bg-black/40 backdrop-blur-sm p-6 shadow-sm">
+                  <div className="relative flex flex-1 flex-col justify-between gap-3">
+                    <div className="w-fit rounded-lg border-[0.75px] border-white/10 bg-white/5 p-2">
+                      <Smartphone className="h-4 w-4 text-purple-400" />
+                    </div>
+                    <div className="space-y-3">
+                      <h3 className="pt-0.5 text-xl leading-[1.375rem] font-semibold tracking-[-0.04em] md:text-2xl md:leading-[1.875rem] text-white">
+                        CV Accessible Partout
+                      </h3>
+                      <p className="text-sm leading-[1.125rem] md:text-base md:leading-[1.375rem] text-white/60">
+                        Téléversez votre CV une fois, accessible 24/7 via votre profil public.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Analytics Avancés */}
+            <div className="min-h-[14rem]">
+              <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-white/10 p-2 md:rounded-[1.5rem] md:p-3">
+                <GlowingEffect
+                  spread={40}
+                  glow={true}
+                  disabled={false}
+                  proximity={64}
+                  inactiveZone={0.01}
+                  borderWidth={3}
+                />
+                <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-[0.75px] bg-black/40 backdrop-blur-sm p-6 shadow-sm">
+                  <div className="relative flex flex-1 flex-col justify-between gap-3">
+                    <div className="w-fit rounded-lg border-[0.75px] border-white/10 bg-white/5 p-2">
+                      <TrendingUp className="h-4 w-4 text-sky-400" />
+                    </div>
+                    <div className="space-y-3">
+                      <h3 className="pt-0.5 text-xl leading-[1.375rem] font-semibold tracking-[-0.04em] md:text-2xl md:leading-[1.875rem] text-white">
+                        Analytics Avancés
+                      </h3>
+                      <p className="text-sm leading-[1.125rem] md:text-base md:leading-[1.375rem] text-white/60">
+                        Suivez le nombre de vues, téléchargements CV et contacts enregistrés (Pro).
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Multi-Profils */}
+            <div className="min-h-[14rem]">
+              <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-white/10 p-2 md:rounded-[1.5rem] md:p-3">
+                <GlowingEffect
+                  spread={40}
+                  glow={true}
+                  disabled={false}
+                  proximity={64}
+                  inactiveZone={0.01}
+                  borderWidth={3}
+                />
+                <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-[0.75px] bg-black/40 backdrop-blur-sm p-6 shadow-sm">
+                  <div className="relative flex flex-1 flex-col justify-between gap-3">
+                    <div className="w-fit rounded-lg border-[0.75px] border-white/10 bg-white/5 p-2">
+                      <Zap className="h-4 w-4 text-yellow-400" />
+                    </div>
+                    <div className="space-y-3">
+                      <h3 className="pt-0.5 text-xl leading-[1.375rem] font-semibold tracking-[-0.04em] md:text-2xl md:leading-[1.875rem] text-white">
+                        Multi-Profils
+                      </h3>
+                      <p className="text-sm leading-[1.125rem] md:text-base md:leading-[1.375rem] text-white/60">
+                        Créez jusqu'à 3 profils différents (Personnel, Pro, Side Project) avec le plan Pro.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Toujours à Jour */}
+            <div className="min-h-[14rem]">
+              <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-white/10 p-2 md:rounded-[1.5rem] md:p-3">
+                <GlowingEffect
+                  spread={40}
+                  glow={true}
+                  disabled={false}
+                  proximity={64}
+                  inactiveZone={0.01}
+                  borderWidth={3}
+                />
+                <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-[0.75px] bg-black/40 backdrop-blur-sm p-6 shadow-sm">
+                  <div className="relative flex flex-1 flex-col justify-between gap-3">
+                    <div className="w-fit rounded-lg border-[0.75px] border-white/10 bg-white/5 p-2">
+                      <Shield className="h-4 w-4 text-green-400" />
+                    </div>
+                    <div className="space-y-3">
+                      <h3 className="pt-0.5 text-xl leading-[1.375rem] font-semibold tracking-[-0.04em] md:text-2xl md:leading-[1.875rem] text-white">
+                        Toujours à Jour
+                      </h3>
+                      <p className="text-sm leading-[1.125rem] md:text-base md:leading-[1.375rem] text-white/60">
+                        Modifiez vos infos en temps réel. Pas besoin de réimprimer 500 cartes.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Pricing Section */}
-      <section className="border-t bg-muted/30 py-16 sm:py-24">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-3xl text-center">
-            <h2 className="mb-4 text-3xl font-bold">Tarifs simples et transparents</h2>
-            <p className="mb-12 text-lg text-muted-foreground">
+      <section className="py-16 sm:py-24 bg-[#030303] relative overflow-hidden">
+        {/* Subtle gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-blue-500/5" />
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="mx-auto max-w-3xl text-center mb-14">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+              Tarifs simples et transparents
+            </h2>
+            <p className="text-lg text-white/70 max-w-2xl mx-auto">
               Choisissez le plan qui correspond à vos besoins. Pas de frais cachés.
             </p>
           </div>
-          <div className="mx-auto grid max-w-6xl gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Freemium */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Freemium</CardTitle>
-                <CardDescription>Pour tester SmartLink</CardDescription>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold">0 FCFA</span>
-                  <span className="text-muted-foreground">/mois</span>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Separator className="mb-4" />
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-start">
-                    <CheckCircle className="mr-2 h-4 w-4 text-primary" />
-                    <span>1 profil</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="mr-2 h-4 w-4 text-primary" />
-                    <span>QR Code basique</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="mr-2 h-4 w-4 text-primary" />
-                    <span>vCard download</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="mr-2 h-4 w-4 text-primary" />
-                    <span>CV téléchargeable</span>
-                  </li>
-                </ul>
-              </CardContent>
-              <CardFooter>
-                <Button variant="outline" className="w-full" asChild>
-                  <Link href="/signup">Commencer</Link>
-                </Button>
-              </CardFooter>
-            </Card>
 
-            {/* Pro Digital */}
-            <Card className="relative border-primary">
-              <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">Populaire</Badge>
-              <CardHeader>
-                <CardTitle>Pro Digital</CardTitle>
-                <CardDescription>Pour les professionnels actifs</CardDescription>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold">1 000 FCFA</span>
-                  <span className="text-muted-foreground">/mois</span>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Separator className="mb-4" />
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-start">
-                    <CheckCircle className="mr-2 h-4 w-4 text-primary" />
-                    <span>3 profils</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="mr-2 h-4 w-4 text-primary" />
-                    <span>QR Code personnalisable (couleurs)</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="mr-2 h-4 w-4 text-primary" />
-                    <span>Analytics avancés</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="mr-2 h-4 w-4 text-primary" />
-                    <span>Support prioritaire</span>
-                  </li>
-                </ul>
-              </CardContent>
-              <CardFooter>
-                <Button className="w-full" asChild>
-                  <Link href="/signup">Souscrire</Link>
-                </Button>
-              </CardFooter>
-            </Card>
-
-            {/* Pack Starter */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Pack Starter</CardTitle>
-                <CardDescription>Digital + Physique</CardDescription>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold">15 000 FCFA</span>
-                  <span className="text-muted-foreground">/an</span>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Separator className="mb-4" />
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-start">
-                    <CheckCircle className="mr-2 h-4 w-4 text-primary" />
-                    <span>Tout de Pro Digital</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="mr-2 h-4 w-4 text-primary" />
-                    <span>50 cartes papier QR (livrées)</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="mr-2 h-4 w-4 text-primary" />
-                    <span>Design professionnel</span>
-                  </li>
-                </ul>
-              </CardContent>
-              <CardFooter>
-                <Button variant="outline" className="w-full" asChild>
-                  <Link href="/signup">Souscrire</Link>
-                </Button>
-              </CardFooter>
-            </Card>
-
-            {/* Corporate */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Corporate</CardTitle>
-                <CardDescription>Pour les entreprises</CardDescription>
-                <div className="mt-4">
-                  <span className="text-2xl font-bold">Sur devis</span>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Separator className="mb-4" />
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-start">
-                    <CheckCircle className="mr-2 h-4 w-4 text-primary" />
-                    <span>Profils illimités</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="mr-2 h-4 w-4 text-primary" />
-                    <span>Gestion centralisée</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="mr-2 h-4 w-4 text-primary" />
-                    <span>Branding personnalisé</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="mr-2 h-4 w-4 text-primary" />
-                    <span>Support dédié</span>
-                  </li>
-                </ul>
-              </CardContent>
-              <CardFooter>
-                <Button variant="outline" className="w-full" asChild>
-                  <Link href="/signup">Nous contacter</Link>
-                </Button>
-              </CardFooter>
-            </Card>
+          <div className="flex flex-col md:flex-row gap-8 md:gap-6 justify-center items-stretch w-full max-w-6xl mx-auto">
+            {pricingPlans.map((plan) => (
+              <PricingCard key={plan.planName} {...plan} />
+            ))}
           </div>
         </div>
       </section>
 
       {/* Final CTA */}
-      <section className="border-t py-16 sm:py-24">
+      <section className="border-t border-white/10 bg-[#0a0a0a] py-16 sm:py-24">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center">
-            <Globe className="mx-auto mb-6 h-16 w-16 text-primary" />
-            <h2 className="mb-4 text-3xl font-bold">
+            <Globe className="mx-auto mb-6 h-16 w-16 text-cyan-400" />
+            <h2 className="mb-4 text-3xl font-bold text-white">
               Rejoignez les professionnels modernes d'Abidjan
             </h2>
-            <p className="mb-8 text-lg text-muted-foreground">
+            <p className="mb-8 text-lg text-white/60">
               Créez votre profil gratuitement en moins de 2 minutes. Aucune carte bancaire requise.
             </p>
-            <Button size="lg" asChild>
+            <Button size="lg" asChild className="bg-white text-black hover:bg-white/90">
               <Link href="/signup">
                 Créer mon profil gratuitement
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -397,26 +401,36 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t bg-muted/50 py-8">
+      <footer className="border-t border-white/10 bg-black py-12">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-            <p className="text-sm text-muted-foreground">
-              © 2025 SmartLink. Tous droits réservés.
-            </p>
+          <div className="flex flex-col items-center gap-8">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/logo.png"
+                alt="SmartLink Logo"
+                width={40}
+                height={40}
+                className="opacity-90"
+              />
+              <span className="text-lg font-semibold text-white">SmartLink</span>
+            </div>
             <div className="flex gap-6">
-              <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link href="#" className="text-sm text-white/60 hover:text-white transition-colors">
                 À propos
               </Link>
-              <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link href="#" className="text-sm text-white/60 hover:text-white transition-colors">
                 Confidentialité
               </Link>
-              <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link href="#" className="text-sm text-white/60 hover:text-white transition-colors">
                 Conditions
               </Link>
-              <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link href="#" className="text-sm text-white/60 hover:text-white transition-colors">
                 Contact
               </Link>
             </div>
+            <p className="text-sm text-white/60">
+              © 2025 SmartLink. Tous droits réservés.
+            </p>
           </div>
         </div>
       </footer>

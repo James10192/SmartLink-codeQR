@@ -1,9 +1,12 @@
 "use client";
 
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
-import { Circle } from "lucide-react";
+import { Circle, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import Image from "next/image";
 
 
 function ElegantShape({
@@ -152,6 +155,23 @@ function HeroGeometric({
                         variants={fadeUpVariants}
                         initial="hidden"
                         animate="visible"
+                        className="mb-6 md:mb-8"
+                    >
+                        <Image
+                            src="/logo.png"
+                            alt="SmartLink Logo"
+                            width={120}
+                            height={120}
+                            className="mx-auto"
+                            priority
+                        />
+                    </motion.div>
+
+                    <motion.div
+                        custom={0}
+                        variants={fadeUpVariants}
+                        initial="hidden"
+                        animate="visible"
                         className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] mb-8 md:mb-12"
                     >
                         <Circle className="h-2 w-2 fill-rose-500/80" />
@@ -188,9 +208,26 @@ function HeroGeometric({
                         animate="visible"
                     >
                         <p className="text-base sm:text-lg md:text-xl text-white/40 mb-8 leading-relaxed font-light tracking-wide max-w-xl mx-auto px-4">
-                            Crafting exceptional digital experiences through
-                            innovative design and cutting-edge technology.
+                            Créez votre carte de visite numérique avec QR Code. Partagez votre profil, CV et contacts en un instant. Fini les cartes papier perdues.
                         </p>
+                    </motion.div>
+
+                    <motion.div
+                        custom={3}
+                        variants={fadeUpVariants}
+                        initial="hidden"
+                        animate="visible"
+                        className="flex flex-col gap-4 sm:flex-row sm:justify-center"
+                    >
+                        <Button size="lg" asChild className="bg-white text-black hover:bg-white/90">
+                            <Link href="/signup">
+                                Commencer gratuitement
+                                <ArrowRight className="ml-2 h-4 w-4" />
+                            </Link>
+                        </Button>
+                        <Button size="lg" variant="outline" asChild className="border-white/20 bg-white/10 text-white hover:bg-white/20 hover:text-white">
+                            <Link href="/login">Se connecter</Link>
+                        </Button>
                     </motion.div>
                 </div>
             </div>
