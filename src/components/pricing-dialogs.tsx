@@ -1,6 +1,5 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import {
   Dialog,
   DialogContent,
@@ -18,6 +17,8 @@ interface PricingDialogProps {
   price: string
   features: string[]
   planType: 'freemium' | 'pro' | 'starter'
+  onSignup?: () => void
+  onSubscribe?: () => void
 }
 
 export function PricingDialog({
@@ -27,18 +28,17 @@ export function PricingDialog({
   price,
   features,
   planType,
+  onSignup,
+  onSubscribe,
 }: PricingDialogProps) {
-  const router = useRouter()
-
   const handleSignup = () => {
-    router.push('/signup')
+    onOpenChange(false)
+    onSignup?.()
   }
 
   const handleSubscribe = () => {
-    // TODO: Integrate with payment gateway (CinetPay/Lemon Squeezy)
-    console.log(`Subscribe to ${planName}`)
-    // For now, redirect to signup
-    router.push(`/signup?plan=${planType}`)
+    onOpenChange(false)
+    onSubscribe?.()
   }
 
   return (
@@ -74,7 +74,7 @@ export function PricingDialog({
               <>
                 <Button
                   onClick={handleSignup}
-                  className="w-full bg-cyan-400 hover:bg-cyan-300 text-black"
+                  className="w-full bg-cyan-400 hover:bg-cyan-300 text-black cursor-pointer"
                   size="lg"
                 >
                   Créer un compte gratuit
@@ -90,7 +90,7 @@ export function PricingDialog({
                     }
                   }}
                   variant="outline"
-                  className="w-full"
+                  className="w-full cursor-pointer"
                   size="lg"
                 >
                   <Mail className="mr-2 h-4 w-4" />
@@ -101,7 +101,7 @@ export function PricingDialog({
               <>
                 <Button
                   onClick={handleSubscribe}
-                  className="w-full bg-cyan-400 hover:bg-cyan-300 text-black"
+                  className="w-full bg-cyan-400 hover:bg-cyan-300 text-black cursor-pointer"
                   size="lg"
                 >
                   Souscrire maintenant

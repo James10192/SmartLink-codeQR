@@ -31,7 +31,7 @@ function OAuthButton({ provider, children, className }: OAuthButtonProps) {
   return (
     <Button
       variant="outline"
-      className={className}
+      className={`cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors ${className}`}
       onClick={handleSignIn}
       disabled={isLoading}
       type="button"

@@ -17,6 +17,7 @@ import { ContactForm } from '@/components/contact-form'
 import { ContactDialog } from '@/components/contact-dialog'
 import { Mail, Phone } from 'lucide-react'
 import { PricingDialog } from '@/components/pricing-dialogs'
+import { AuthModal } from '@/components/auth/auth-modal'
 import {
   Smartphone,
   QrCode,
@@ -36,6 +37,8 @@ import {
 
 export default function Home() {
   const [activePricingDialog, setActivePricingDialog] = useState<string | null>(null)
+  const [authModalOpen, setAuthModalOpen] = useState(false)
+  const [authModalTab, setAuthModalTab] = useState<'login' | 'signup'>('signup')
 
   const bentoItems: BentoItem[] = [
     {
@@ -424,11 +427,16 @@ export default function Home() {
             <p className="mb-8 text-lg text-white/60">
               Créez votre profil gratuitement en moins de 2 minutes. Aucune carte bancaire requise.
             </p>
-            <Button size="lg" asChild className="bg-white text-black hover:bg-white/90">
-              <Link href="/signup">
-                Créer mon profil gratuitement
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
+            <Button
+              size="lg"
+              className="bg-white text-black hover:bg-white/90 cursor-pointer"
+              onClick={() => {
+                setAuthModalTab('signup')
+                setAuthModalOpen(true)
+              }}
+            >
+              Créer mon profil gratuitement
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
         </div>
@@ -449,17 +457,17 @@ export default function Home() {
               <span className="text-lg font-semibold text-white">SmartLink</span>
             </div>
             <div className="flex gap-6">
-              <Link href="#" className="text-sm text-white/60 hover:text-white transition-colors">
+              <Link href="#" className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer">
                 À propos
               </Link>
-              <Link href="#" className="text-sm text-white/60 hover:text-white transition-colors">
+              <Link href="#" className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer">
                 Confidentialité
               </Link>
-              <Link href="#" className="text-sm text-white/60 hover:text-white transition-colors">
+              <Link href="#" className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer">
                 Conditions
               </Link>
               <ContactDialog trigger={
-                <button className="text-sm text-white/60 hover:text-white transition-colors">
+                <button className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer">
                   Contact
                 </button>
               } />
@@ -484,9 +492,24 @@ export default function Home() {
             price={plan.price}
             features={plan.features}
             planType={planType}
+            onSignup={() => {
+              setAuthModalTab('signup')
+              setAuthModalOpen(true)
+            }}
+            onSubscribe={() => {
+              setAuthModalTab('signup')
+              setAuthModalOpen(true)
+            }}
           />
         )
       })}
+
+      {/* Auth Modal */}
+      <AuthModal
+        open={authModalOpen}
+        onOpenChange={setAuthModalOpen}
+        defaultTab={authModalTab}
+      />
     </div>
   )
 }

@@ -171,7 +171,7 @@ export const PricingCard = ({
   planName, description, price, features, buttonText, isPopular = false, buttonVariant = 'primary', onButtonClick
 }: PricingCardProps) => {
   const buttonClasses = `
-    mt-auto w-full py-2.5 rounded-xl font-semibold text-[14px] transition font-sans
+    mt-auto w-full py-2.5 rounded-xl font-semibold text-[14px] transition font-sans cursor-pointer
     ${buttonVariant === 'primary'
       ? 'bg-cyan-400 hover:bg-cyan-300 text-black'
       : 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
