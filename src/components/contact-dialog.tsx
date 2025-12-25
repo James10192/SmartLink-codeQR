@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useActionState } from 'react'
+import React, { useState, useActionState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -36,11 +36,18 @@ export function ContactDialog({ trigger, children }: ContactDialogProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || <Button variant="outline">Contact</Button>}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[525px]">
+    <>
+      {trigger ? (
+        <div onClick={() => setOpen(true)} style={{ display: 'inline-block', cursor: 'pointer' }}>
+          {trigger}
+        </div>
+      ) : (
+        <Button variant="outline" onClick={() => setOpen(true)}>
+          Contact
+        </Button>
+      )}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
           <DialogTitle>Contactez-nous</DialogTitle>
           <DialogDescription>
@@ -126,6 +133,7 @@ export function ContactDialog({ trigger, children }: ContactDialogProps) {
           </Button>
         </form>
       </DialogContent>
-    </Dialog>
+      </Dialog>
+    </>
   )
 }

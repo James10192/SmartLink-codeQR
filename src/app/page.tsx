@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -13,6 +14,7 @@ import { GlowingEffect } from '@/components/ui/glowing-effect'
 import { ImageComparison } from '@/components/ui/image-comparison'
 import { ContactCard } from '@/components/ui/contact-card'
 import { ContactDialog } from '@/components/contact-dialog'
+import { PricingDialog } from '@/components/pricing-dialogs'
 import {
   Smartphone,
   QrCode,
@@ -31,6 +33,8 @@ import {
 } from 'lucide-react'
 
 export default function Home() {
+  const [activePricingDialog, setActivePricingDialog] = useState<string | null>(null)
+
   const bentoItems: BentoItem[] = [
     {
       title: "QR Code Intelligent",
@@ -80,7 +84,8 @@ export default function Home() {
         "CV téléchargeable"
       ],
       buttonText: "Commencer",
-      buttonVariant: "secondary"
+      buttonVariant: "secondary",
+      onButtonClick: () => setActivePricingDialog('freemium')
     },
     {
       planName: "Pro Digital",
@@ -94,7 +99,8 @@ export default function Home() {
       ],
       buttonText: "Souscrire",
       buttonVariant: "primary",
-      isPopular: true
+      isPopular: true,
+      onButtonClick: () => setActivePricingDialog('prodigital')
     },
     {
       planName: "Pack Starter",
@@ -107,7 +113,8 @@ export default function Home() {
         "Livraison incluse"
       ],
       buttonText: "Souscrire",
-      buttonVariant: "secondary"
+      buttonVariant: "secondary",
+      onButtonClick: () => setActivePricingDialog('packstarter')
     }
   ]
 
@@ -445,9 +452,11 @@ export default function Home() {
               <Link href="#" className="text-sm text-white/60 hover:text-white transition-colors">
                 Conditions
               </Link>
-              <Link href="#" className="text-sm text-white/60 hover:text-white transition-colors">
-                Contact
-              </Link>
+              <ContactDialog trigger={
+                <button className="text-sm text-white/60 hover:text-white transition-colors">
+                  Contact
+                </button>
+              } />
             </div>
             <p className="text-sm text-white/60">
               © 2025 SmartLink. Tous droits réservés.
@@ -455,6 +464,23 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Pricing Dialogs */}
+      {pricingPlans.map((plan) => {
+        const planKey = plan.planName.toLowerCase().replace(/\s+/g, '')
+        const planType = plan.planName === 'Freemium' ? 'freemium' : plan.planName === 'Pro Digital' ? 'pro' : 'starter'
+        return (
+          <PricingDialog
+            key={plan.planName}
+            open={activePricingDialog === planKey}
+            onOpenChange={(open) => setActivePricingDialog(open ? planKey : null)}
+            planName={plan.planName}
+            price={plan.price}
+            features={plan.features}
+            planType={planType}
+          />
+        )
+      })}
     </div>
   )
 }
