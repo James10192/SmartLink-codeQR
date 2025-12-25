@@ -11,6 +11,8 @@ import { BentoGrid, type BentoItem } from '@/components/ui/bento-grid'
 import { PricingCard, type PricingCardProps } from '@/components/ui/animated-glassy-pricing'
 import { GlowingEffect } from '@/components/ui/glowing-effect'
 import { ImageComparison } from '@/components/ui/image-comparison'
+import { ContactCard } from '@/components/ui/contact-card'
+import { ContactDialog } from '@/components/contact-dialog'
 import {
   Smartphone,
   QrCode,
@@ -165,40 +167,24 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Problem Section */}
+      {/* Contact Section - REPLACES Problem Section */}
       <section className="border-t border-white/10 bg-[#0a0a0a] py-16 sm:py-24">
         <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-3xl text-center">
-            <h2 className="mb-4 text-3xl font-bold text-white">Le problème avec les cartes papier</h2>
-            <p className="mb-12 text-lg text-white/60">
-              Les cartes de visite traditionnelles sont coûteuses, obsolètes et inefficaces.
+          <div className="mx-auto max-w-3xl text-center mb-12">
+            <h2 className="mb-4 text-3xl font-bold text-white">Contactez-nous</h2>
+            <p className="mb-8 text-lg text-white/60">
+              Une question ? Besoin d'aide ? Notre équipe est là pour vous accompagner.
             </p>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <Card>
-                <CardContent className="pt-6 text-center">
-                  <XCircle className="mx-auto mb-3 h-8 w-8 text-destructive" />
-                  <p className="text-sm font-medium">88% finissent à la poubelle en moins d'une semaine</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-6 text-center">
-                  <XCircle className="mx-auto mb-3 h-8 w-8 text-destructive" />
-                  <p className="text-sm font-medium">2 min pour saisir manuellement un contact</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-6 text-center">
-                  <XCircle className="mx-auto mb-3 h-8 w-8 text-destructive" />
-                  <p className="text-sm font-medium">500 cartes inutiles après un changement de poste</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-6 text-center">
-                  <XCircle className="mx-auto mb-3 h-8 w-8 text-destructive" />
-                  <p className="text-sm font-medium">CV papier encombrant et souvent égaré</p>
-                </CardContent>
-              </Card>
-            </div>
+          </div>
+          <ContactCard email="marcel-_12@outlook.fr" phone="+225 07 08 41 34 84" />
+
+          {/* Contact Form Button */}
+          <div className="mx-auto max-w-md text-center mt-8">
+            <ContactDialog trigger={
+              <Button size="lg" className="bg-cyan-400 hover:bg-cyan-300 text-black">
+                Envoyez-nous un message
+              </Button>
+            } />
           </div>
         </div>
       </section>
