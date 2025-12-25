@@ -130,6 +130,10 @@ export default function Home() {
         badge="SmartLink"
         title1="Votre contact enregistré"
         title2="en 1 scan"
+        onSignupClick={() => {
+          setAuthModalTab('signup')
+          setAuthModalOpen(true)
+        }}
       />
 
       {/* Bento Grid Features */}

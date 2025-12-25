@@ -79,10 +79,12 @@ function HeroGeometric({
     badge = "Design Collective",
     title1 = "Elevate Your Digital Vision",
     title2 = "Crafting Exceptional Websites",
+    onSignupClick,
 }: {
     badge?: string;
     title1?: string;
     title2?: string;
+    onSignupClick?: () => void;
 }) {
     const fadeUpVariants = {
         hidden: { opacity: 0, y: 30 },
@@ -206,13 +208,20 @@ function HeroGeometric({
                         animate="visible"
                         className="flex flex-col gap-4 sm:flex-row sm:justify-center"
                     >
-                        <Button size="lg" asChild className="bg-white text-black hover:bg-white/90">
-                            <Link href="/signup">
-                                Commencer gratuitement
-                                <ArrowRight className="ml-2 h-4 w-4" />
-                            </Link>
+                        <Button
+                            size="lg"
+                            className="bg-white text-black hover:bg-white/90 cursor-pointer"
+                            onClick={onSignupClick}
+                        >
+                            Commencer gratuitement
+                            <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
-                        <Button size="lg" variant="outline" asChild className="border-white/20 bg-white/10 text-white hover:bg-white/20 hover:text-white">
+                        <Button
+                            size="lg"
+                            variant="outline"
+                            asChild
+                            className="border-white/20 bg-white/10 text-white hover:bg-white/20 hover:text-white cursor-pointer"
+                        >
                             <Link href="/login">Se connecter</Link>
                         </Button>
                     </motion.div>
