@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { signIn } from '@/lib/auth/client'
 
 interface OAuthButtonProps {
@@ -22,8 +23,23 @@ function OAuthButton({ provider, children, className }: OAuthButtonProps) {
         provider,
         callbackURL: '/dashboard',
       })
+      // If successful, user will be redirected
     } catch (error) {
       console.error(`${provider} sign in error:`, error)
+
+      // Show user-friendly error message
+      const errorMessage = error instanceof Error ? error.message : 'Une erreur est survenue'
+
+      if (errorMessage.includes('not enabled') || errorMessage.includes('not configured')) {
+        toast.error(`${provider.charAt(0).toUpperCase() + provider.slice(1)} n'est pas configuré`, {
+          description: 'Veuillez contacter l\'administrateur ou utiliser l\'email/mot de passe.',
+        })
+      } else {
+        toast.error('Erreur de connexion', {
+          description: `Impossible de se connecter avec ${provider}. Veuillez réessayer.`,
+        })
+      }
+
       setIsLoading(false)
     }
   }

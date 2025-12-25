@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { AlertCircle } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { signIn, signUp } from '@/lib/auth/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -124,24 +125,39 @@ export function AuthModal({ open, onOpenChange, defaultTab = 'login' }: AuthModa
           </DialogDescription>
         </DialogHeader>
 
-        {/* Tabs Toggle */}
-        <div className="flex gap-2 p-1 bg-muted rounded-lg">
+        {/* Animated Toggle */}
+        <div className="relative flex gap-0 p-1 bg-muted rounded-lg">
+          {/* Sliding background indicator */}
+          <motion.div
+            className="absolute inset-y-1 w-[calc(50%-4px)] bg-background shadow-sm rounded-md"
+            initial={false}
+            animate={{
+              x: activeTab === 'login' ? 4 : 'calc(100% + 4px)',
+            }}
+            transition={{
+              type: 'spring',
+              stiffness: 300,
+              damping: 30,
+            }}
+          />
+
+          {/* Toggle buttons */}
           <button
             onClick={() => setActiveTab('login')}
-            className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+            className={`relative z-10 flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
               activeTab === 'login'
-                ? 'bg-background shadow-sm'
-                : 'hover:bg-background/50'
+                ? 'text-foreground'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Connexion
           </button>
           <button
             onClick={() => setActiveTab('signup')}
-            className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+            className={`relative z-10 flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
               activeTab === 'signup'
-                ? 'bg-background shadow-sm'
-                : 'hover:bg-background/50'
+                ? 'text-foreground'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             Inscription
