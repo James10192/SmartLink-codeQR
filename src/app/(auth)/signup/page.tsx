@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { AlertCircle } from 'lucide-react'
 import { signUp } from '@/lib/auth/client'
 import { Button } from '@/components/ui/button'
@@ -9,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Field, FieldLabel, FieldDescription } from '@/components/ui/field'
+import { OAuthButtons } from '@/components/auth/oauth-buttons'
 import Link from 'next/link'
 
 export default function SignupPage() {
@@ -51,8 +53,12 @@ export default function SignupPage() {
 
       router.push('/dashboard')
       router.refresh()
-    } catch (err: any) {
-      if (err?.message?.includes('already exists')) {
+    } catch (err: unknown) {
+      const errorMessage = err && typeof err === 'object' && 'message' in err
+        ? String(err.message)
+        : ''
+
+      if (errorMessage.includes('already exists')) {
         setError('Un compte existe déjà avec cet email')
       } else {
         setError('Erreur lors de la création du compte')
@@ -66,6 +72,17 @@ export default function SignupPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-md space-y-8">
+        <div className="flex justify-center mb-6">
+          <Image
+            src="/logo.png"
+            alt="SmartLink Logo"
+            width={120}
+            height={120}
+            className="rounded-lg"
+            priority
+          />
+        </div>
+
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight">SmartLink</h1>
           <p className="mt-2 text-sm text-muted-foreground">
@@ -151,6 +168,8 @@ export default function SignupPage() {
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? 'Création...' : 'Créer mon compte'}
               </Button>
+
+              <OAuthButtons />
 
               <p className="text-xs text-center text-muted-foreground">
                 En créant un compte, vous acceptez nos Conditions d'utilisation

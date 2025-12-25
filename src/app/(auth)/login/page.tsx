@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { AlertCircle } from 'lucide-react'
 import { signIn } from '@/lib/auth/client'
 import { Button } from '@/components/ui/button'
@@ -9,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Field, FieldLabel } from '@/components/ui/field'
+import { OAuthButtons } from '@/components/auth/oauth-buttons'
 import Link from 'next/link'
 
 export default function LoginPage() {
@@ -42,6 +44,17 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-md space-y-8">
+        <div className="flex justify-center mb-6">
+          <Image
+            src="/logo.png"
+            alt="SmartLink Logo"
+            width={120}
+            height={120}
+            className="rounded-lg"
+            priority
+          />
+        </div>
+
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight">SmartLink</h1>
           <p className="mt-2 text-sm text-muted-foreground">
@@ -95,6 +108,8 @@ export default function LoginPage() {
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? 'Connexion...' : 'Se connecter'}
               </Button>
+
+              <OAuthButtons />
 
               <p className="text-center text-sm text-muted-foreground">
                 Pas encore de compte ?{' '}
