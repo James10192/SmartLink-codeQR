@@ -10,6 +10,7 @@ import { HeroGeometric } from '@/components/ui/shape-landing-hero'
 import { BentoGrid, type BentoItem } from '@/components/ui/bento-grid'
 import { PricingCard, type PricingCardProps } from '@/components/ui/animated-glassy-pricing'
 import { GlowingEffect } from '@/components/ui/glowing-effect'
+import { ImageComparison } from '@/components/ui/image-comparison'
 import {
   Smartphone,
   QrCode,
@@ -127,6 +128,40 @@ export default function Home() {
             </p>
           </div>
           <BentoGrid items={bentoItems} />
+        </div>
+      </section>
+
+      {/* Image Comparison Section - Traditional vs SmartLink */}
+      <section className="border-t border-white/10 bg-[#0a0a0a] py-16 sm:py-24">
+        <div className="container mx-auto px-4">
+          {/* Header */}
+          <div className="mx-auto max-w-3xl text-center mb-12">
+            <h2 className="mb-4 text-3xl font-bold text-white">
+              La Révolution du Networking Professionnel
+            </h2>
+            <p className="text-lg text-white/60">
+              Comparez l'ancien et le nouveau. Glissez pour découvrir comment SmartLink transforme votre carte de visite en un outil moderne et interactif.
+            </p>
+          </div>
+
+          {/* Comparison Component */}
+          <div className="mx-auto max-w-6xl">
+            <ImageComparison
+              beforeImage="/traditional-card.png"
+              afterImage="/smartlink-qr-card.png"
+              beforeLabel="Traditionnel"
+              afterLabel="SmartLink QR"
+              className="shadow-2xl"
+            />
+          </div>
+
+          {/* Optional instruction text */}
+          <div className="mx-auto max-w-3xl text-center mt-12">
+            <p className="text-sm text-white/50">
+              Glissez le curseur pour comparer les deux formats.
+              Avec SmartLink, vos contacts scannent votre QR Code et enregistrent automatiquement votre profil.
+            </p>
+          </div>
         </div>
       </section>
 
