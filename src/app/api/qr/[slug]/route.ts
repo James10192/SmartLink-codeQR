@@ -4,10 +4,10 @@ import { generateQRCodeBuffer } from '@/lib/utils/generate-qr'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params
+    const { slug } = await params
 
     // Vérifier que le profil existe et est public
     const profile = await prisma.profile.findUnique({

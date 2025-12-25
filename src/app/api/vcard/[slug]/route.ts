@@ -4,10 +4,10 @@ import { generateVCard } from '@/lib/utils/generate-vcard'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params
+    const { slug } = await params
 
     // Récupérer le profil public
     const profile = await prisma.profile.findUnique({
