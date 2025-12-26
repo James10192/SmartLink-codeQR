@@ -139,9 +139,15 @@ export const verifyPaymentAction = actionClient
         },
       })
 
-      // Activate subscription
+      // Calculate expiration date based on plan
       const expiresAt = new Date()
-      expiresAt.setMonth(expiresAt.getMonth() + 1) // 1 month subscription
+      if (payment.plan === 'PACK_STARTER') {
+        // Pack Starter: PRO features for 1 year
+        expiresAt.setMonth(expiresAt.getMonth() + 12)
+      } else {
+        // PRO Digital: 1 month subscription
+        expiresAt.setMonth(expiresAt.getMonth() + 1)
+      }
 
       await prisma.subscription.upsert({
         where: { userId: session.user.id },

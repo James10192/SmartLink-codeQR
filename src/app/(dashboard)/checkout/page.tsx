@@ -17,7 +17,7 @@ interface CheckoutPageProps {
 const PLANS = {
   PRO_DIGITAL: {
     name: 'PRO Digital',
-    price: 9900,
+    price: 3000,
     period: '/mois',
     features: [
       '3 profils numériques',
@@ -30,11 +30,11 @@ const PLANS = {
   PACK_STARTER: {
     name: 'Pack Starter',
     price: 29900,
-    period: 'Une fois',
+    period: 'Paiement unique',
     features: [
-      '3 profils numériques',
+      'Fonctionnalités PRO pendant 1 an',
       '50 cartes papier avec QR Code',
-      'Toutes les fonctionnalités PRO',
+      '3 profils numériques',
       'Livraison à Abidjan incluse',
       'Design premium sur cartes',
     ],

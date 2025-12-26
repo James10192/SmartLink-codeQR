@@ -242,8 +242,8 @@ export function verifyWebhookSignature(payload: any, receivedSignature: string):
  */
 export function getSubscriptionAmount(plan: string): number {
   const amounts: Record<string, number> = {
-    PRO_DIGITAL: 9900, // 9 900 FCFA
-    PACK_STARTER: 29900, // 29 900 FCFA (one-time)
+    PRO_DIGITAL: 3000, // 3 000 FCFA/mois
+    PACK_STARTER: 29900, // 29 900 FCFA (paiement unique - PRO 1 an + 50 cartes)
     CORPORATE: 0, // Sur devis (contact required)
   }
 

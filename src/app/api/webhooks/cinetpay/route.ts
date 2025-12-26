@@ -74,9 +74,15 @@ export async function POST(request: NextRequest) {
         },
       })
 
-      // Calculate expiration date (1 month from now)
+      // Calculate expiration date based on plan
       const expiresAt = new Date()
-      expiresAt.setMonth(expiresAt.getMonth() + 1)
+      if (payment.plan === 'PACK_STARTER') {
+        // Pack Starter: PRO features for 1 year
+        expiresAt.setMonth(expiresAt.getMonth() + 12)
+      } else {
+        // PRO Digital: 1 month subscription
+        expiresAt.setMonth(expiresAt.getMonth() + 1)
+      }
 
       // Map payment method
       let cinetPayMethod: 'CINETPAY' | 'MANUAL' = 'CINETPAY'
