@@ -186,6 +186,7 @@ export async function getPublicProfile(slug: string) {
       viewsCount: true,
       cvDownloads: true,
       contactSaves: true,
+      userId: true, // Add userId to check ownership
     },
   })
 
@@ -196,7 +197,8 @@ export async function getPublicProfile(slug: string) {
     })
 
     // Track visitor (PRO+ feature - anonymous)
-    await trackProfileVisit(profile.id)
+    // Pass userId to prevent owner from being tracked as visitor
+    await trackProfileVisit(profile.id, profile.userId)
   }
 
   return profile
@@ -206,11 +208,23 @@ export async function getPublicProfile(slug: string) {
  * Track anonymous profile visitor
  * RGPD-compliant: stores only city/country, hashed IP
  * Deduplicates visitors within 24 hours
+ * Prevents profile owner from being tracked as visitor
  *
  * @param profileId - The profile ID being visited
+ * @param profileOwnerId - The user ID of the profile owner
  */
-export async function trackProfileVisit(profileId: string) {
+export async function trackProfileVisit(profileId: string, profileOwnerId: string) {
   try {
+    // Check if user is authenticated
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    })
+
+    // If visitor is the profile owner, don't track
+    if (session?.user?.id === profileOwnerId) {
+      return
+    }
+
     const headersList = await headers()
     const ip = getClientIP(headersList)
     const userAgent = headersList.get('user-agent') || ''
