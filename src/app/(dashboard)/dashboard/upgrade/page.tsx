@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import Link from 'next/link'
 
 interface PlanFeature {
   name: string
@@ -221,18 +222,45 @@ export default async function UpgradePage() {
                   ))}
                 </ul>
 
-                <Button
-                  className="w-full"
-                  variant={isCurrentPlan ? 'outline' : plan.popular ? 'default' : 'outline'}
-                  disabled={isCurrentPlan || !canUpgrade}
-                  size="lg"
-                >
-                  {isCurrentPlan
-                    ? 'Plan actuel'
-                    : canUpgrade
-                    ? plan.cta
-                    : 'Non disponible'}
-                </Button>
+                {isCurrentPlan ? (
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    disabled
+                    size="lg"
+                  >
+                    Plan actuel
+                  </Button>
+                ) : !canUpgrade ? (
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    disabled
+                    size="lg"
+                  >
+                    Non disponible
+                  </Button>
+                ) : plan.name === 'CORPORATE' ? (
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    size="lg"
+                    asChild
+                  >
+                    <a href="mailto:support@smartlink.ci">{plan.cta}</a>
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full"
+                    variant={plan.popular ? 'default' : 'outline'}
+                    size="lg"
+                    asChild
+                  >
+                    <Link href={`/checkout?plan=${plan.name}`}>
+                      {plan.cta}
+                    </Link>
+                  </Button>
+                )}
               </CardContent>
             </Card>
           )

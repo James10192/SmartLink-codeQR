@@ -29,6 +29,7 @@ model User {
   // Relations
   profiles      Profile[]
   subscription  Subscription?
+  payments      Payment[]
   sessions      Session[]
   accounts      Account[]
 }
@@ -150,12 +151,43 @@ model Subscription {
   // Paiement
   paymentMethod PaymentMethod?
   paymentId     String?           // CinetPay transaction_id ou Lemon Squeezy order_id
+  expiresAt     DateTime?         // Date d'expiration de l'abonnement
 
   startDate     DateTime  @default(now())
   endDate       DateTime?
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+// Payment transaction history
+model Payment {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  transactionId String    @unique  // CinetPay transaction_id or external ID
+  amount        Int                 // Amount in smallest currency unit (FCFA)
+  currency      String    @default("XOF")
+  plan          SubscriptionPlan
+  provider      String              // CINETPAY or LEMONSQUEEZY
+  status        PaymentStatus
+  paidAt        DateTime?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([transactionId])
+  @@index([status])
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
 }
 
 enum SubscriptionPlan {
@@ -173,10 +205,9 @@ enum SubscriptionStatus {
 }
 
 enum PaymentMethod {
-  CINETPAY_WAVE         // Wave via CinetPay (annuel uniquement)
-  CINETPAY_ORANGE_MONEY // Orange Money via CinetPay (annuel)
-  CINETPAY_MTN          // MTN via CinetPay (annuel)
-  LEMON_SQUEEZY_CARD    // Carte bancaire via Lemon Squeezy (mensuel ou annuel)
+  CINETPAY              // Mobile Money via CinetPay (tous opérateurs)
+  LEMONSQUEEZY          // Carte bancaire via Lemon Squeezy
+  MANUAL                // Attribution manuelle par admin
 }
 
 // ==========================================
