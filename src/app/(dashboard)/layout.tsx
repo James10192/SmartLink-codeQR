@@ -1,35 +1,47 @@
-'use client'
+import { requireAuth } from '@/lib/auth/session'
+import { redirect } from 'next/navigation'
+import { SidebarProvider } from '@/contexts/sidebar-context'
+import { DashboardLayoutClient } from '@/components/layout/DashboardLayoutClient'
+import { prisma } from '@/lib/db/prisma'
 
-import { SidebarProvider, useSidebar } from '@/contexts/sidebar-context'
-import { DashboardSidebar } from '@/components/layout/dashboard-sidebar'
-import { cn } from '@/lib/utils'
-
-function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
-  const { isCollapsed } = useSidebar()
-
-  return (
-    <div className="flex min-h-screen">
-      <DashboardSidebar />
-      <main
-        className={cn(
-          'flex-1 transition-all duration-300',
-          isCollapsed ? 'ml-16' : 'ml-64'
-        )}
-      >
-        {children}
-      </main>
-    </div>
-  )
-}
-
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  // 1. Fetch session server-side
+  const session = await requireAuth()
+
+  // 2. Fetch user with subscription
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    include: { subscription: true },
+  })
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  // 3. Mock notification count (TODO: remplacer par vraie requête DB)
+  const notificationCount = 3
+
+  const currentPlan = user.subscription?.plan || 'FREE'
+
+  // 4. Passer données au Client Component
   return (
     <SidebarProvider>
-      <DashboardLayoutContent>{children}</DashboardLayoutContent>
+      <DashboardLayoutClient
+        user={{
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+        }}
+        notificationCount={notificationCount}
+        currentPlan={currentPlan}
+      >
+        {children}
+      </DashboardLayoutClient>
     </SidebarProvider>
   )
 }
