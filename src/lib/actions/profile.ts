@@ -6,6 +6,8 @@ import { prisma } from '@/lib/db/prisma'
 import { requireAuth } from '@/lib/auth/session'
 import { ProfileSchema, ProfileUpdateSchema } from '@/lib/validations/profile'
 import { revalidatePath } from 'next/cache'
+import { getGeoIPData, hashIP, hashUserAgent, getClientIP } from '@/lib/utils/geoip'
+import { headers } from 'next/headers'
 
 const PROFILE_LIMITS = {
   FREE: 1,
@@ -149,6 +151,13 @@ export async function getProfileById(profileId: string) {
   const session = await requireAuth()
   const profile = await prisma.profile.findFirst({
     where: { id: profileId, userId: session.user.id },
+    include: {
+      user: {
+        include: {
+          subscription: true,
+        },
+      },
+    },
   })
   if (!profile) throw new Error('Profil non trouvé')
   return profile
@@ -168,6 +177,7 @@ export async function getPublicProfile(slug: string) {
       website: true,
       avatarUrl: true,
       cvFileUrl: true,
+      videoUrl: true,
       linkedinUrl: true,
       twitterUrl: true,
       facebookUrl: true,
@@ -184,7 +194,66 @@ export async function getPublicProfile(slug: string) {
       where: { id: profile.id },
       data: { viewsCount: { increment: 1 } },
     })
+
+    // Track visitor (PRO+ feature - anonymous)
+    await trackProfileVisit(profile.id)
   }
 
   return profile
+}
+
+/**
+ * Track anonymous profile visitor
+ * RGPD-compliant: stores only city/country, hashed IP
+ * Deduplicates visitors within 24 hours
+ *
+ * @param profileId - The profile ID being visited
+ */
+export async function trackProfileVisit(profileId: string) {
+  try {
+    const headersList = await headers()
+    const ip = getClientIP(headersList)
+    const userAgent = headersList.get('user-agent') || ''
+    const referrer = headersList.get('referer') || null
+
+    // Hash IP and User-Agent for privacy (RGPD compliance)
+    const ipHash = await hashIP(ip)
+    const userAgentHash = await hashUserAgent(userAgent)
+
+    // Check if visitor already exists within last 24 hours (deduplication)
+    const existingVisit = await prisma.profileVisitor.findFirst({
+      where: {
+        profileId,
+        ipHash,
+        visitedAt: {
+          gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24 hours
+        },
+      },
+    })
+
+    if (existingVisit) {
+      // Already tracked this visitor today, skip
+      return
+    }
+
+    // Get geographic location from IP (anonymous)
+    const geoData = await getGeoIPData(ip)
+
+    // Create visitor record
+    await prisma.profileVisitor.create({
+      data: {
+        profileId,
+        city: geoData.city,
+        country: geoData.country,
+        countryCode: geoData.countryCode,
+        region: geoData.region,
+        ipHash,
+        userAgentHash,
+        referrer,
+      },
+    })
+  } catch (error) {
+    // Silent fail - don't break page load if tracking fails
+    console.error('Visitor tracking error:', error)
+  }
 }
