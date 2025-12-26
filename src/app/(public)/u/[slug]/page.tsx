@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { Mail, Phone, Globe, Linkedin, Twitter, Facebook, MessageCircle, Download, Share2 } from 'lucide-react'
 import { getPublicProfile } from '@/lib/actions/profile'
+import { getPublicProfileTheme, generateThemeVars } from '@/lib/actions/theme'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Avatar } from '@/components/ui/avatar'
@@ -11,13 +12,19 @@ import Link from 'next/link'
 export default async function PublicProfilePage({
   params,
 }: {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }) {
-  const profile = await getPublicProfile(params.slug)
+  const { slug } = await params
+  const profile = await getPublicProfile(slug)
 
   if (!profile) {
     notFound()
   }
+
+  // Fetch custom theme (PRO+ feature)
+  const theme = await getPublicProfileTheme(slug)
+  const themeVars = theme ? generateThemeVars(theme) : {}
+  const fontFamily = theme?.fontFamily || 'Inter'
 
   const socialLinksData = [
     {
@@ -57,19 +64,56 @@ export default async function PublicProfilePage({
     }))
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-muted/50 to-background">
+    <div
+      className="min-h-screen"
+      style={{
+        ...themeVars,
+        fontFamily,
+        backgroundColor: theme?.backgroundColor || undefined,
+        color: theme?.textColor || undefined,
+      } as React.CSSProperties}
+    >
       <div className="container mx-auto px-4 py-12">
         <div className="mx-auto max-w-2xl">
           {/* Card principale */}
           <Card className="overflow-hidden">
-            {/* En-tête avec avatar */}
+            {/* En-tête avec avatar/vidéo */}
             <CardHeader className="space-y-6 bg-gradient-to-r from-primary/10 to-primary/5 pb-8">
               <div className="flex flex-col items-center gap-4 text-center">
-                <Avatar className="h-24 w-24">
-                  <div className="flex h-full w-full items-center justify-center bg-primary text-4xl font-bold text-primary-foreground">
-                    {profile.fullName.charAt(0).toUpperCase()}
+                {/* Video Section (if exists) - PRO+ feature */}
+                {profile.videoUrl && (
+                  <div className="w-full max-w-md">
+                    <video
+                      src={profile.videoUrl}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      controls
+                      className="aspect-video w-full rounded-lg shadow-lg object-cover"
+                      poster={profile.avatarUrl || undefined}
+                    >
+                      Votre navigateur ne supporte pas la lecture vidéo.
+                    </video>
                   </div>
-                </Avatar>
+                )}
+
+                {/* Avatar (only show if no video) */}
+                {!profile.videoUrl && (
+                  <Avatar className="h-24 w-24">
+                    {profile.avatarUrl ? (
+                      <img
+                        src={profile.avatarUrl}
+                        alt={profile.fullName}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-primary text-4xl font-bold text-primary-foreground">
+                        {profile.fullName.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </Avatar>
+                )}
 
                 <div className="space-y-2">
                   <h1 className="text-3xl font-bold tracking-tight">

@@ -24,7 +24,11 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { CVUpload } from '@/components/profile/cv-upload'
 import { AvatarUpload } from '@/components/profile/avatar-upload'
+import { VideoUpload } from '@/components/profile/video-upload'
 import { Separator } from '@/components/ui/separator'
+import { canAccessFeature } from '@/lib/utils/tier-enforcement'
+import { Video } from 'lucide-react'
+import { SubscriptionPlan } from '@prisma/client'
 import Link from 'next/link'
 
 export default function EditProfilePage({ params }: { params: { id: string } }) {
@@ -33,6 +37,8 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
   const [isLoading, setIsLoading] = useState(true)
   const [cvUrl, setCvUrl] = useState<string | null>(null)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const [videoUrl, setVideoUrl] = useState<string | null>(null)
+  const [userPlan, setUserPlan] = useState<SubscriptionPlan>('FREE')
 
   const form = useForm({
     resolver: zodResolver(ProfileUpdateSchema),
@@ -72,6 +78,8 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
         })
         setCvUrl(profile.cvFileUrl)
         setAvatarUrl(profile.avatarUrl)
+        setVideoUrl(profile.videoUrl)
+        setUserPlan(profile.user.subscription?.plan || 'FREE')
       } catch (err: any) {
         setError(err.message || 'Erreur lors du chargement du profil')
       } finally {
@@ -391,6 +399,68 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
                     onDeleteSuccess={() => setCvUrl(null)}
                   />
                 </div>
+
+                {/* Section Vidéo Business Card (PRO+ only) */}
+                <Separator />
+                {!canAccessFeature(userPlan, 'video') ? (
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-lg font-medium">Carte de Visite Vidéo</h3>
+                        <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+                          PRO+
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Disponible avec le plan PRO ou supérieur
+                      </p>
+                    </div>
+                    <div className="relative overflow-hidden rounded-lg border-2 border-dashed border-muted-foreground/25 p-8">
+                      {/* Blur overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 backdrop-blur-sm z-10" />
+
+                      {/* Content */}
+                      <div className="relative z-0 flex flex-col items-center gap-4 text-center">
+                        <div className="rounded-full bg-primary/10 p-4">
+                          <Video className="h-12 w-12 text-primary" />
+                        </div>
+                        <div className="space-y-2">
+                          <p className="font-medium text-lg">Démarquez-vous avec une vidéo</p>
+                          <p className="text-sm text-muted-foreground max-w-md">
+                            Présentez-vous en 30 secondes et créez un impact immédiat. Vidéo autoplay sur votre profil public.
+                          </p>
+                        </div>
+                        <div className="relative z-20">
+                          <Button asChild>
+                            <Link href="/dashboard/upgrade">
+                              Passer au PRO
+                            </Link>
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-lg font-medium">Carte de Visite Vidéo</h3>
+                        <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-200">
+                          PRO
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Téléchargez une vidéo de 30 secondes maximum pour vous présenter
+                      </p>
+                    </div>
+                    <VideoUpload
+                      profileId={params.id}
+                      currentVideoUrl={videoUrl}
+                      onUploadSuccess={(url) => setVideoUrl(url)}
+                      onDeleteSuccess={() => setVideoUrl(null)}
+                    />
+                  </div>
+                )}
 
                 <div className="flex gap-4">
                   <Button
