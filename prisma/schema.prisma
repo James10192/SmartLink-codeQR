@@ -19,7 +19,7 @@ datasource db {
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
-  emailVerified DateTime?
+  emailVerified Boolean   @default(false)
   name          String?
   image         String?
   createdAt     DateTime  @default(now())
@@ -33,33 +33,48 @@ model User {
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sessionToken String   @unique
-  expires      DateTime
-  createdAt    DateTime @default(now())
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
 
 model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
+  id                       String    @id @default(cuid())
+  accountId                String
+  providerId               String
+  userId                   String
+  user                     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken              String?
+  refreshToken             String?
+  idToken                  String?
+  accessTokenExpiresAt     DateTime?
+  refreshTokenExpiresAt    DateTime?
+  scope                    String?
+  password                 String?
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
 
-  @@unique([provider, providerAccountId])
+  @@unique([providerId, accountId])
   @@index([userId])
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([identifier, value])
 }
 
 // ==========================================
@@ -86,6 +101,7 @@ model Profile {
   // Médias
   avatarUrl     String?
   cvFileUrl     String?   // URL du PDF sur Supabase Storage
+  videoUrl      String?   // URL to video in Supabase Storage (PRO+)
 
   // Réseaux sociaux
   linkedinUrl   String?
@@ -101,6 +117,10 @@ model Profile {
   viewsCount    Int       @default(0)
   cvDownloads   Int       @default(0)
   contactSaves  Int       @default(0)  // Téléchargements vCard
+
+  // Premium features relations
+  theme         ProfileTheme?
+  visitors      ProfileVisitor[]
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -151,6 +171,69 @@ enum PaymentMethod {
   CINETPAY_ORANGE_MONEY // Orange Money via CinetPay (annuel)
   CINETPAY_MTN          // MTN via CinetPay (annuel)
   LEMON_SQUEEZY_CARD    // Carte bancaire via Lemon Squeezy (mensuel ou annuel)
+}
+
+// ==========================================
+// PREMIUM FEATURES (PRO+)
+// ==========================================
+
+// Theme customization (PRO+ only)
+model ProfileTheme {
+  id                String        @id @default(cuid())
+  profileId         String        @unique
+  profile           Profile       @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  // Brand colors (hex format)
+  primaryColor      String        @default("#000000")
+  secondaryColor    String?
+  backgroundColor   String        @default("#ffffff")
+  textColor         String        @default("#000000")
+
+  // Layout settings
+  layout            ThemeLayout   @default(CENTERED)
+  fontFamily        String?       // "Inter", "Poppins", etc.
+
+  // Custom sections (JSON array)
+  customSections    Json?         // [{ type: "portfolio", title: "Mes projets", items: [...] }]
+
+  // Logo/branding
+  logoUrl           String?
+
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([profileId])
+}
+
+enum ThemeLayout {
+  CENTERED      // Default: content centered, minimal
+  LEFT_ALIGNED  // Content left, visual right
+  CARD_GRID     // Card-based layout
+  MINIMAL       // Ultra minimalist, text-focused
+}
+
+// Visitor tracking (anonymous, RGPD-compliant)
+model ProfileVisitor {
+  id            String    @id @default(cuid())
+  profileId     String
+  profile       Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  // Anonymous tracking data
+  city          String?
+  country       String?
+  countryCode   String?   // ISO 2-letter code (CI, FR, etc.)
+  region        String?
+
+  // Technical metadata (hashed, not personal)
+  ipHash        String?   // SHA256 hash of IP (not the actual IP)
+  userAgentHash String?   // Hashed to detect unique visitors
+
+  // Event tracking
+  visitedAt     DateTime  @default(now())
+  referrer      String?   // Where did they come from?
+
+  @@index([profileId, visitedAt])   // Fast recent visitors query
+  @@index([profileId, ipHash])      // Fast visitor deduplication
 }
 
 // ==========================================
