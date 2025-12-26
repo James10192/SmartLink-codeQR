@@ -3,7 +3,6 @@
 
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import { auth } from "@/lib/auth/config"
 
 // Public routes that don't require authentication
 const publicRoutes = [
@@ -38,35 +37,28 @@ function isPublicRoute(pathname: string): boolean {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Check authentication first
-  try {
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    })
-
-    // If authenticated and trying to access auth pages, redirect to dashboard
-    if (session && (pathname === "/login" || pathname === "/signup")) {
-      return NextResponse.redirect(new URL("/dashboard", request.url))
-    }
-
-    // Allow public routes (including auth pages for non-authenticated users)
-    if (isPublicRoute(pathname)) {
-      return NextResponse.next()
-    }
-
-    // If no session and trying to access protected route, redirect to login
-    if (!session) {
-      const loginUrl = new URL("/login", request.url)
-      loginUrl.searchParams.set("from", pathname)
-      return NextResponse.redirect(loginUrl)
-    }
-
-    return NextResponse.next()
-  } catch (error) {
-    console.error("[Middleware Auth Error]", error)
-    // On error, allow the request to continue (fail open for development)
+  // Allow public routes without session check
+  if (isPublicRoute(pathname)) {
     return NextResponse.next()
   }
+
+  // For protected routes, check for session cookie
+  // Better-Auth uses a cookie for session management
+  const sessionCookie = request.cookies.get('better-auth.session_token')
+
+  // If no session cookie and trying to access protected route, redirect to login
+  if (!sessionCookie && !pathname.startsWith('/login') && !pathname.startsWith('/signup')) {
+    const loginUrl = new URL("/login", request.url)
+    loginUrl.searchParams.set("from", pathname)
+    return NextResponse.redirect(loginUrl)
+  }
+
+  // If has session cookie and trying to access auth pages, redirect to dashboard
+  if (sessionCookie && (pathname === "/login" || pathname === "/signup")) {
+    return NextResponse.redirect(new URL("/dashboard", request.url))
+  }
+
+  return NextResponse.next()
 }
 
 export const config = {
