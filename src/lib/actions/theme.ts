@@ -7,6 +7,7 @@ import { requireAuth } from '@/lib/auth/session'
 import { canAccessFeature } from '@/lib/utils/tier-enforcement'
 import { revalidatePath } from 'next/cache'
 import { ThemeLayout } from '@prisma/client'
+import { DEFAULT_THEME } from '@/lib/utils/theme'
 
 /**
  * Zod schema for theme customization
@@ -152,21 +153,6 @@ export const deleteThemeAction = actionClient
   })
 
 /**
- * Default theme values
- * Used when no custom theme exists
- */
-export const DEFAULT_THEME = {
-  primaryColor: '#000000',
-  secondaryColor: null,
-  backgroundColor: '#ffffff',
-  textColor: '#000000',
-  layout: 'CENTERED' as ThemeLayout,
-  fontFamily: null,
-  customSections: null,
-  logoUrl: null,
-}
-
-/**
  * Get theme for public profile (no auth required)
  * Used by public profile page to apply custom styling
  *
@@ -186,55 +172,3 @@ export async function getPublicProfileTheme(slug: string) {
   // Return custom theme or defaults
   return profile.theme || DEFAULT_THEME
 }
-
-/**
- * Preset themes for quick selection
- * Users can choose from these presets or create custom
- */
-export const THEME_PRESETS = [
-  {
-    id: 'modern-dark',
-    name: 'Moderne Sombre',
-    description: 'Design épuré avec fond sombre',
-    primaryColor: '#6366f1',
-    backgroundColor: '#0f172a',
-    textColor: '#f1f5f9',
-    layout: 'CENTERED' as ThemeLayout,
-  },
-  {
-    id: 'professional',
-    name: 'Professionnel',
-    description: 'Design classique pour les entreprises',
-    primaryColor: '#1e40af',
-    backgroundColor: '#ffffff',
-    textColor: '#1e293b',
-    layout: 'LEFT_ALIGNED' as ThemeLayout,
-  },
-  {
-    id: 'creative',
-    name: 'Créatif',
-    description: 'Design coloré et dynamique',
-    primaryColor: '#ec4899',
-    backgroundColor: '#fdf4ff',
-    textColor: '#831843',
-    layout: 'CARD_GRID' as ThemeLayout,
-  },
-  {
-    id: 'minimal',
-    name: 'Minimaliste',
-    description: 'Design épuré et simple',
-    primaryColor: '#000000',
-    backgroundColor: '#ffffff',
-    textColor: '#000000',
-    layout: 'MINIMAL' as ThemeLayout,
-  },
-  {
-    id: 'gradient',
-    name: 'Dégradé',
-    description: 'Design avec dégradés modernes',
-    primaryColor: '#8b5cf6',
-    backgroundColor: '#faf5ff',
-    textColor: '#581c87',
-    layout: 'CENTERED' as ThemeLayout,
-  },
-] as const
