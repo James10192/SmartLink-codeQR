@@ -17,6 +17,7 @@ interface DashboardLayoutClientProps {
   }
   notificationCount?: number
   currentPlan: string
+  userRole: string
 }
 
 export function DashboardLayoutClient({
@@ -24,13 +25,14 @@ export function DashboardLayoutClient({
   user,
   notificationCount = 0,
   currentPlan,
+  userRole,
 }: DashboardLayoutClientProps) {
   const { isCollapsed } = useSidebar()
 
   return (
     <div className="min-h-screen bg-muted/30">
       {/* Sidebar fixe à gauche */}
-      <Sidebar currentPlan={currentPlan} />
+      <Sidebar currentPlan={currentPlan} userRole={userRole} />
 
       {/* Main content avec padding dynamique */}
       <div

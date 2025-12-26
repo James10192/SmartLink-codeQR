@@ -5,6 +5,7 @@ import {
   Settings,
   CreditCard,
   TrendingUp,
+  Shield,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -13,6 +14,7 @@ export interface NavItem {
   href: string
   icon: LucideIcon
   badge?: string | number
+  adminOnly?: boolean
 }
 
 export const NAV_ITEMS: NavItem[] = [
@@ -40,6 +42,12 @@ export const NAV_ITEMS: NavItem[] = [
     title: 'Abonnement',
     href: '/dashboard/subscription',
     icon: CreditCard,
+  },
+  {
+    title: 'Admin',
+    href: '/admin/subscriptions',
+    icon: Shield,
+    adminOnly: true,
   },
   {
     title: 'Paramètres',

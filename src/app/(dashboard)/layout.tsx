@@ -26,6 +26,7 @@ export default async function DashboardLayout({
   const notificationCount = 3
 
   const currentPlan = user.subscription?.plan || 'FREE'
+  const userRole = user.role
 
   // 4. Passer données au Client Component
   return (
@@ -39,6 +40,7 @@ export default async function DashboardLayout({
         }}
         notificationCount={notificationCount}
         currentPlan={currentPlan}
+        userRole={userRole}
       >
         {children}
       </DashboardLayoutClient>

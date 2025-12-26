@@ -17,12 +17,21 @@ import { NAV_ITEMS } from '@/config/navigation'
 
 interface SidebarProps {
   currentPlan: string
+  userRole: string
 }
 
-export function Sidebar({ currentPlan }: SidebarProps) {
+export function Sidebar({ currentPlan, userRole }: SidebarProps) {
   const pathname = usePathname()
   const { isCollapsed, toggleSidebar } = useSidebar()
   const isFree = currentPlan === 'FREE'
+  const isAdmin = userRole === 'ADMIN'
+
+  // Filter nav items based on user role
+  const visibleNavItems = NAV_ITEMS.filter((item) => {
+    // Hide admin-only items for non-admins
+    if (item.adminOnly && !isAdmin) return false
+    return true
+  })
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -67,7 +76,7 @@ export function Sidebar({ currentPlan }: SidebarProps) {
 
         {/* Navigation Items */}
         <nav className="flex flex-col gap-1 p-2">
-          {NAV_ITEMS.map((item) => {
+          {visibleNavItems.map((item) => {
             const isActive =
               pathname === item.href ||
               (item.href !== '/dashboard' && pathname.startsWith(item.href))
