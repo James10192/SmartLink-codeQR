@@ -10,8 +10,13 @@ import { Separator } from '@/components/ui/separator'
 import { HeroGeometric } from '@/components/ui/shape-landing-hero'
 import { BentoGrid, type BentoItem } from '@/components/ui/bento-grid'
 import { PricingCard, type PricingCardProps } from '@/components/ui/animated-glassy-pricing'
-import PricingCanvasCards from '@/components/ui/pricing-canvas-cards'
+import dynamic from 'next/dynamic'
 import { GlowingEffect } from '@/components/ui/glowing-effect'
+
+const PricingCanvasCards = dynamic(
+  () => import('@/components/ui/pricing-canvas-cards'),
+  { ssr: false }
+)
 import CardComparisonTabs from '@/components/ui/card-comparison-tabs'
 import { ContactCard } from '@/components/ui/contact-card'
 import { ContactForm } from '@/components/contact-form'

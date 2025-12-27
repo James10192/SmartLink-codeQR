@@ -142,7 +142,7 @@ interface PricingCanvasCardsProps {
 
 export default function PricingCanvasCards({ plans }: PricingCanvasCardsProps) {
   return (
-    <div className="flex flex-col lg:flex-row items-center justify-center bg-black w-full gap-4 mx-auto px-8">
+    <div className="flex flex-col lg:flex-row items-center justify-center w-full gap-4 px-8">
       {plans.map((plan, index) => (
         <Card key={index} {...plan} />
       ))}
