@@ -18,6 +18,7 @@ import { ContactDialog } from '@/components/contact-dialog'
 import { Mail, Phone } from 'lucide-react'
 import { PricingDialog } from '@/components/pricing-dialogs'
 import { AuthModal } from '@/components/auth/auth-modal'
+import FeaturesSectionDemo from '@/components/ui/features-section-demo-2'
 import {
   Smartphone,
   QrCode,
@@ -210,190 +211,16 @@ export default function Home() {
       </section>
 
       {/* Solution/Features Section */}
-      <section className="py-16 sm:py-24 bg-[#030303]">
+      <section className="py-16 sm:py-24 bg-white dark:bg-[#030303]">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center mb-12">
-            <h2 className="mb-4 text-3xl font-bold text-white">La solution moderne et écologique</h2>
-            <p className="mb-8 text-lg text-white/60">
+            <h2 className="mb-4 text-3xl font-bold text-foreground">La solution moderne et écologique</h2>
+            <p className="mb-8 text-lg text-muted-foreground">
               SmartLink vous permet de créer, personnaliser et partager votre profil professionnel en quelques clics.
             </p>
           </div>
 
-          <div className="mx-auto grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {/* QR Code Personnalisé */}
-            <div className="min-h-[14rem]">
-              <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-white/10 p-2 md:rounded-[1.5rem] md:p-3">
-                <GlowingEffect
-                  spread={40}
-                  glow={true}
-                  disabled={false}
-                  proximity={64}
-                  inactiveZone={0.01}
-                  borderWidth={3}
-                />
-                <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-[0.75px] bg-black/40 backdrop-blur-sm p-6 shadow-sm">
-                  <div className="relative flex flex-1 flex-col justify-between gap-3">
-                    <div className="w-fit rounded-lg border-[0.75px] border-white/10 bg-white/5 p-2">
-                      <QrCode className="h-4 w-4 text-cyan-400" />
-                    </div>
-                    <div className="space-y-3">
-                      <h3 className="pt-0.5 text-xl leading-[1.375rem] font-semibold tracking-[-0.04em] md:text-2xl md:leading-[1.875rem] text-white">
-                        QR Code Personnalisé
-                      </h3>
-                      <p className="text-sm leading-[1.125rem] md:text-base md:leading-[1.375rem] text-white/60">
-                        Générez votre QR Code unique et partagez-le partout (email, réseaux sociaux, cartes).
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Contact en 1 Clic */}
-            <div className="min-h-[14rem]">
-              <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-white/10 p-2 md:rounded-[1.5rem] md:p-3">
-                <GlowingEffect
-                  spread={40}
-                  glow={true}
-                  disabled={false}
-                  proximity={64}
-                  inactiveZone={0.01}
-                  borderWidth={3}
-                />
-                <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-[0.75px] bg-black/40 backdrop-blur-sm p-6 shadow-sm">
-                  <div className="relative flex flex-1 flex-col justify-between gap-3">
-                    <div className="w-fit rounded-lg border-[0.75px] border-white/10 bg-white/5 p-2">
-                      <Download className="h-4 w-4 text-emerald-400" />
-                    </div>
-                    <div className="space-y-3">
-                      <h3 className="pt-0.5 text-xl leading-[1.375rem] font-semibold tracking-[-0.04em] md:text-2xl md:leading-[1.875rem] text-white">
-                        Contact en 1 Clic
-                      </h3>
-                      <p className="text-sm leading-[1.125rem] md:text-base md:leading-[1.375rem] text-white/60">
-                        Vos contacts téléchargent votre vCard (.vcf) directement. Fini la saisie manuelle.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* CV Accessible Partout */}
-            <div className="min-h-[14rem]">
-              <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-white/10 p-2 md:rounded-[1.5rem] md:p-3">
-                <GlowingEffect
-                  spread={40}
-                  glow={true}
-                  disabled={false}
-                  proximity={64}
-                  inactiveZone={0.01}
-                  borderWidth={3}
-                />
-                <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-[0.75px] bg-black/40 backdrop-blur-sm p-6 shadow-sm">
-                  <div className="relative flex flex-1 flex-col justify-between gap-3">
-                    <div className="w-fit rounded-lg border-[0.75px] border-white/10 bg-white/5 p-2">
-                      <Smartphone className="h-4 w-4 text-purple-400" />
-                    </div>
-                    <div className="space-y-3">
-                      <h3 className="pt-0.5 text-xl leading-[1.375rem] font-semibold tracking-[-0.04em] md:text-2xl md:leading-[1.875rem] text-white">
-                        CV Accessible Partout
-                      </h3>
-                      <p className="text-sm leading-[1.125rem] md:text-base md:leading-[1.375rem] text-white/60">
-                        Téléversez votre CV une fois, accessible 24/7 via votre profil public.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Analytics Avancés */}
-            <div className="min-h-[14rem]">
-              <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-white/10 p-2 md:rounded-[1.5rem] md:p-3">
-                <GlowingEffect
-                  spread={40}
-                  glow={true}
-                  disabled={false}
-                  proximity={64}
-                  inactiveZone={0.01}
-                  borderWidth={3}
-                />
-                <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-[0.75px] bg-black/40 backdrop-blur-sm p-6 shadow-sm">
-                  <div className="relative flex flex-1 flex-col justify-between gap-3">
-                    <div className="w-fit rounded-lg border-[0.75px] border-white/10 bg-white/5 p-2">
-                      <TrendingUp className="h-4 w-4 text-sky-400" />
-                    </div>
-                    <div className="space-y-3">
-                      <h3 className="pt-0.5 text-xl leading-[1.375rem] font-semibold tracking-[-0.04em] md:text-2xl md:leading-[1.875rem] text-white">
-                        Analytics Avancés
-                      </h3>
-                      <p className="text-sm leading-[1.125rem] md:text-base md:leading-[1.375rem] text-white/60">
-                        Suivez le nombre de vues, téléchargements CV et contacts enregistrés (Pro).
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Multi-Profils */}
-            <div className="min-h-[14rem]">
-              <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-white/10 p-2 md:rounded-[1.5rem] md:p-3">
-                <GlowingEffect
-                  spread={40}
-                  glow={true}
-                  disabled={false}
-                  proximity={64}
-                  inactiveZone={0.01}
-                  borderWidth={3}
-                />
-                <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-[0.75px] bg-black/40 backdrop-blur-sm p-6 shadow-sm">
-                  <div className="relative flex flex-1 flex-col justify-between gap-3">
-                    <div className="w-fit rounded-lg border-[0.75px] border-white/10 bg-white/5 p-2">
-                      <Zap className="h-4 w-4 text-yellow-400" />
-                    </div>
-                    <div className="space-y-3">
-                      <h3 className="pt-0.5 text-xl leading-[1.375rem] font-semibold tracking-[-0.04em] md:text-2xl md:leading-[1.875rem] text-white">
-                        Multi-Profils
-                      </h3>
-                      <p className="text-sm leading-[1.125rem] md:text-base md:leading-[1.375rem] text-white/60">
-                        Créez jusqu'à 3 profils différents (Personnel, Pro, Side Project) avec le plan Pro.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Toujours à Jour */}
-            <div className="min-h-[14rem]">
-              <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-white/10 p-2 md:rounded-[1.5rem] md:p-3">
-                <GlowingEffect
-                  spread={40}
-                  glow={true}
-                  disabled={false}
-                  proximity={64}
-                  inactiveZone={0.01}
-                  borderWidth={3}
-                />
-                <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-[0.75px] bg-black/40 backdrop-blur-sm p-6 shadow-sm">
-                  <div className="relative flex flex-1 flex-col justify-between gap-3">
-                    <div className="w-fit rounded-lg border-[0.75px] border-white/10 bg-white/5 p-2">
-                      <Shield className="h-4 w-4 text-green-400" />
-                    </div>
-                    <div className="space-y-3">
-                      <h3 className="pt-0.5 text-xl leading-[1.375rem] font-semibold tracking-[-0.04em] md:text-2xl md:leading-[1.875rem] text-white">
-                        Toujours à Jour
-                      </h3>
-                      <p className="text-sm leading-[1.125rem] md:text-base md:leading-[1.375rem] text-white/60">
-                        Modifiez vos infos en temps réel. Pas besoin de réimprimer 500 cartes.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <FeaturesSectionDemo />
         </div>
       </section>
 
