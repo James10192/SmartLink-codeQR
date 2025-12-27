@@ -56,6 +56,7 @@ Ouvrir [http://localhost:3000](http://localhost:3000) dans votre navigateur.
 |----------|-------------|
 | **[CLAUDE.md](./CLAUDE.md)** | Guide complet de développement (11+ sections, ~1450 lignes) |
 | **[docs/BEST_PRACTICES.md](./docs/BEST_PRACTICES.md)** | Best practices 2025 pour chaque technologie |
+| **[docs/TURBOPACK_PRISMA_ISSUE.md](./docs/TURBOPACK_PRISMA_ISSUE.md)** | Issue connue Turbopack + Prisma (Webpack workaround) |
 | **[.env.example](./.env.example)** | Template variables d'environnement |
 
 ### Documentation Modulaire
@@ -73,7 +74,8 @@ Ouvrir [http://localhost:3000](http://localhost:3000) dans votre navigateur.
 
 ```bash
 # Développement
-bun run dev          # Serveur de développement
+bun run dev          # Serveur de développement (Webpack)
+bun run dev:turbo    # Serveur avec Turbopack (⚠️ bug Prisma)
 bun run build        # Build production
 bun run start        # Serveur production
 bun run lint         # Linter ESLint
