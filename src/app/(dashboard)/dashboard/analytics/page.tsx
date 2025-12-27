@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { requireAuth } from '@/lib/auth/session'
 import { prisma } from '@/lib/db/prisma'
 import { canAccessFeature, getVisitorLimit } from '@/lib/utils/tier-enforcement'
@@ -8,6 +9,11 @@ import Link from 'next/link'
 import { Eye, Download, Users, TrendingUp, Lock, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
+
+export const metadata: Metadata = {
+  title: 'Statistiques',
+  description: 'Suivez les performances de vos profils',
+}
 
 export default async function AnalyticsPage() {
   const session = await requireAuth()

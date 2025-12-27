@@ -6,7 +6,10 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'SmartLink - Votre Carte de Visite Numérique avec QR Code',
+  title: {
+    template: '%s | SmartLink',
+    default: 'SmartLink - Votre Carte de Visite Numérique avec QR Code',
+  },
   description:
     'Créez votre profil professionnel en ligne avec QR Code. Partagez vos contacts, CV et réseaux sociaux en 1 scan. Fini les cartes papier perdues. Gratuit pour commencer.',
   keywords: [

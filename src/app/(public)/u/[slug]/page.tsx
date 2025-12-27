@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 import {
   Mail,
   Phone,
@@ -30,6 +31,51 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const profile = await getPublicProfile(slug)
+
+  if (!profile) {
+    return {
+      title: 'Profil introuvable',
+      description: 'Ce profil n\'existe pas ou n\'est pas public',
+    }
+  }
+
+  const description = profile.jobTitle && profile.company
+    ? `${profile.jobTitle} chez ${profile.company}`
+    : profile.jobTitle || profile.company || 'Professionnel sur SmartLink'
+
+  return {
+    title: profile.fullName,
+    description: `${description} - ${profile.bio || 'Découvrez mon profil professionnel'}`,
+    openGraph: {
+      type: 'profile',
+      url: `https://smartlink.vercel.app/u/${slug}`,
+      title: profile.fullName,
+      description,
+      images: profile.avatarUrl ? [
+        {
+          url: profile.avatarUrl,
+          width: 400,
+          height: 400,
+          alt: profile.fullName,
+        }
+      ] : [],
+    },
+    twitter: {
+      card: 'summary',
+      title: profile.fullName,
+      description,
+      images: profile.avatarUrl ? [profile.avatarUrl] : [],
+    },
+  }
+}
 
 export default async function PublicProfilePage({
   params,

@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { Users, Plus, Sparkles, Lock } from 'lucide-react'
 import { getSession } from '@/lib/auth/session'
 import { getUserProfiles } from '@/lib/actions/profile'
@@ -16,6 +17,11 @@ import {
 } from '@/components/ui/empty'
 import { prisma } from '@/lib/db/prisma'
 import { SubscriptionPlan } from '@prisma/client'
+
+export const metadata: Metadata = {
+  title: 'Mes profils',
+  description: 'Gérez tous vos profils professionnels',
+}
 
 const PROFILE_LIMITS: Record<SubscriptionPlan, number> = {
   FREE: 1,

@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import type { Metadata } from 'next'
 import { getSession } from '@/lib/auth/session'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -6,6 +7,11 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import { User, Mail, Calendar } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Paramètres',
+  description: 'Gérez votre compte et vos préférences',
+}
 
 export default async function SettingsPage() {
   const session = await getSession()

@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { TrendingUp, Users, Eye, Download, UserPlus, ArrowUpRight, Plus, Sparkles, X } from 'lucide-react'
 import { requireAuth } from '@/lib/auth/session'
 import { getUserProfiles } from '@/lib/actions/profile'
@@ -9,6 +10,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
+
+export const metadata: Metadata = {
+  title: 'Tableau de bord',
+  description: 'Gérez vos profils professionnels et consultez vos statistiques',
+}
 
 export default async function DashboardPage() {
   const session = await requireAuth()

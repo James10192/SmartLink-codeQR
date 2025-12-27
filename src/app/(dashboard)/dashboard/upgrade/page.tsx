@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { requireAuth } from '@/lib/auth/session'
 import { prisma } from '@/lib/db/prisma'
 import { Check, X, Sparkles, Crown, Building2, Gift } from 'lucide-react'
@@ -6,6 +7,11 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Passer au Pro',
+  description: 'Découvrez nos offres premium',
+}
 
 interface PlanFeature {
   name: string
