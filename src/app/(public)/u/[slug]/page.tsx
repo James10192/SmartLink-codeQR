@@ -8,18 +8,26 @@ import {
   Facebook,
   MessageCircle,
   Download,
-  Share2,
   MapPin,
   Briefcase,
+  Eye,
+  Users,
+  Calendar,
+  ExternalLink,
+  Star,
+  QrCode,
+  Award,
+  Building2,
 } from 'lucide-react'
 import { getPublicProfile } from '@/lib/actions/profile'
 import { getPublicProfileTheme } from '@/lib/actions/theme'
 import { generateThemeVars } from '@/lib/utils/theme'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import Image from 'next/image'
+import { format } from 'date-fns'
+import { fr } from 'date-fns/locale'
 
 export default async function PublicProfilePage({
   params,
@@ -38,27 +46,32 @@ export default async function PublicProfilePage({
   const themeVars = theme ? generateThemeVars(theme) : {}
   const fontFamily = theme?.fontFamily || 'Inter'
 
+  // Get user plan for badges and feature access
+  const userPlan = profile.user.subscription?.plan || 'FREE'
+  const isPro = ['PRO_DIGITAL', 'PACK_STARTER', 'CORPORATE'].includes(userPlan)
+
+  // Generate DiceBear avatar URL if no custom avatar
+  const avatarUrl = profile.avatarUrl ||
+    `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(profile.fullName)}`
+
   const socialLinksData = [
     {
       href: profile.linkedinUrl,
       icon: Linkedin,
       label: 'LinkedIn',
       show: !!profile.linkedinUrl,
-      color: 'hover:bg-[#0077B5] hover:text-white',
     },
     {
       href: profile.twitterUrl,
       icon: Twitter,
       label: 'Twitter',
       show: !!profile.twitterUrl,
-      color: 'hover:bg-[#1DA1F2] hover:text-white',
     },
     {
       href: profile.facebookUrl,
       icon: Facebook,
       label: 'Facebook',
       show: !!profile.facebookUrl,
-      color: 'hover:bg-[#1877F2] hover:text-white',
     },
     {
       href: profile.whatsappNumber
@@ -67,7 +80,6 @@ export default async function PublicProfilePage({
       icon: MessageCircle,
       label: 'WhatsApp',
       show: !!profile.whatsappNumber,
-      color: 'hover:bg-[#25D366] hover:text-white',
     },
   ]
 
@@ -77,182 +89,460 @@ export default async function PublicProfilePage({
       href: link.href as string,
       icon: link.icon,
       label: link.label,
-      color: link.color,
     }))
 
   return (
     <div
-      className="min-h-screen bg-gray-50"
+      className="min-h-screen bg-background"
       style={{
         ...themeVars,
         fontFamily,
-        backgroundColor: theme?.backgroundColor || '#f9fafb',
-        color: theme?.textColor || undefined,
       } as React.CSSProperties}
     >
-      {/* Container mobile-first */}
-      <div className="mx-auto max-w-4xl">
-        {/* Profile Card - Style LinkedIn */}
-        <Card className="overflow-hidden border-0 shadow-lg md:mt-6 md:rounded-xl">
-          {/* Cover Image / Banner */}
-          <div className="relative h-32 bg-gradient-to-r from-blue-600 to-cyan-600 sm:h-48 md:h-56">
-            {/* Video as cover if exists */}
-            {profile.videoUrl && (
-              <video
-                src={profile.videoUrl}
-                autoPlay
-                muted
-                loop
-                playsInline
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-            )}
-          </div>
+      {/* Main Container - LinkedIn-style 2 Column Layout */}
+      <div className="mx-auto max-w-7xl px-4 py-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {/* Main Content Column */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Profile Header Card - LinkedIn Style */}
+            <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
+              {/* Cover Image/Video */}
+              <div className="relative h-48 overflow-hidden bg-muted">
+                {profile.videoUrl ? (
+                  <video
+                    src={profile.videoUrl}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div
+                    className="h-full w-full bg-gradient-to-br from-primary/20 via-primary/10 to-transparent"
+                  />
+                )}
+              </div>
 
-          {/* Profile Info Section */}
-          <div className="relative px-4 pb-6 sm:px-6 lg:px-8">
-            {/* Avatar - Overlapping the banner */}
-            <div className="flex flex-col sm:flex-row sm:items-end sm:gap-6">
-              <div className="-mt-16 sm:-mt-20">
-                <div className="relative h-32 w-32 overflow-hidden rounded-full border-4 border-white bg-white shadow-xl sm:h-40 sm:w-40">
-                  {profile.avatarUrl ? (
-                    <Image
-                      src={profile.avatarUrl}
-                      alt={profile.fullName}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-blue-500 to-cyan-500 text-6xl font-bold text-white">
-                      {profile.fullName.charAt(0).toUpperCase()}
+              {/* Profile Info */}
+              <div className="px-6 pb-6">
+                {/* Avatar with Plan Badge */}
+                <div className="relative -mt-16 mb-4 flex items-end gap-4">
+                  <div className="relative">
+                    <div className="h-32 w-32 overflow-hidden rounded-full border-4 border-card bg-card shadow-lg ring-2 ring-primary/10">
+                      <Image
+                        src={avatarUrl}
+                        alt={profile.fullName}
+                        width={128}
+                        height={128}
+                        className="h-full w-full object-cover"
+                        priority
+                        unoptimized={avatarUrl.includes('supabase.co')}
+                      />
                     </div>
+                    {/* Plan Badge */}
+                    {userPlan === 'PRO_DIGITAL' && (
+                      <Badge
+                        className="absolute -bottom-1 -right-1 border-2 border-card bg-primary text-primary-foreground"
+                      >
+                        <Award className="mr-1 h-3 w-3" />
+                        PRO
+                      </Badge>
+                    )}
+                    {userPlan === 'PACK_STARTER' && (
+                      <Badge
+                        className="absolute -bottom-1 -right-1 border-2 border-card bg-amber-500 text-white"
+                      >
+                        <Award className="mr-1 h-3 w-3" />
+                        STARTER
+                      </Badge>
+                    )}
+                    {userPlan === 'CORPORATE' && (
+                      <Badge
+                        className="absolute -bottom-1 -right-1 border-2 border-card bg-purple-600 text-white"
+                      >
+                        <Award className="mr-1 h-3 w-3" />
+                        CORP
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Statistics */}
+                  <div className="mb-2 flex gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Eye className="h-4 w-4" />
+                      <span>{profile.viewsCount} vues</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Users className="h-4 w-4" />
+                      <span>{profile.contactSaves} contacts</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Name & Title */}
+                <div className="mb-6">
+                  <h1 className="text-3xl font-bold text-foreground">
+                    {profile.fullName}
+                  </h1>
+                  {profile.jobTitle && (
+                    <p className="mt-1 text-lg text-foreground/80">
+                      {profile.jobTitle}
+                    </p>
+                  )}
+                  <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                    {profile.company && (
+                      <div className="flex items-center gap-1">
+                        <Building2 className="h-4 w-4" />
+                        <span>{profile.company}</span>
+                      </div>
+                    )}
+                    {profile.address && (
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-4 w-4" />
+                        <span>{profile.address}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    size="lg"
+                    className="font-semibold bg-primary hover:bg-primary/90"
+                    asChild
+                  >
+                    <a href={`/api/vcard/${profile.slug}`} download>
+                      <Download className="mr-2 h-5 w-5" />
+                      Enregistrer le contact
+                    </a>
+                  </Button>
+
+                  {profile.showCV && profile.cvFileUrl && (
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="font-semibold border-primary text-primary hover:bg-primary/10"
+                      asChild
+                    >
+                      <a href={`/api/cv/${profile.slug}`} download>
+                        <Download className="mr-2 h-5 w-5" />
+                        Télécharger CV
+                      </a>
+                    </Button>
                   )}
                 </div>
               </div>
-
-              {/* Primary CTA - Mobile: below avatar, Desktop: aligned right */}
-              <div className="mt-4 flex flex-1 flex-col gap-2 sm:mt-0 sm:flex-row sm:items-center sm:justify-end">
-                <Button
-                  size="lg"
-                  className="w-full gap-2 bg-blue-600 hover:bg-blue-700 sm:w-auto"
-                  asChild
-                >
-                  <a href={`/api/vcard/${profile.slug}`} download>
-                    <Download className="h-4 w-4" />
-                    Enregistrer le contact
-                  </a>
-                </Button>
-
-                {profile.showCV && profile.cvFileUrl && (
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="w-full gap-2 sm:w-auto"
-                    asChild
-                  >
-                    <a href={`/api/cv/${profile.slug}`} download>
-                      <Download className="h-4 w-4" />
-                      Télécharger CV
-                    </a>
-                  </Button>
-                )}
-              </div>
             </div>
 
-            {/* Name & Title */}
-            <div className="mt-4 space-y-1">
-              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                {profile.fullName}
-              </h1>
-
-              {profile.jobTitle && (
-                <p className="text-lg text-gray-700 sm:text-xl">
-                  {profile.jobTitle}
+            {/* Bio Section */}
+            {profile.bio && (
+              <div className="rounded-xl border bg-card p-6 shadow-sm">
+                <h2 className="mb-4 text-xl font-semibold text-foreground">
+                  À propos
+                </h2>
+                <p className="whitespace-pre-line text-foreground/80 leading-relaxed">
+                  {profile.bio}
                 </p>
-              )}
-
-              <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
-                {profile.company && (
-                  <div className="flex items-center gap-1.5">
-                    <Briefcase className="h-4 w-4" />
-                    <span>{profile.company}</span>
-                  </div>
-                )}
-
-                {profile.address && (
-                  <div className="flex items-center gap-1.5">
-                    <MapPin className="h-4 w-4" />
-                    <span>{profile.address}</span>
-                  </div>
-                )}
               </div>
-            </div>
-          </div>
+            )}
 
-          <Separator />
+            {/* Experience Section */}
+            {profile.experiences.length > 0 && (
+              <div className="rounded-xl border bg-card p-6 shadow-sm">
+                <h2 className="mb-6 text-xl font-semibold text-foreground">
+                  Expérience professionnelle
+                </h2>
+                <div className="space-y-6">
+                  {profile.experiences.map((exp) => (
+                    <div key={exp.id} className="relative pl-8 pb-6 border-l-2 border-border last:pb-0">
+                      <div className="absolute left-0 top-0 -ml-[9px] h-4 w-4 rounded-full border-2 border-card bg-primary" />
 
-          {/* Contact Information */}
-          <div className="px-4 py-6 sm:px-6 lg:px-8">
-            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
-              Informations de contact
-            </h2>
-
-            <div className="space-y-3">
-              <a
-                href={`mailto:${profile.email}`}
-                className="flex items-center gap-3 rounded-lg p-3 text-sm transition-all hover:bg-gray-100 active:bg-gray-200"
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-                  <Mail className="h-5 w-5" />
+                      <div className="space-y-1">
+                        <h3 className="text-lg font-semibold text-foreground">
+                          {exp.position}
+                        </h3>
+                        <p className="font-medium text-foreground/80">
+                          {exp.company}
+                          {exp.location && ` · ${exp.location}`}
+                        </p>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Calendar className="h-4 w-4" />
+                          <span>
+                            {format(new Date(exp.startDate), 'MMM yyyy', { locale: fr })}
+                            {' - '}
+                            {exp.isCurrent
+                              ? "Aujourd'hui"
+                              : exp.endDate
+                              ? format(new Date(exp.endDate), 'MMM yyyy', { locale: fr })
+                              : 'Présent'}
+                          </span>
+                          <Badge variant="outline" className="text-xs">
+                            {exp.employmentType.replace('_', ' ')}
+                          </Badge>
+                        </div>
+                        {exp.description && (
+                          <p className="mt-2 text-foreground/70 leading-relaxed">
+                            {exp.description}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex-1">
-                  <p className="text-xs font-medium text-gray-500">Email</p>
-                  <p className="font-medium text-gray-900">{profile.email}</p>
-                </div>
-              </a>
+              </div>
+            )}
 
-              <a
-                href={`tel:${profile.phoneNumber}`}
-                className="flex items-center gap-3 rounded-lg p-3 text-sm transition-all hover:bg-gray-100 active:bg-gray-200"
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 text-green-600">
-                  <Phone className="h-5 w-5" />
+            {/* Skills Section */}
+            {profile.skills.length > 0 && (
+              <div className="rounded-xl border bg-card p-6 shadow-sm">
+                <h2 className="mb-4 text-xl font-semibold text-foreground">
+                  Compétences
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {profile.skills.map((skill) => (
+                    <Badge
+                      key={skill.id}
+                      className="px-3 py-1.5 text-sm font-medium bg-primary hover:bg-primary/90 text-primary-foreground"
+                      style={{
+                        opacity: skill.level === 'EXPERT' ? 1 : skill.level === 'ADVANCED' ? 0.9 : skill.level === 'INTERMEDIATE' ? 0.75 : 0.6,
+                      }}
+                    >
+                      {skill.name}
+                      {skill.level !== 'INTERMEDIATE' && (
+                        <span className="ml-1 text-xs opacity-75">
+                          ({skill.level.toLowerCase()})
+                        </span>
+                      )}
+                    </Badge>
+                  ))}
                 </div>
-                <div className="flex-1">
-                  <p className="text-xs font-medium text-gray-500">Téléphone</p>
-                  <p className="font-medium text-gray-900">{profile.phoneNumber}</p>
-                </div>
-              </a>
+              </div>
+            )}
 
-              {profile.website && (
+            {/* Projects Section (Only show if user has projects) */}
+            {isPro && profile.projects.length > 0 && (
+              <div className="rounded-xl border bg-card p-6 shadow-sm">
+                <h2 className="mb-6 text-xl font-semibold text-foreground">
+                  Projets & Réalisations
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {profile.projects.map((project) => (
+                    <div key={project.id} className="group relative overflow-hidden rounded-lg border transition-shadow hover:shadow-lg">
+                      {project.images[0] && (
+                        <div className="relative h-48 overflow-hidden bg-muted">
+                          <Image
+                            src={project.images[0]}
+                            alt={project.title}
+                            fill
+                            className="object-cover transition-transform group-hover:scale-105"
+                          />
+                        </div>
+                      )}
+                      <div className="p-4 bg-card">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="font-semibold text-foreground">
+                            {project.title}
+                          </h3>
+                          {project.isFeatured && (
+                            <Badge variant="secondary" className="shrink-0">
+                              <Star className="mr-1 h-3 w-3" />
+                              Featured
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                          {project.description}
+                        </p>
+                        {project.technologies.length > 0 && (
+                          <div className="mt-3 flex flex-wrap gap-1">
+                            {project.technologies.map((tech) => (
+                              <Badge key={tech} variant="outline" className="text-xs">
+                                {tech}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                        {project.url && (
+                          <a
+                            href={project.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline transition-colors"
+                          >
+                            Voir le projet
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Testimonials Section (PRO Only) */}
+            {isPro && profile.testimonials.length > 0 && (
+              <div className="rounded-xl border bg-card p-6 shadow-sm">
+                <h2 className="mb-6 text-xl font-semibold text-foreground">
+                  Témoignages & Recommandations
+                </h2>
+                <div className="space-y-6">
+                  {profile.testimonials.map((testimonial) => (
+                    <div key={testimonial.id} className="rounded-lg border bg-muted/50 p-6">
+                      <div className="flex items-start gap-4">
+                        {testimonial.authorPhoto && (
+                          <Image
+                            src={testimonial.authorPhoto}
+                            alt={testimonial.authorName}
+                            width={56}
+                            height={56}
+                            className="rounded-full"
+                          />
+                        )}
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <p className="font-semibold text-foreground">
+                                {testimonial.authorName}
+                              </p>
+                              {testimonial.authorTitle && (
+                                <p className="text-sm text-muted-foreground">
+                                  {testimonial.authorTitle}
+                                  {testimonial.authorCompany && ` · ${testimonial.authorCompany}`}
+                                </p>
+                              )}
+                            </div>
+                            {testimonial.rating && (
+                              <div className="flex gap-0.5">
+                                {Array.from({ length: testimonial.rating }).map((_, i) => (
+                                  <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <p className="mt-3 text-foreground/80 leading-relaxed">
+                            "{testimonial.content}"
+                          </p>
+                          {testimonial.relationship && (
+                            <Badge variant="outline" className="mt-2">
+                              {testimonial.relationship}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Posts Section (PRO Only) */}
+            {isPro && profile.posts.length > 0 && (
+              <div className="rounded-xl border bg-card p-6 shadow-sm">
+                <h2 className="mb-6 text-xl font-semibold text-foreground">
+                  Actualités & Publications
+                </h2>
+                <div className="space-y-6">
+                  {profile.posts.map((post) => (
+                    <article key={post.id} className="border-b border-border pb-6 last:border-0 last:pb-0">
+                      {post.coverImage && (
+                        <div className="relative mb-4 h-48 overflow-hidden rounded-lg">
+                          <Image
+                            src={post.coverImage}
+                            alt={post.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                      <h3 className="text-lg font-semibold text-foreground">
+                        {post.title}
+                      </h3>
+                      {post.excerpt && (
+                        <p className="mt-2 text-foreground/70">
+                          {post.excerpt}
+                        </p>
+                      )}
+                      {post.tags.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {post.tags.map((tag) => (
+                            <Badge key={tag} variant="outline" className="text-xs">
+                              #{tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                      {post.publishedAt && (
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          Publié le {format(new Date(post.publishedAt), 'dd MMMM yyyy', { locale: fr })}
+                        </p>
+                      )}
+                    </article>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Contact Information Section */}
+            <div className="rounded-xl border bg-card p-6 shadow-sm">
+              <h2 className="mb-4 text-xl font-semibold text-foreground">
+                Informations de contact
+              </h2>
+              <div className="space-y-3">
                 <a
-                  href={profile.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 rounded-lg p-3 text-sm transition-all hover:bg-gray-100 active:bg-gray-200"
+                  href={`mailto:${profile.email}`}
+                  className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent"
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 text-purple-600">
-                    <Globe className="h-5 w-5" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs font-medium text-gray-500">Site web</p>
-                    <p className="font-medium text-gray-900">{profile.website}</p>
+                  <Mail className="h-5 w-5 text-primary" />
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Email</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {profile.email}
+                    </p>
                   </div>
                 </a>
-              )}
-            </div>
-          </div>
 
-          {/* Social Links */}
-          {socialLinks.length > 0 && (
-            <>
-              <Separator />
-              <div className="px-4 py-6 sm:px-6 lg:px-8">
-                <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
+                <a
+                  href={`tel:${profile.phoneNumber}`}
+                  className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent"
+                >
+                  <Phone className="h-5 w-5 text-primary" />
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Téléphone</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {profile.phoneNumber}
+                    </p>
+                  </div>
+                </a>
+
+                {profile.website && (
+                  <a
+                    href={profile.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent"
+                  >
+                    <Globe className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground">Site web</p>
+                      <p className="text-sm font-medium text-foreground">
+                        {profile.website}
+                      </p>
+                    </div>
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {/* Social Networks */}
+            {socialLinks.length > 0 && (
+              <div className="rounded-xl border bg-card p-6 shadow-sm">
+                <h2 className="mb-4 text-xl font-semibold text-foreground">
                   Réseaux sociaux
                 </h2>
-
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <div className="grid grid-cols-2 gap-3">
                   {socialLinks.map((link) => {
                     const Icon = link.icon
                     return (
@@ -261,10 +551,10 @@ export default async function PublicProfilePage({
                         href={link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`flex items-center justify-center gap-2 rounded-lg border-2 border-gray-200 p-4 transition-all ${link.color}`}
+                        className="flex items-center gap-3 rounded-lg border border-primary/20 p-3 transition-all hover:border-primary hover:shadow-md hover:bg-primary/5"
                       >
-                        <Icon className="h-5 w-5" />
-                        <span className="hidden text-sm font-medium sm:inline">
+                        <Icon className="h-5 w-5 text-primary" />
+                        <span className="text-sm font-medium text-foreground">
                           {link.label}
                         </span>
                       </a>
@@ -272,21 +562,97 @@ export default async function PublicProfilePage({
                   })}
                 </div>
               </div>
-            </>
-          )}
-        </Card>
+            )}
+          </div>
 
-        {/* Footer */}
-        <div className="py-8 text-center">
-          <p className="text-sm text-gray-500">
-            Créé avec{' '}
-            <Link
-              href="/"
-              className="font-semibold text-blue-600 hover:underline"
-            >
-              SmartLink
-            </Link>
-          </p>
+          {/* Right Sidebar - Sticky */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-6 space-y-6">
+              {/* QR Code Card */}
+              <div className="rounded-xl border bg-card p-6 shadow-sm text-center">
+                <div className="mb-4 flex items-center justify-center">
+                  <div className="rounded-lg p-4 bg-muted">
+                    <QrCode className="h-32 w-32 text-muted-foreground" />
+                  </div>
+                </div>
+                <h3 className="font-semibold text-foreground mb-2">
+                  Scannez pour partager
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Partagez votre profil facilement
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full border-primary text-primary hover:bg-primary/10"
+                >
+                  Télécharger QR Code
+                </Button>
+              </div>
+
+              {/* Quick Stats */}
+              <div className="rounded-xl border bg-card p-6 shadow-sm">
+                <h3 className="font-semibold text-foreground mb-4">
+                  Statistiques
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Eye className="h-4 w-4" />
+                      <span className="text-sm">Vues du profil</span>
+                    </div>
+                    <span className="font-semibold text-primary">
+                      {profile.viewsCount}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Download className="h-4 w-4" />
+                      <span className="text-sm">CV téléchargés</span>
+                    </div>
+                    <span className="font-semibold text-primary">
+                      {profile.cvDownloads}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Users className="h-4 w-4" />
+                      <span className="text-sm">Contacts sauvés</span>
+                    </div>
+                    <span className="font-semibold text-primary">
+                      {profile.contactSaves}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* SmartLink Branding */}
+              <div className="rounded-xl border bg-card p-6 shadow-sm text-center">
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary">
+                  <span className="text-xl font-bold text-primary-foreground">S</span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Créé avec{' '}
+                  <Link
+                    href="/"
+                    className="font-semibold text-primary hover:underline"
+                  >
+                    SmartLink
+                  </Link>
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full mt-4"
+                  asChild
+                >
+                  <Link href="/">
+                    Créer mon profil
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
