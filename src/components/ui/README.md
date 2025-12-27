@@ -39,7 +39,16 @@ bunx shadcn@latest init --base-ui
 ✔ Are you using React Server Components? › yes
 ```
 
-### 2. Installer les composants nécessaires
+### 2. Installer les dépendances Radix UI manquantes
+
+Certains composants nécessitent des packages Radix UI supplémentaires :
+
+```bash
+# Checkbox (utilisé dans les formulaires d'édition)
+bun add @radix-ui/react-checkbox
+```
+
+### 3. Installer les composants nécessaires
 
 ```bash
 # Core UI Components
@@ -66,6 +75,8 @@ bunx shadcn@latest add tooltip
 # Feedback
 bunx shadcn@latest add alert
 bunx shadcn@latest add progress
+
+# Note: Le composant Checkbox est créé manuellement dans checkbox.tsx
 ```
 
 ---
