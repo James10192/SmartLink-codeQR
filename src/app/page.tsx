@@ -191,9 +191,12 @@ export default function Home() {
   ]
 
   return (
-    <div className="min-h-screen relative bg-background">
+    <div className="min-h-screen relative bg-black">
       {/* Global Dot Pattern Background */}
       <DotPattern className="opacity-30" />
+
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-black/50 pointer-events-none z-0" />
 
       {/* Hero Section with Geometric Shapes */}
       <HeroGeometric
@@ -207,7 +210,7 @@ export default function Home() {
       />
 
       {/* Bento Grid Features */}
-      <section className="py-16 sm:py-24 relative">
+      <section className="py-16 sm:py-24 relative z-10">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center mb-12">
             <h2 className="mb-4 text-3xl font-bold text-foreground">Fonctionnalités Modernes</h2>
@@ -220,7 +223,7 @@ export default function Home() {
       </section>
 
       {/* Card Comparison Section - Traditional vs SmartLink */}
-      <section className="py-16 sm:py-24 relative">
+      <section className="py-16 sm:py-24 relative z-10">
         <div className="container mx-auto px-4">
           {/* Header */}
           <div className="mx-auto max-w-3xl text-center mb-12">
@@ -246,7 +249,7 @@ export default function Home() {
       </section>
 
       {/* Contact Section - REPLACES Problem Section */}
-      <section className="py-16 sm:py-24 relative">
+      <section className="py-16 sm:py-24 relative z-10">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-5xl">
             <ContactCard
@@ -272,7 +275,7 @@ export default function Home() {
       </section>
 
       {/* Solution/Features Section */}
-      <section className="py-16 sm:py-24 relative">
+      <section className="py-16 sm:py-24 relative z-10">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center mb-12">
             <h2 className="mb-4 text-3xl font-bold text-foreground">La solution moderne et écologique</h2>
@@ -286,7 +289,7 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-20 relative">
+      <section className="py-20 relative z-10">
         <div className="mx-auto max-w-7xl text-center px-4 mb-4">
           <div className="inline-block mb-4">
             <span className="text-primary text-sm font-semibold uppercase tracking-wide">Tarifs</span>
@@ -303,7 +306,7 @@ export default function Home() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-16 sm:py-24 relative">
+      <section className="py-16 sm:py-24 relative z-10">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center">
             <Globe className="mx-auto mb-6 h-16 w-16 text-primary" />
@@ -329,7 +332,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 relative">
+      <footer className="py-12 relative z-10">
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center gap-8">
             <div className="flex items-center gap-3">
