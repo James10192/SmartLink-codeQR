@@ -10,7 +10,7 @@ import { Separator } from '@/components/ui/separator'
 import { HeroGeometric } from '@/components/ui/shape-landing-hero'
 import { BentoGrid, type BentoItem } from '@/components/ui/bento-grid'
 import { PricingCard, type PricingCardProps } from '@/components/ui/animated-glassy-pricing'
-import PricingCanvasReveal from '@/components/ui/pricing-canvas-reveal'
+import PricingCanvasCards from '@/components/ui/pricing-canvas-cards'
 import { GlowingEffect } from '@/components/ui/glowing-effect'
 import CardComparisonTabs from '@/components/ui/card-comparison-tabs'
 import { ContactCard } from '@/components/ui/contact-card'
@@ -127,8 +127,7 @@ export default function Home() {
 
   const pricingCanvasPlans = [
     {
-      planName: "Freemium",
-      description: "Pour tester SmartLink",
+      title: "Freemium",
       price: "0 FCFA",
       features: [
         "1 profil",
@@ -136,34 +135,37 @@ export default function Home() {
         "vCard download",
         "CV téléchargeable"
       ],
-      colors: [[125, 211, 252], [96, 165, 250]], // cyan to blue
+      colors: [[125, 211, 252]], // cyan
+      animationSpeed: 5.1,
       onButtonClick: () => setActivePricingDialog('freemium')
     },
     {
-      planName: "Pro Digital",
-      description: "Pour les professionnels",
-      price: "1 000 FCFA",
+      title: "Pro Digital",
+      price: "3 000 FCFA",
+      period: "/mois",
       features: [
         "3 profils",
         "QR Code personnalisable",
         "Analytics avancés",
         "Support prioritaire"
       ],
-      colors: [[59, 130, 246], [139, 92, 246]], // blue to purple
+      colors: [[236, 72, 153], [232, 121, 249]], // pink to purple
+      animationSpeed: 3,
       onButtonClick: () => setActivePricingDialog('prodigital'),
       isPopular: true
     },
     {
-      planName: "Pack Starter",
-      description: "Digital + Physique",
-      price: "15 000 FCFA",
+      title: "Pack Starter",
+      price: "29 900 FCFA",
+      period: "/an",
       features: [
-        "Tout de Pro Digital",
+        "Accès Pro pendant 1 an",
         "50 cartes papier QR",
         "Design professionnel",
         "Livraison incluse"
       ],
-      colors: [[236, 72, 153], [168, 85, 247]], // pink to purple
+      colors: [[125, 211, 252]], // sky blue
+      animationSpeed: 3,
       onButtonClick: () => setActivePricingDialog('packstarter')
     }
   ]
@@ -261,7 +263,7 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-16 sm:py-24 bg-[#030303] relative overflow-hidden">
+      <section className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden py-20">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center mb-14">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
@@ -272,9 +274,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="max-w-7xl mx-auto">
-            <PricingCanvasReveal plans={pricingCanvasPlans} />
-          </div>
+          <PricingCanvasCards plans={pricingCanvasPlans} />
         </div>
       </section>
 
