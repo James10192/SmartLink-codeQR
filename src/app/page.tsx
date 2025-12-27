@@ -13,8 +13,8 @@ import { PricingCard, type PricingCardProps } from '@/components/ui/animated-gla
 import dynamic from 'next/dynamic'
 import { GlowingEffect } from '@/components/ui/glowing-effect'
 
-const PricingCanvasCards = dynamic(
-  () => import('@/components/ui/pricing-canvas-cards'),
+const PricingCardsModern = dynamic(
+  () => import('@/components/ui/pricing-cards-modern'),
   {
     ssr: false,
     loading: () => (
@@ -137,47 +137,54 @@ export default function Home() {
     }
   ]
 
-  const pricingCanvasPlans = [
+  const pricingModernPlans = [
     {
-      title: "Freemium",
+      name: "Gratuit",
       price: "0 FCFA",
+      description: "Idéal pour tester SmartLink et créer votre premier profil digital.",
       features: [
-        "1 profil",
-        "QR Code basique",
-        "vCard download",
-        "CV téléchargeable"
+        "1 profil digital",
+        "QR Code téléchargeable",
+        "Enregistrement de contact en un clic",
+        "CV hébergé en ligne"
       ],
-      colors: [[125, 211, 252]], // cyan
-      animationSpeed: 5.1,
+      buttonText: "Commencer gratuitement",
+      buttonVariant: "outline" as const,
       onButtonClick: () => setActivePricingDialog('freemium')
     },
     {
-      title: "Pro Digital",
+      name: "Pro Digital",
+      badge: "Le plus populaire",
       price: "3 000 FCFA",
       period: "/mois",
+      description: "Tout ce dont vous avez besoin pour gérer votre présence digitale professionnelle.",
       features: [
-        "3 profils",
+        "3 profils digitaux",
         "QR Code personnalisable",
-        "Analytics avancés",
-        "Support prioritaire"
+        "Statistiques avancées",
+        "Thèmes premium",
+        "Support prioritaire",
+        "Badge PRO"
       ],
-      colors: [[236, 72, 153], [232, 121, 249]], // pink to purple
-      animationSpeed: 3,
-      onButtonClick: () => setActivePricingDialog('prodigital'),
-      isPopular: true
+      buttonText: "Passer au Pro",
+      buttonVariant: "primary" as const,
+      highlighted: true,
+      onButtonClick: () => setActivePricingDialog('prodigital')
     },
     {
-      title: "Pack Starter",
-      price: "29 900 FCFA",
-      period: "/an",
+      name: "Pack Starter",
+      price: "15 000 FCFA",
+      period: "/one-time",
+      description: "Digital + Physique : profitez du Pro Digital et de 50 cartes papier.",
       features: [
-        "Accès Pro pendant 1 an",
-        "50 cartes papier QR",
+        "Pro Digital pendant 1 mois",
+        "50 cartes papier avec QR",
         "Design professionnel",
-        "Livraison incluse"
+        "Livraison gratuite Abidjan",
+        "Révisions illimitées"
       ],
-      colors: [[125, 211, 252]], // sky blue
-      animationSpeed: 3,
+      buttonText: "Commander",
+      buttonVariant: "outline" as const,
       onButtonClick: () => setActivePricingDialog('packstarter')
     }
   ]
@@ -275,19 +282,20 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden py-20">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-3xl text-center mb-14">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-              Tarifs simples et transparents
-            </h2>
-            <p className="text-lg text-white/70 max-w-2xl mx-auto">
-              Passez la souris pour découvrir les détails de chaque plan
-            </p>
+      <section className="border-t border-white/10 bg-[#0a0a0a] py-20">
+        <div className="mx-auto max-w-7xl text-center px-4 mb-4">
+          <div className="inline-block mb-4">
+            <span className="text-primary text-sm font-semibold uppercase tracking-wide">Tarifs</span>
           </div>
-
-          <PricingCanvasCards plans={pricingCanvasPlans} />
+          <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
+            Choisissez le plan qui vous convient
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Commencez gratuitement, passez au Pro quand vous en avez besoin. Pas de frais cachés, uniquement des fonctionnalités essentielles.
+          </p>
         </div>
+
+        <PricingCardsModern plans={pricingModernPlans} />
       </section>
 
       {/* Final CTA */}
