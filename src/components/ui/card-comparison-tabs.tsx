@@ -63,11 +63,17 @@ export default function CardComparisonTabs() {
 
   // Handle touch swipe
   const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
+    const touch = e.touches[0];
+    if (touch) {
+      touchStartX.current = touch.clientX;
+    }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.touches[0].clientX;
+    const touch = e.touches[0];
+    if (touch) {
+      touchEndX.current = touch.clientX;
+    }
   };
 
   const handleTouchEnd = () => {
