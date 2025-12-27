@@ -20,21 +20,50 @@ export const auth = betterAuth({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
       enabled: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
+      // Map Google's picture field to user.image
+      mapProfileToUser: (profile: any) => {
+        return {
+          name: profile.name,
+          image: profile.picture, // Google's picture URL
+        }
+      },
     },
     github: {
       clientId: process.env.GITHUB_CLIENT_ID || "",
       clientSecret: process.env.GITHUB_CLIENT_SECRET || "",
       enabled: !!(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET),
+      // Map GitHub's avatar_url to user.image
+      mapProfileToUser: (profile: any) => {
+        return {
+          name: profile.name,
+          image: profile.avatar_url, // GitHub's avatar_url
+        }
+      },
     },
     facebook: {
       clientId: process.env.FACEBOOK_CLIENT_ID || "",
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET || "",
       enabled: !!(process.env.FACEBOOK_CLIENT_ID && process.env.FACEBOOK_CLIENT_SECRET),
+      // Map Facebook's picture URL
+      mapProfileToUser: (profile: any) => {
+        return {
+          name: profile.name,
+          // Facebook picture is in nested structure
+          image: profile.picture?.data?.url || null,
+        }
+      },
     },
     apple: {
       clientId: process.env.APPLE_CLIENT_ID || "",
       clientSecret: process.env.APPLE_CLIENT_SECRET || "",
       enabled: !!(process.env.APPLE_CLIENT_ID && process.env.APPLE_CLIENT_SECRET),
+      // Apple does not provide profile image via OAuth
+      mapProfileToUser: (profile: any) => {
+        return {
+          name: profile.name,
+          image: null,
+        }
+      },
     },
   },
 
