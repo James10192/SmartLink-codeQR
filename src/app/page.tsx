@@ -11,7 +11,7 @@ import { HeroGeometric } from '@/components/ui/shape-landing-hero'
 import { BentoGrid, type BentoItem } from '@/components/ui/bento-grid'
 import { PricingCard, type PricingCardProps } from '@/components/ui/animated-glassy-pricing'
 import { GlowingEffect } from '@/components/ui/glowing-effect'
-import { ImageComparison } from '@/components/ui/image-comparison'
+import CardComparisonTabs from '@/components/ui/card-comparison-tabs'
 import { ContactCard } from '@/components/ui/contact-card'
 import { ContactForm } from '@/components/contact-form'
 import { ContactDialog } from '@/components/contact-dialog'
@@ -150,7 +150,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Image Comparison Section - Traditional vs SmartLink */}
+      {/* Card Comparison Section - Traditional vs SmartLink */}
       <section className="border-t border-white/10 bg-[#0a0a0a] py-16 sm:py-24">
         <div className="container mx-auto px-4">
           {/* Header */}
@@ -159,25 +159,17 @@ export default function Home() {
               La Révolution du Networking Professionnel
             </h2>
             <p className="text-lg text-white/60">
-              Comparez l'ancien et le nouveau. Glissez pour découvrir comment SmartLink transforme votre carte de visite en un outil moderne et interactif.
+              Swipez ou attendez pour découvrir comment SmartLink transforme votre carte de visite en un outil moderne et interactif.
             </p>
           </div>
 
-          {/* Comparison Component */}
-          <div className="mx-auto max-w-6xl">
-            <ImageComparison
-              beforeImage="/traditional-card-optimized.webp"
-              afterImage="/smartlink-qr-card-optimized.webp"
-              beforeLabel="Traditionnel"
-              afterLabel="SmartLink QR"
-              className="shadow-2xl"
-            />
-          </div>
+          {/* Tabs Comparison Component */}
+          <CardComparisonTabs />
 
           {/* Optional instruction text */}
           <div className="mx-auto max-w-3xl text-center mt-12">
             <p className="text-sm text-white/50">
-              Glissez le curseur pour comparer les deux formats.
+              Les onglets changent automatiquement toutes les 5 secondes. Vous pouvez aussi swiper ou cliquer pour comparer.
               Avec SmartLink, vos contacts scannent votre QR Code et enregistrent automatiquement votre profil.
             </p>
           </div>
