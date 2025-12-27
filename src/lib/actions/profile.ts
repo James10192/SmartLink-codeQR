@@ -158,6 +158,21 @@ export async function getProfileById(profileId: string) {
           subscription: true,
         },
       },
+      experiences: {
+        orderBy: {
+          startDate: 'desc',
+        },
+      },
+      skills: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
+      projects: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
     },
   })
   if (!profile) throw new Error('Profil non trouvé')
@@ -176,6 +191,7 @@ export async function getPublicProfile(slug: string) {
       phoneNumber: true,
       email: true,
       website: true,
+      address: true,
       avatarUrl: true,
       cvFileUrl: true,
       videoUrl: true,
@@ -183,11 +199,43 @@ export async function getPublicProfile(slug: string) {
       twitterUrl: true,
       facebookUrl: true,
       whatsappNumber: true,
+      bio: true,
       showCV: true,
       viewsCount: true,
       cvDownloads: true,
       contactSaves: true,
-      userId: true, // Add userId to check ownership
+      userId: true,
+      // Include user subscription for plan badge
+      user: {
+        select: {
+          subscription: {
+            select: {
+              plan: true,
+              status: true,
+            },
+          },
+        },
+      },
+      // Include all enrichment data
+      experiences: {
+        orderBy: { startDate: 'desc' },
+        where: { OR: [{ isCurrent: true }, { endDate: { not: null } }] },
+      },
+      skills: {
+        orderBy: { order: 'asc' },
+      },
+      projects: {
+        orderBy: [{ isFeatured: 'desc' }, { order: 'asc' }],
+      },
+      testimonials: {
+        where: { isPublished: true },
+        orderBy: { order: 'asc' },
+      },
+      posts: {
+        where: { isPublished: true },
+        orderBy: { publishedAt: 'desc' },
+        take: 5, // Only show latest 5 posts
+      },
     },
   })
 
