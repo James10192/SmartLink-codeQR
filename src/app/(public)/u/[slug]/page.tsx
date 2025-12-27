@@ -25,6 +25,7 @@ import { generateThemeVars } from '@/lib/utils/theme'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { VisitorCaptureModal } from '@/components/profile/visitor-capture-modal'
+import { ViewTracker } from '@/components/profile/view-tracker'
 import Link from 'next/link'
 import Image from 'next/image'
 import { format } from 'date-fns'
@@ -633,6 +634,9 @@ export default async function PublicProfilePage({
           </div>
         </div>
       </div>
+
+      {/* View Tracker - Comptage automatique des vues uniques */}
+      <ViewTracker profileId={profile.id} />
 
       {/* Visitor Capture Modal (QR scan) */}
       <VisitorCaptureModal

@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { User, Phone, X } from 'lucide-react'
+import { User, Phone } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface VisitorCaptureModalProps {
@@ -81,19 +81,13 @@ export function VisitorCaptureModal({ profileId, profileOwnerName }: VisitorCapt
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(isOpen) => {
+      if (!isOpen) handleSkip()
+    }}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
-            <span>Connectez-vous avec {profileOwnerName}</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleSkip}
-              className="h-8 w-8"
-            >
-              <X className="h-4 w-4" />
-            </Button>
+          <DialogTitle>
+            Connectez-vous avec {profileOwnerName}
           </DialogTitle>
           <DialogDescription>
             Laissez vos coordonnées pour que {profileOwnerName} puisse vous recontacter facilement.
