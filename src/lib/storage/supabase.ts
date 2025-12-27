@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error(
@@ -9,16 +10,27 @@ if (!supabaseUrl || !supabaseAnonKey) {
   )
 }
 
+// Client for client-side operations (respects RLS)
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+// Admin client for server-side operations (bypasses RLS)
+export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+  },
+})
 
 // Bucket names
 export const CV_BUCKET_NAME = 'cvs'
 export const AVATAR_BUCKET_NAME = 'avatars'
+export const COVER_BUCKET_NAME = 'covers'
 export const VIDEO_BUCKET_NAME = 'videos'
 
 // Maximum file sizes
 export const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB for CVs
 export const MAX_AVATAR_SIZE = 2 * 1024 * 1024 // 2MB for avatars
+export const MAX_COVER_SIZE = 5 * 1024 * 1024 // 5MB for cover images
 export const MAX_VIDEO_SIZE = 30 * 1024 * 1024 // 30MB for videos
 
 // Allowed file types
@@ -65,8 +77,8 @@ export async function uploadCV(
   const fileExtension = file.name.split('.').pop()
   const fileName = `${userId}/${profileId}-${Date.now()}.${fileExtension}`
 
-  // Upload to Supabase Storage
-  const { data, error } = await supabase.storage
+  // Upload to Supabase Storage (using admin client to bypass RLS)
+  const { data, error } = await supabaseAdmin.storage
     .from(CV_BUCKET_NAME)
     .upload(fileName, file, {
       cacheControl: '3600',
@@ -81,7 +93,7 @@ export async function uploadCV(
   // Get public URL
   const {
     data: { publicUrl },
-  } = supabase.storage.from(CV_BUCKET_NAME).getPublicUrl(data.path)
+  } = supabaseAdmin.storage.from(CV_BUCKET_NAME).getPublicUrl(data.path)
 
   return {
     url: publicUrl,
@@ -93,7 +105,7 @@ export async function uploadCV(
  * Delete a CV file from Supabase Storage
  */
 export async function deleteCV(filePath: string): Promise<void> {
-  const { error } = await supabase.storage.from(CV_BUCKET_NAME).remove([filePath])
+  const { error } = await supabaseAdmin.storage.from(CV_BUCKET_NAME).remove([filePath])
 
   if (error) {
     console.error('Supabase delete error:', error)
@@ -138,8 +150,8 @@ export async function uploadAvatar(
   const fileExtension = file.name.split('.').pop()
   const fileName = `${userId}/${profileId}-${Date.now()}.${fileExtension}`
 
-  // Upload to Supabase Storage
-  const { data, error } = await supabase.storage
+  // Upload to Supabase Storage (using admin client to bypass RLS)
+  const { data, error } = await supabaseAdmin.storage
     .from(AVATAR_BUCKET_NAME)
     .upload(fileName, file, {
       cacheControl: '3600',
@@ -154,7 +166,7 @@ export async function uploadAvatar(
   // Get public URL
   const {
     data: { publicUrl },
-  } = supabase.storage.from(AVATAR_BUCKET_NAME).getPublicUrl(data.path)
+  } = supabaseAdmin.storage.from(AVATAR_BUCKET_NAME).getPublicUrl(data.path)
 
   return {
     url: publicUrl,
@@ -166,7 +178,7 @@ export async function uploadAvatar(
  * Delete an avatar image from Supabase Storage
  */
 export async function deleteAvatar(filePath: string): Promise<void> {
-  const { error } = await supabase.storage.from(AVATAR_BUCKET_NAME).remove([filePath])
+  const { error } = await supabaseAdmin.storage.from(AVATAR_BUCKET_NAME).remove([filePath])
 
   if (error) {
     console.error('Supabase delete error:', error)
@@ -233,8 +245,8 @@ export async function uploadVideo(
   const fileExtension = file.name.split('.').pop()
   const fileName = `${userId}/${profileId}-${Date.now()}.${fileExtension}`
 
-  // Upload to Supabase Storage
-  const { data, error } = await supabase.storage
+  // Upload to Supabase Storage (using admin client to bypass RLS)
+  const { data, error } = await supabaseAdmin.storage
     .from(VIDEO_BUCKET_NAME)
     .upload(fileName, file, {
       cacheControl: '3600',
@@ -249,7 +261,7 @@ export async function uploadVideo(
   // Get public URL
   const {
     data: { publicUrl },
-  } = supabase.storage.from(VIDEO_BUCKET_NAME).getPublicUrl(data.path)
+  } = supabaseAdmin.storage.from(VIDEO_BUCKET_NAME).getPublicUrl(data.path)
 
   return {
     url: publicUrl,
@@ -272,7 +284,7 @@ export async function uploadVideo(
  * ```
  */
 export async function deleteVideo(filePath: string): Promise<void> {
-  const { error } = await supabase.storage.from(VIDEO_BUCKET_NAME).remove([filePath])
+  const { error } = await supabaseAdmin.storage.from(VIDEO_BUCKET_NAME).remove([filePath])
 
   if (error) {
     console.error('Supabase video delete error:', error)
@@ -297,6 +309,79 @@ export function getVideoPathFromUrl(url: string): string | null {
   try {
     const urlObj = new URL(url)
     const pathMatch = urlObj.pathname.match(/\/storage\/v1\/object\/public\/videos\/(.+)/)
+    return pathMatch && pathMatch[1] ? pathMatch[1] : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Upload a cover image to Supabase Storage
+ */
+export async function uploadCoverImage(
+  file: File,
+  userId: string,
+  profileId: string
+): Promise<{ url: string; path: string }> {
+  // Validate file size
+  if (file.size > MAX_COVER_SIZE) {
+    throw new Error(
+      `L'image est trop volumineuse. Taille maximum : ${MAX_COVER_SIZE / 1024 / 1024}MB`
+    )
+  }
+
+  // Validate file type
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    throw new Error('Type de fichier non autorisé. Utilisez une image JPG, PNG ou WebP')
+  }
+
+  // Generate unique file path
+  const fileExtension = file.name.split('.').pop()
+  const fileName = `${userId}/${profileId}-cover-${Date.now()}.${fileExtension}`
+
+  // Upload to Supabase Storage (using admin client to bypass RLS)
+  const { data, error } = await supabaseAdmin.storage
+    .from(COVER_BUCKET_NAME)
+    .upload(fileName, file, {
+      cacheControl: '3600',
+      upsert: false,
+    })
+
+  if (error) {
+    console.error('Supabase cover upload error:', error)
+    throw new Error('Erreur lors du téléchargement de l\'image de couverture')
+  }
+
+  // Get public URL
+  const {
+    data: { publicUrl },
+  } = supabaseAdmin.storage.from(COVER_BUCKET_NAME).getPublicUrl(data.path)
+
+  return {
+    url: publicUrl,
+    path: data.path,
+  }
+}
+
+/**
+ * Delete a cover image from Supabase Storage
+ */
+export async function deleteCoverImage(filePath: string): Promise<void> {
+  const { error } = await supabaseAdmin.storage.from(COVER_BUCKET_NAME).remove([filePath])
+
+  if (error) {
+    console.error('Supabase cover delete error:', error)
+    throw new Error('Erreur lors de la suppression de l\'image de couverture')
+  }
+}
+
+/**
+ * Get the cover image file path from a public URL
+ */
+export function getCoverImagePathFromUrl(url: string): string | null {
+  try {
+    const urlObj = new URL(url)
+    const pathMatch = urlObj.pathname.match(/\/storage\/v1\/object\/public\/covers\/(.+)/)
     return pathMatch && pathMatch[1] ? pathMatch[1] : null
   } catch {
     return null
