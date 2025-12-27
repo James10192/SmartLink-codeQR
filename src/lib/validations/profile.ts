@@ -1,6 +1,12 @@
 import { z } from 'zod'
 
 export const ProfileSchema = z.object({
+  label: z
+    .string()
+    .min(2, 'Le nom du profil doit contenir au moins 2 caractères')
+    .max(50, 'Le nom du profil ne peut pas dépasser 50 caractères')
+    .default('Mon Profil'),
+
   fullName: z
     .string()
     .min(2, 'Le nom doit contenir au moins 2 caractères')

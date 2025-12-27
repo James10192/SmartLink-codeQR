@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -31,7 +31,10 @@ import { Video } from 'lucide-react'
 import { SubscriptionPlan } from '@prisma/client'
 import Link from 'next/link'
 
-export default function EditProfilePage({ params }: { params: { id: string } }) {
+export default function EditProfilePage({ params }: { params: Promise<{ id: string }> }) {
+  // Unwrap params Promise (Next.js 16+)
+  const { id: profileId } = use(params)
+
   const router = useRouter()
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(true)
@@ -43,6 +46,7 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
   const form = useForm({
     resolver: zodResolver(ProfileUpdateSchema),
     defaultValues: {
+      label: '',
       fullName: '',
       email: '',
       phoneNumber: '',
@@ -61,8 +65,9 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
   useEffect(() => {
     async function loadProfile() {
       try {
-        const profile = await getProfileById(params.id)
+        const profile = await getProfileById(profileId)
         form.reset({
+          label: profile.label || '',
           fullName: profile.fullName,
           email: profile.email,
           phoneNumber: profile.phoneNumber,
@@ -88,19 +93,19 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
     }
 
     loadProfile()
-  }, [params.id, form])
+  }, [profileId, form])
 
   async function onSubmit(data: any) {
     setError('')
 
     try {
       const result = await updateProfileAction({
-        profileId: params.id,
+        profileId: profileId,
         data: data as Partial<ProfileInput>,
       })
 
       if (result?.data?.success) {
-        router.push('/dashboard')
+        router.push(`/profile/${profileId}/preview`)
         router.refresh()
       } else {
         setError(result?.serverError || 'Une erreur est survenue')
@@ -137,16 +142,16 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Modifier le profil</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Modifier le profil</h1>
         <p className="mt-2 text-muted-foreground">
           Mettez à jour les informations de votre profil SmartLink
         </p>
       </div>
 
       <div className="mx-auto max-w-2xl">
-        <Card>
+        <Card className="border-border bg-card">
           <CardHeader>
-            <CardTitle>Informations du profil</CardTitle>
+            <CardTitle className="text-foreground">Informations du profil</CardTitle>
             <CardDescription>
               Les champs marqués d'un astérisque (*) sont obligatoires
             </CardDescription>
@@ -164,6 +169,23 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
                 {/* Section Informations de base */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">Informations de base</h3>
+
+                  <FormField
+                    control={form.control}
+                    name="label"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nom du profil *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Ex: Professionnel, Artistique, Personnel..." {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          Ce nom vous aide à organiser vos profils
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   <FormField
                     control={form.control}
@@ -376,7 +398,7 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
                     </p>
                   </div>
                   <AvatarUpload
-                    profileId={params.id}
+                    profileId={profileId}
                     currentAvatarUrl={avatarUrl}
                     onUploadSuccess={(url) => setAvatarUrl(url)}
                     onDeleteSuccess={() => setAvatarUrl(null)}
@@ -393,7 +415,7 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
                     </p>
                   </div>
                   <CVUpload
-                    profileId={params.id}
+                    profileId={profileId}
                     currentCvUrl={cvUrl}
                     onUploadSuccess={(url) => setCvUrl(url)}
                     onDeleteSuccess={() => setCvUrl(null)}
@@ -431,7 +453,7 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
                           </p>
                         </div>
                         <div className="relative z-20">
-                          <Button asChild>
+                          <Button asChild className="cursor-pointer bg-primary hover:bg-primary/90">
                             <Link href="/dashboard/upgrade">
                               Passer au PRO
                             </Link>
@@ -454,7 +476,7 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
                       </p>
                     </div>
                     <VideoUpload
-                      profileId={params.id}
+                      profileId={profileId}
                       currentVideoUrl={videoUrl}
                       onUploadSuccess={(url) => setVideoUrl(url)}
                       onDeleteSuccess={() => setVideoUrl(null)}
@@ -467,14 +489,14 @@ export default function EditProfilePage({ params }: { params: { id: string } }) 
                     type="button"
                     variant="outline"
                     asChild
-                    className="flex-1"
+                    className="flex-1 cursor-pointer border-border hover:bg-muted"
                   >
-                    <Link href="/dashboard">Annuler</Link>
+                    <Link href={`/profile/${profileId}/preview`}>Annuler</Link>
                   </Button>
                   <Button
                     type="submit"
                     disabled={form.formState.isSubmitting}
-                    className="flex-1"
+                    className="flex-1 cursor-pointer bg-primary hover:bg-primary/90 text-primary-foreground"
                   >
                     {form.formState.isSubmitting ? (
                       <>
