@@ -24,6 +24,7 @@ import { getPublicProfileTheme } from '@/lib/actions/theme'
 import { generateThemeVars } from '@/lib/utils/theme'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { VisitorCaptureModal } from '@/components/profile/visitor-capture-modal'
 import Link from 'next/link'
 import Image from 'next/image'
 import { format } from 'date-fns'
@@ -590,40 +591,17 @@ export default async function PublicProfilePage({
                 </Button>
               </div>
 
-              {/* Quick Stats */}
-              <div className="rounded-xl border bg-card p-6 shadow-sm">
-                <h3 className="font-semibold text-foreground mb-4">
-                  Statistiques
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Eye className="h-4 w-4" />
-                      <span className="text-sm">Vues du profil</span>
-                    </div>
-                    <span className="font-semibold text-primary">
-                      {profile.viewsCount}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Download className="h-4 w-4" />
-                      <span className="text-sm">CV téléchargés</span>
-                    </div>
-                    <span className="font-semibold text-primary">
-                      {profile.cvDownloads}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Users className="h-4 w-4" />
-                      <span className="text-sm">Contacts sauvés</span>
-                    </div>
-                    <span className="font-semibold text-primary">
-                      {profile.contactSaves}
-                    </span>
-                  </div>
+              {/* Profile Views */}
+              <div className="rounded-xl border bg-gradient-to-br from-primary/5 to-primary/10 p-6 shadow-sm text-center">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Eye className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Vues du profil
+                  </span>
                 </div>
+                <p className="text-4xl font-bold text-primary">
+                  {profile.viewsCount.toLocaleString()}
+                </p>
               </div>
 
               {/* SmartLink Branding */}
@@ -655,6 +633,12 @@ export default async function PublicProfilePage({
           </div>
         </div>
       </div>
+
+      {/* Visitor Capture Modal (QR scan) */}
+      <VisitorCaptureModal
+        profileId={profile.id}
+        profileOwnerName={profile.fullName}
+      />
     </div>
   )
 }

@@ -240,10 +240,20 @@ export async function getPublicProfile(slug: string) {
   })
 
   if (profile) {
-    await prisma.profile.update({
-      where: { id: profile.id },
-      data: { viewsCount: { increment: 1 } },
+    // Check if visitor is the profile owner
+    const session = await auth.api.getSession({
+      headers: await headers(),
     })
+
+    const isOwner = session?.user?.id === profile.userId
+
+    // Only increment view count for external visitors (not the owner)
+    if (!isOwner) {
+      await prisma.profile.update({
+        where: { id: profile.id },
+        data: { viewsCount: { increment: 1 } },
+      })
+    }
 
     // Track visitor (PRO+ feature - anonymous)
     // Pass userId to prevent owner from being tracked as visitor
@@ -314,6 +324,12 @@ export async function trackProfileVisit(profileId: string, profileOwnerId: strin
         userAgentHash,
         referrer,
       },
+    })
+
+    // Increment unique visitors count (Option B: visitors uniques)
+    await prisma.profile.update({
+      where: { id: profileId },
+      data: { uniqueVisitors: { increment: 1 } },
     })
   } catch (error) {
     // Silent fail - don't break page load if tracking fails

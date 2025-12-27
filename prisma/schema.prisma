@@ -128,7 +128,8 @@ model Profile {
   showCV        Boolean   @default(true)
 
   // Analytics (compteurs en DB)
-  viewsCount    Int       @default(0)
+  viewsCount    Int       @default(0)  // Total page views (Option A)
+  uniqueVisitors Int      @default(0)  // Unique visitors per day (Option B)
   cvDownloads   Int       @default(0)
   contactSaves  Int       @default(0)  // Téléchargements vCard
 
@@ -276,6 +277,10 @@ model ProfileVisitor {
   // Technical metadata (hashed, not personal)
   ipHash        String?   // SHA256 hash of IP (not the actual IP)
   userAgentHash String?   // Hashed to detect unique visitors
+
+  // Visitor identification (optional, self-provided)
+  visitorName   String?   // Name provided by visitor (QR scan modal)
+  visitorContact String?  // Email or phone provided by visitor
 
   // Event tracking
   visitedAt     DateTime  @default(now())
