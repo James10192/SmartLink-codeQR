@@ -3,8 +3,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import Link from 'next/link'
-import { MapPin, Clock, ExternalLink } from 'lucide-react'
+import { MapPin, Clock, ExternalLink, User, Mail, Phone } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
@@ -16,6 +17,8 @@ interface Visitor {
   countryCode: string | null
   visitedAt: Date
   referrer: string | null
+  visitorName: string | null
+  visitorContact: string | null
 }
 
 interface VisitorListProps {
@@ -57,46 +60,90 @@ export function VisitorList({ visitors, isPro, profileName }: VisitorListProps) 
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between text-base">
-          <span>
-            Visiteurs récents <span className="text-muted-foreground">({visitors.length})</span>
-          </span>
-          {!isPro && <Badge variant="secondary">FREE: 3 derniers</Badge>}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
+    <div className="space-y-3 p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="font-semibold text-sm">
+          Visiteurs récents <span className="text-muted-foreground font-normal">({visitors.length})</span>
+        </h4>
+        {!isPro && <Badge variant="secondary">FREE: 3 derniers</Badge>}
+      </div>
         {/* Visitor cards */}
-        <div className="space-y-2">
+        <div className="space-y-3">
           {displayedVisitors.map((visitor, index) => {
-            const isBlurred = !isPro
+            // FREE users can see the first 3 visitors WITHOUT blur
+            const shouldBlur = false // Never blur for FREE users showing last 3
+
+            // Get initials for avatar
+            const initials = visitor.visitorName
+              ? visitor.visitorName
+                  .split(' ')
+                  .map((n) => n[0])
+                  .join('')
+                  .toUpperCase()
+                  .slice(0, 2)
+              : '?'
 
             return (
               <div
                 key={visitor.id}
-                className={cn(
-                  'flex items-start gap-3 rounded-lg border p-3 transition-all',
-                  isBlurred && 'blur-sm select-none'
-                )}
+                className="flex items-start gap-4 rounded-lg border bg-card p-4 hover:bg-accent/50 transition-colors"
               >
-                {/* Flag emoji */}
-                {visitor.countryCode && (
-                  <div className="flex-shrink-0 text-2xl" aria-label={visitor.country || 'Unknown'}>
-                    {getFlagEmoji(visitor.countryCode)}
-                  </div>
-                )}
+                {/* Avatar with flag or initials */}
+                <Avatar className="h-12 w-12 border-2">
+                  <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                    {visitor.countryCode ? getFlagEmoji(visitor.countryCode) : initials}
+                  </AvatarFallback>
+                </Avatar>
 
-                {/* Location and time */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                    <p className="font-medium text-sm truncate">
+                {/* Visitor info */}
+                <div className="flex-1 min-w-0 space-y-2">
+                  {/* Name or Anonymous */}
+                  <div className="flex items-center gap-2">
+                    {visitor.visitorName ? (
+                      <>
+                        <User className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        <p className="font-semibold text-sm truncate">{visitor.visitorName}</p>
+                      </>
+                    ) : (
+                      <>
+                        <User className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        <p className="font-medium text-sm text-muted-foreground italic">Visiteur anonyme</p>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Contact info (if provided) */}
+                  {visitor.visitorContact && (
+                    <div className="flex items-center gap-2 text-xs">
+                      {visitor.visitorContact.includes('@') ? (
+                        <Mail className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                      ) : (
+                        <Phone className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                      )}
+                      <a
+                        href={
+                          visitor.visitorContact.includes('@')
+                            ? `mailto:${visitor.visitorContact}`
+                            : `tel:${visitor.visitorContact}`
+                        }
+                        className="text-primary hover:underline truncate"
+                      >
+                        {visitor.visitorContact}
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Location */}
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <MapPin className="h-3 w-3 flex-shrink-0" />
+                    <span className="truncate">
                       {visitor.city && visitor.country
                         ? `${visitor.city}, ${visitor.country}`
                         : visitor.country || 'Lieu inconnu'}
-                    </p>
+                    </span>
                   </div>
+
+                  {/* Time */}
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Clock className="h-3 w-3 flex-shrink-0" />
                     <span>
@@ -106,12 +153,12 @@ export function VisitorList({ visitors, isPro, profileName }: VisitorListProps) 
                       })}
                     </span>
                   </div>
+
+                  {/* Referrer (PRO only) */}
                   {visitor.referrer && isPro && (
-                    <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <ExternalLink className="h-3 w-3 flex-shrink-0" />
-                      <span className="truncate">
-                        depuis {new URL(visitor.referrer).hostname}
-                      </span>
+                      <span className="truncate">depuis {new URL(visitor.referrer).hostname}</span>
                     </div>
                   )}
                 </div>
@@ -146,8 +193,7 @@ export function VisitorList({ visitors, isPro, profileName }: VisitorListProps) 
             </Button>
           </div>
         )}
-      </CardContent>
-    </Card>
+    </div>
   )
 }
 

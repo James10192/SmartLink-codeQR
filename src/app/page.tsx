@@ -15,7 +15,14 @@ import { GlowingEffect } from '@/components/ui/glowing-effect'
 
 const PricingCanvasCards = dynamic(
   () => import('@/components/ui/pricing-canvas-cards'),
-  { ssr: false }
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center min-h-[30rem]">
+        <div className="text-white text-lg">Chargement...</div>
+      </div>
+    )
+  }
 )
 import CardComparisonTabs from '@/components/ui/card-comparison-tabs'
 import { ContactCard } from '@/components/ui/contact-card'

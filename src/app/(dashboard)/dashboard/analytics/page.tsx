@@ -5,8 +5,9 @@ import { VisitorList } from '@/components/analytics/visitor-list'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { Eye, Download, Users, TrendingUp, Lock } from 'lucide-react'
+import { Eye, Download, Users, TrendingUp, Lock, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
 
 export default async function AnalyticsPage() {
   const session = await requireAuth()
@@ -137,11 +138,19 @@ export default async function AnalyticsPage() {
 
       {/* Visitors per profile */}
       <div className="space-y-6">
-        <h2 className="text-2xl font-bold">Visiteurs par profil</h2>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold">Visiteurs par profil</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Consultez qui a visité chacun de vos profils
+            </p>
+          </div>
+        </div>
 
         {user.profiles.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
+              <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
               <p className="text-muted-foreground mb-4">Vous n'avez pas encore de profil</p>
               <Button asChild>
                 <Link href="/profile/create">Créer mon premier profil</Link>
@@ -149,27 +158,44 @@ export default async function AnalyticsPage() {
             </CardContent>
           </Card>
         ) : (
-          user.profiles.map((profile) => (
-            <div key={profile.id}>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-semibold">{profile.fullName}</h3>
-                <Button variant="outline" size="sm" asChild>
-                  <Link href={`/u/${profile.slug}`} target="_blank">
-                    Voir le profil
-                  </Link>
-                </Button>
-              </div>
-
-              <VisitorList
-                visitors={profile.visitors.map((v) => ({
-                  ...v,
-                  visitedAt: new Date(v.visitedAt),
-                }))}
-                isPro={isPro}
-                profileName={profile.fullName}
-              />
-            </div>
-          ))
+          <div className="grid gap-6">
+            {user.profiles.map((profile) => (
+              <Card key={profile.id} className="overflow-hidden">
+                <CardHeader className="bg-muted/30 border-b">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <CardTitle className="text-xl">{profile.fullName}</CardTitle>
+                      <p className="text-sm text-muted-foreground">
+                        {profile.jobTitle || 'Professionnel'}
+                        {profile.company && ` · ${profile.company}`}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="font-mono">
+                        {profile.visitors.length} visite{profile.visitors.length > 1 ? 's' : ''}
+                      </Badge>
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href={`/u/${profile.slug}`} target="_blank">
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          Voir
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <VisitorList
+                    visitors={profile.visitors.map((v) => ({
+                      ...v,
+                      visitedAt: new Date(v.visitedAt),
+                    }))}
+                    isPro={isPro}
+                    profileName={profile.fullName}
+                  />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         )}
       </div>
 
