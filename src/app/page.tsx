@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator'
 import { HeroGeometric } from '@/components/ui/shape-landing-hero'
 import { BentoGrid, type BentoItem } from '@/components/ui/bento-grid'
 import { PricingCard, type PricingCardProps } from '@/components/ui/animated-glassy-pricing'
+import PricingCanvasReveal from '@/components/ui/pricing-canvas-reveal'
 import { GlowingEffect } from '@/components/ui/glowing-effect'
 import CardComparisonTabs from '@/components/ui/card-comparison-tabs'
 import { ContactCard } from '@/components/ui/contact-card'
@@ -124,6 +125,49 @@ export default function Home() {
     }
   ]
 
+  const pricingCanvasPlans = [
+    {
+      planName: "Freemium",
+      description: "Pour tester SmartLink",
+      price: "0 FCFA",
+      features: [
+        "1 profil",
+        "QR Code basique",
+        "vCard download",
+        "CV téléchargeable"
+      ],
+      colors: [[125, 211, 252], [96, 165, 250]], // cyan to blue
+      onButtonClick: () => setActivePricingDialog('freemium')
+    },
+    {
+      planName: "Pro Digital",
+      description: "Pour les professionnels",
+      price: "1 000 FCFA",
+      features: [
+        "3 profils",
+        "QR Code personnalisable",
+        "Analytics avancés",
+        "Support prioritaire"
+      ],
+      colors: [[59, 130, 246], [139, 92, 246]], // blue to purple
+      onButtonClick: () => setActivePricingDialog('prodigital'),
+      isPopular: true
+    },
+    {
+      planName: "Pack Starter",
+      description: "Digital + Physique",
+      price: "15 000 FCFA",
+      features: [
+        "Tout de Pro Digital",
+        "50 cartes papier QR",
+        "Design professionnel",
+        "Livraison incluse"
+      ],
+      colors: [[236, 72, 153], [168, 85, 247]], // pink to purple
+      onButtonClick: () => setActivePricingDialog('packstarter')
+    }
+  ]
+
   return (
     <div className="min-h-screen">
       {/* Hero Section with Geometric Shapes */}
@@ -218,23 +262,18 @@ export default function Home() {
 
       {/* Pricing Section */}
       <section className="py-16 sm:py-24 bg-[#030303] relative overflow-hidden">
-        {/* Subtle gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-blue-500/5" />
-
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center mb-14">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
               Tarifs simples et transparents
             </h2>
             <p className="text-lg text-white/70 max-w-2xl mx-auto">
-              Choisissez le plan qui correspond à vos besoins. Pas de frais cachés.
+              Passez la souris pour découvrir les détails de chaque plan
             </p>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-8 md:gap-6 justify-center items-stretch w-full max-w-6xl mx-auto">
-            {pricingPlans.map((plan) => (
-              <PricingCard key={plan.planName} {...plan} />
-            ))}
+          <div className="max-w-7xl mx-auto">
+            <PricingCanvasReveal plans={pricingCanvasPlans} />
           </div>
         </div>
       </section>
