@@ -3,13 +3,11 @@
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AlertCircle, Loader2 } from 'lucide-react'
-import { ProfileSchema, type ProfileInput } from '@/lib/validations/profile'
+import { AlertCircle, Loader2, Sparkles, Info } from 'lucide-react'
+import { z } from 'zod'
 import { createProfileAction } from '@/lib/actions/profile'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Switch } from '@/components/ui/switch'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
@@ -24,36 +22,69 @@ import {
 import Link from 'next/link'
 import { useState } from 'react'
 
+// Schéma minimal pour la création (le reste sera ajouté dans la preview)
+const MinimalProfileSchema = z.object({
+  label: z
+    .string()
+    .min(2, 'Le nom du profil doit contenir au moins 2 caractères')
+    .max(50, 'Le nom du profil ne peut pas dépasser 50 caractères'),
+  fullName: z
+    .string()
+    .min(2, 'Le nom doit contenir au moins 2 caractères')
+    .max(100, 'Le nom ne peut pas dépasser 100 caractères'),
+  email: z.string().email('Email invalide'),
+  phoneNumber: z
+    .string()
+    .regex(
+      /^\+[1-9]\d{1,14}$/,
+      'Format E.164 requis (ex: +2250708413484)'
+    ),
+})
+
+type MinimalProfileInput = z.infer<typeof MinimalProfileSchema>
+
 export default function CreateProfilePage() {
   const router = useRouter()
   const [error, setError] = useState('')
 
   const form = useForm({
-    resolver: zodResolver(ProfileSchema),
+    resolver: zodResolver(MinimalProfileSchema),
     defaultValues: {
+      label: '',
       fullName: '',
       email: '',
       phoneNumber: '',
-      jobTitle: '',
-      company: '',
-      website: '',
-      linkedinUrl: '',
-      twitterUrl: '',
-      facebookUrl: '',
-      whatsappNumber: '',
-      isPublic: true,
-      showCV: true,
     },
   })
 
-  async function onSubmit(data: any) {
+  async function onSubmit(data: MinimalProfileInput) {
     setError('')
 
     try {
-      const result = await createProfileAction(data as ProfileInput)
+      // Add default values for optional fields
+      const profileData = {
+        ...data,
+        jobTitle: '',
+        company: '',
+        website: '',
+        linkedinUrl: '',
+        twitterUrl: '',
+        facebookUrl: '',
+        whatsappNumber: '',
+        isPublic: true,
+        showCV: true,
+      }
+
+      const result = await createProfileAction(profileData as any)
 
       if (result?.data?.success) {
-        router.push('/dashboard')
+        // Redirect to preview page instead of dashboard
+        const profileId = result.data.profile?.id
+        if (profileId) {
+          router.push(`/profile/${profileId}/preview`)
+        } else {
+          router.push('/dashboard/profiles')
+        }
         router.refresh()
       } else {
         setError(result?.serverError || 'Une erreur est survenue')
@@ -64,265 +95,171 @@ export default function CreateProfilePage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Créer un profil</h1>
-        <p className="mt-2 text-muted-foreground">
-          Remplissez les informations pour créer votre nouveau profil SmartLink
+    <div className="container mx-auto px-4 py-8 max-w-3xl">
+      <div className="mb-8 text-center">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+          <Sparkles className="h-8 w-8 text-primary" />
+        </div>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          Créer un nouveau profil
+        </h1>
+        <p className="mt-2 text-base text-muted-foreground max-w-xl mx-auto">
+          Commencez avec les informations essentielles. Vous pourrez ajouter le reste (expériences, compétences, CV) dans l'étape suivante.
         </p>
       </div>
 
-      <div className="mx-auto max-w-2xl">
-        <Card>
-          <CardHeader>
-            <CardTitle>Informations du profil</CardTitle>
-            <CardDescription>
-              Les champs marqués d'un astérisque (*) sont obligatoires
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                {error && (
-                  <Alert variant="destructive">
-                    <AlertCircle />
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
+      <Card className="border-border bg-card shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-foreground">Informations de base</CardTitle>
+          <CardDescription>
+            Seulement 4 champs requis pour commencer
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
 
-                {/* Section Informations de base */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Informations de base</h3>
+              <Alert className="bg-primary/5 border-primary/20">
+                <Info className="h-4 w-4 text-primary" />
+                <AlertDescription className="text-foreground/80">
+                  <strong className="text-primary">Astuce :</strong> Le nom du profil vous aide à différencier vos profils (ex: "Professionnel", "Artistique", "Freelance").
+                </AlertDescription>
+              </Alert>
 
-                  <FormField
-                    control={form.control}
-                    name="fullName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nom complet *</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Jean Kouassi" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <div className="space-y-5">
+                <FormField
+                  control={form.control}
+                  name="label"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-foreground font-semibold">
+                        Nom du profil *
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Ex: Professionnel, Artistique, Personnel..."
+                          className="border-border bg-background"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription className="text-muted-foreground">
+                        Ce nom vous aide à organiser vos profils
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <FormField
-                    control={form.control}
-                    name="jobTitle"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Poste</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Développeur Full-Stack" {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <FormField
+                  control={form.control}
+                  name="fullName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-foreground font-semibold">
+                        Votre nom complet *
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Jean Kouassi"
+                          className="border-border bg-background"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription className="text-muted-foreground">
+                        Nom qui apparaîtra sur votre profil public
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <FormField
-                    control={form.control}
-                    name="company"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Entreprise</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Mon Entreprise SARL" {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-foreground font-semibold">
+                        Email professionnel *
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="jean@example.com"
+                          className="border-border bg-background"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                {/* Section Contact */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Coordonnées</h3>
+                <FormField
+                  control={form.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-foreground font-semibold">
+                        Numéro de téléphone *
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="+2250708413484"
+                          className="border-border bg-background"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription className="text-muted-foreground">
+                        Format international (commencez par +)
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email *</FormLabel>
-                        <FormControl>
-                          <Input type="email" placeholder="jean@example.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <div className="flex gap-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  asChild
+                  className="flex-1 cursor-pointer border-border hover:bg-muted"
+                >
+                  <Link href="/dashboard/profiles">Annuler</Link>
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={form.formState.isSubmitting}
+                  className="flex-1 cursor-pointer bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                >
+                  {form.formState.isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Création...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      Continuer vers la personnalisation
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
 
-                  <FormField
-                    control={form.control}
-                    name="phoneNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Téléphone *</FormLabel>
-                        <FormControl>
-                          <Input placeholder="+2250708413484" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Format E.164 requis (ex: +2250708413484)
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="whatsappNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>WhatsApp</FormLabel>
-                        <FormControl>
-                          <Input placeholder="+2250708413484" {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="website"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Site web</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://example.com" {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Section Réseaux sociaux */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Réseaux sociaux</h3>
-
-                  <FormField
-                    control={form.control}
-                    name="linkedinUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>LinkedIn</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://linkedin.com/in/username" {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="twitterUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Twitter / X</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://x.com/username" {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="facebookUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Facebook</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://facebook.com/username" {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Section Paramètres */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Paramètres</h3>
-
-                  <FormField
-                    control={form.control}
-                    name="isPublic"
-                    render={({ field }) => (
-                      <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-base">Profil public</FormLabel>
-                          <FormDescription>
-                            Rendre ce profil accessible via son lien unique
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="showCV"
-                    render={({ field }) => (
-                      <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-base">Afficher le CV</FormLabel>
-                          <FormDescription>
-                            Permettre le téléchargement du CV sur le profil public
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="flex gap-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    asChild
-                    className="flex-1"
-                  >
-                    <Link href="/dashboard">Annuler</Link>
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={form.formState.isSubmitting}
-                    className="flex-1"
-                  >
-                    {form.formState.isSubmitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Création...
-                      </>
-                    ) : (
-                      'Créer le profil'
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+      <div className="mt-6 rounded-lg bg-muted/50 border border-border p-4 text-center">
+        <p className="text-sm text-muted-foreground">
+          <strong className="text-foreground">Prochaine étape :</strong> Ajoutez vos expériences, compétences, CV et personnalisez votre profil
+        </p>
       </div>
     </div>
   )

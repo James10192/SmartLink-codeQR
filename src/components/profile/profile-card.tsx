@@ -11,12 +11,13 @@ import { Separator } from '@/components/ui/separator'
 import { QRCodeDialog } from '@/components/profile/qr-code-dialog'
 import { deleteProfileAction } from '@/lib/actions/profile'
 import { useRouter } from 'next/navigation'
-import { Eye, Download, UserPlus, ExternalLink, Pencil, Trash2 } from 'lucide-react'
+import { Eye, Download, UserPlus, ExternalLink, Pencil, Trash2, QrCode } from 'lucide-react'
 
 interface ProfileCardProps {
   profile: {
     id: string
     slug: string
+    label: string
     fullName: string
     jobTitle: string | null
     company: string | null
@@ -58,61 +59,83 @@ export function ProfileCard({ profile }: ProfileCardProps) {
     .slice(0, 2)
 
   return (
-    <Card className="hover:shadow-lg transition-shadow">
-      <CardHeader className="pb-3">
+    <Card className="group overflow-hidden border-border bg-card transition-all hover:shadow-lg hover:border-primary/20">
+      {/* Header with Avatar */}
+      <CardHeader className="pb-4">
         <div className="flex items-start gap-4">
-          <Avatar className="h-14 w-14">
+          <Avatar className="h-16 w-16 ring-2 ring-primary/10 ring-offset-2 ring-offset-background">
             <AvatarImage src={profile.avatarUrl || undefined} alt={profile.fullName} />
-            <AvatarFallback className="bg-primary text-primary-foreground">
+            <AvatarFallback className="bg-primary text-primary-foreground text-lg font-semibold">
               {initials}
             </AvatarFallback>
           </Avatar>
-          <div className="flex-1 space-y-1">
-            <CardTitle className="text-lg">{profile.fullName}</CardTitle>
-            <CardDescription>
-              {profile.jobTitle && <div>{profile.jobTitle}</div>}
-              {profile.company && <div className="text-xs">{profile.company}</div>}
+          <div className="flex-1 min-w-0 space-y-1">
+            <CardTitle className="text-xl font-bold text-foreground break-words hyphens-auto">
+              {profile.label}
+            </CardTitle>
+            <CardDescription className="space-y-0.5">
+              <div className="text-sm font-medium text-foreground/80 break-words">
+                {profile.fullName}
+              </div>
+              {profile.jobTitle && (
+                <div className="text-xs text-muted-foreground truncate">
+                  {profile.jobTitle}
+                  {profile.company && ` · ${profile.company}`}
+                </div>
+              )}
             </CardDescription>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-3 gap-4 text-center">
-          <div>
-            <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1">
-              <Eye className="h-3 w-3" />
+      {/* Statistics */}
+      <CardContent className="space-y-4 pb-4">
+        <div className="grid grid-cols-3 gap-3">
+          <div className="rounded-lg bg-muted/50 p-3 text-center transition-colors hover:bg-muted">
+            <div className="flex items-center justify-center mb-1.5">
+              <Eye className="h-4 w-4 text-primary" />
             </div>
-            <div className="text-2xl font-bold">{profile.viewsCount}</div>
-            <div className="text-xs text-muted-foreground">Vues</div>
+            <div className="text-2xl font-bold text-foreground">{profile.viewsCount}</div>
+            <div className="text-xs font-medium text-muted-foreground">Vues</div>
           </div>
-          <div>
-            <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1">
-              <UserPlus className="h-3 w-3" />
+          <div className="rounded-lg bg-muted/50 p-3 text-center transition-colors hover:bg-muted">
+            <div className="flex items-center justify-center mb-1.5">
+              <UserPlus className="h-4 w-4 text-primary" />
             </div>
-            <div className="text-2xl font-bold">{profile.contactSaves}</div>
-            <div className="text-xs text-muted-foreground">Contacts</div>
+            <div className="text-2xl font-bold text-foreground">{profile.contactSaves}</div>
+            <div className="text-xs font-medium text-muted-foreground">Contacts</div>
           </div>
-          <div>
-            <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1">
-              <Download className="h-3 w-3" />
+          <div className="rounded-lg bg-muted/50 p-3 text-center transition-colors hover:bg-muted">
+            <div className="flex items-center justify-center mb-1.5">
+              <Download className="h-4 w-4 text-primary" />
             </div>
-            <div className="text-2xl font-bold">{profile.cvDownloads}</div>
-            <div className="text-xs text-muted-foreground">CV</div>
+            <div className="text-2xl font-bold text-foreground">{profile.cvDownloads}</div>
+            <div className="text-xs font-medium text-muted-foreground">CV</div>
           </div>
         </div>
 
-        <Separator />
+        <Separator className="bg-border" />
 
+        {/* Action Buttons */}
         <div className="space-y-2">
           <div className="grid grid-cols-2 gap-2">
-            <Button variant="outline" size="sm" asChild>
-              <Link href={`/u/${profile.slug}`} target="_blank">
-                <ExternalLink className="h-4 w-4 mr-2" />
+            <Button
+              variant="default"
+              size="sm"
+              className="cursor-pointer bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
+              asChild
+            >
+              <Link href={`/profile/${profile.id}/preview`}>
+                <Eye className="h-4 w-4 mr-2" />
                 Voir
               </Link>
             </Button>
-            <Button variant="outline" size="sm" asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="cursor-pointer border-primary/20 text-foreground hover:bg-primary/10 hover:text-primary hover:border-primary font-medium"
+              asChild
+            >
               <Link href={`/profile/${profile.id}/edit`}>
                 <Pencil className="h-4 w-4 mr-2" />
                 Modifier
@@ -124,17 +147,23 @@ export function ProfileCard({ profile }: ProfileCardProps) {
         </div>
       </CardContent>
 
-      <CardFooter className="pt-0">
+      {/* Delete Section */}
+      <CardFooter className="pt-0 pb-4">
         {showDeleteConfirm ? (
-          <div className="w-full space-y-2 rounded-md border border-destructive bg-destructive/10 p-3">
-            <p className="text-sm text-destructive font-medium">Confirmer la suppression ?</p>
+          <div className="w-full space-y-2.5 rounded-lg border border-destructive/50 bg-destructive/5 p-3">
+            <p className="text-sm text-destructive font-semibold">
+              Confirmer la suppression ?
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Cette action est irréversible.
+            </p>
             <div className="flex gap-2">
               <Button
                 variant="destructive"
                 size="sm"
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="flex-1"
+                className="flex-1 cursor-pointer font-medium"
               >
                 {isDeleting ? 'Suppression...' : 'Oui, supprimer'}
               </Button>
@@ -143,7 +172,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
                 size="sm"
                 onClick={() => setShowDeleteConfirm(false)}
                 disabled={isDeleting}
-                className="flex-1"
+                className="flex-1 cursor-pointer font-medium"
               >
                 Annuler
               </Button>
@@ -154,10 +183,10 @@ export function ProfileCard({ profile }: ProfileCardProps) {
             variant="ghost"
             size="sm"
             onClick={() => setShowDeleteConfirm(true)}
-            className="w-full text-destructive hover:text-destructive"
+            className="w-full cursor-pointer text-destructive hover:text-destructive hover:bg-destructive/10 font-medium"
           >
             <Trash2 className="h-4 w-4 mr-2" />
-            Supprimer
+            Supprimer le profil
           </Button>
         )}
       </CardFooter>
