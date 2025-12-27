@@ -32,6 +32,7 @@ import { Mail, Phone } from 'lucide-react'
 import { PricingDialog } from '@/components/pricing-dialogs'
 import { AuthModal } from '@/components/auth/auth-modal'
 import FeaturesSectionDemo from '@/components/ui/features-section-demo-2'
+import { DotPattern } from '@/components/ui/dot-pattern'
 import {
   Smartphone,
   QrCode,
@@ -190,7 +191,10 @@ export default function Home() {
   ]
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative bg-background">
+      {/* Global Dot Pattern Background */}
+      <DotPattern className="opacity-30" />
+
       {/* Hero Section with Geometric Shapes */}
       <HeroGeometric
         badge="SmartLink"
@@ -203,11 +207,11 @@ export default function Home() {
       />
 
       {/* Bento Grid Features */}
-      <section className="py-16 sm:py-24 bg-[#030303]">
+      <section className="py-16 sm:py-24 relative">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center mb-12">
-            <h2 className="mb-4 text-3xl font-bold text-white">Fonctionnalités Modernes</h2>
-            <p className="text-lg text-white/60">
+            <h2 className="mb-4 text-3xl font-bold text-foreground">Fonctionnalités Modernes</h2>
+            <p className="text-lg text-muted-foreground">
               Tout ce dont vous avez besoin pour un networking professionnel efficace
             </p>
           </div>
@@ -216,14 +220,14 @@ export default function Home() {
       </section>
 
       {/* Card Comparison Section - Traditional vs SmartLink */}
-      <section className="border-t border-white/10 bg-[#0a0a0a] py-16 sm:py-24">
+      <section className="py-16 sm:py-24 relative">
         <div className="container mx-auto px-4">
           {/* Header */}
           <div className="mx-auto max-w-3xl text-center mb-12">
-            <h2 className="mb-4 text-3xl font-bold text-white">
+            <h2 className="mb-4 text-3xl font-bold text-foreground">
               La Révolution du Networking Professionnel
             </h2>
-            <p className="text-lg text-white/60">
+            <p className="text-lg text-muted-foreground">
               Swipez ou attendez pour découvrir comment SmartLink transforme votre carte de visite en un outil moderne et interactif.
             </p>
           </div>
@@ -233,7 +237,7 @@ export default function Home() {
 
           {/* Optional instruction text */}
           <div className="mx-auto max-w-3xl text-center mt-12">
-            <p className="text-sm text-white/50">
+            <p className="text-sm text-muted-foreground">
               Les onglets changent automatiquement toutes les 5 secondes. Vous pouvez aussi swiper ou cliquer pour comparer.
               Avec SmartLink, vos contacts scannent votre QR Code et enregistrent automatiquement votre profil.
             </p>
@@ -242,7 +246,7 @@ export default function Home() {
       </section>
 
       {/* Contact Section - REPLACES Problem Section */}
-      <section className="border-t border-white/10 bg-[#0a0a0a] py-16 sm:py-24">
+      <section className="py-16 sm:py-24 relative">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-5xl">
             <ContactCard
@@ -268,7 +272,7 @@ export default function Home() {
       </section>
 
       {/* Solution/Features Section */}
-      <section className="py-16 sm:py-24 bg-white dark:bg-[#030303]">
+      <section className="py-16 sm:py-24 relative">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center mb-12">
             <h2 className="mb-4 text-3xl font-bold text-foreground">La solution moderne et écologique</h2>
@@ -282,12 +286,12 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section className="border-t border-white/10 bg-[#0a0a0a] py-20">
+      <section className="py-20 relative">
         <div className="mx-auto max-w-7xl text-center px-4 mb-4">
           <div className="inline-block mb-4">
             <span className="text-primary text-sm font-semibold uppercase tracking-wide">Tarifs</span>
           </div>
-          <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
+          <h2 className="text-5xl md:text-6xl font-bold text-foreground mb-6 tracking-tight">
             Choisissez le plan qui vous convient
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -299,19 +303,19 @@ export default function Home() {
       </section>
 
       {/* Final CTA */}
-      <section className="border-t border-white/10 bg-[#0a0a0a] py-16 sm:py-24">
+      <section className="py-16 sm:py-24 relative">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center">
-            <Globe className="mx-auto mb-6 h-16 w-16 text-cyan-400" />
-            <h2 className="mb-4 text-3xl font-bold text-white">
+            <Globe className="mx-auto mb-6 h-16 w-16 text-primary" />
+            <h2 className="mb-4 text-3xl font-bold text-foreground">
               Rejoignez les professionnels modernes d'Abidjan
             </h2>
-            <p className="mb-8 text-lg text-white/60">
+            <p className="mb-8 text-lg text-muted-foreground">
               Créez votre profil gratuitement en moins de 2 minutes. Aucune carte bancaire requise.
             </p>
             <Button
               size="lg"
-              className="bg-white text-black hover:bg-white/90 cursor-pointer"
+              className="cursor-pointer"
               onClick={() => {
                 setAuthModalTab('signup')
                 setAuthModalOpen(true)
@@ -325,7 +329,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 bg-black py-12">
+      <footer className="py-12 relative">
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center gap-8">
             <div className="flex items-center gap-3">
@@ -336,25 +340,25 @@ export default function Home() {
                 height={40}
                 className="opacity-90"
               />
-              <span className="text-lg font-semibold text-white">SmartLink</span>
+              <span className="text-lg font-semibold text-foreground">SmartLink</span>
             </div>
             <div className="flex gap-6">
-              <Link href="#" className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer">
+              <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
                 À propos
               </Link>
-              <Link href="#" className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer">
+              <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
                 Confidentialité
               </Link>
-              <Link href="#" className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer">
+              <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
                 Conditions
               </Link>
               <ContactDialog trigger={
-                <button className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer">
+                <button className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
                   Contact
                 </button>
               } />
             </div>
-            <p className="text-sm text-white/60">
+            <p className="text-sm text-muted-foreground">
               © 2025 SmartLink. Tous droits réservés.
             </p>
           </div>
