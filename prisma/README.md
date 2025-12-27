@@ -274,12 +274,42 @@ bunx prisma migrate reset
 3. **Vérifier la migration** dans `prisma/migrations/`
 4. **Commit la migration** avec le schéma
 
+**Alternative rapide (prototypage):**
+```bash
+# Push directement sans créer de migration
+bunx prisma db push
+
+# Régénérer le client Prisma après changements
+bunx prisma generate
+```
+
 ### Workflow Production
 
 ```bash
 # Sur Vercel (automatique via build command)
 bunx prisma migrate deploy
 ```
+
+### Migrations Récentes
+
+#### Ajout de `coverImageUrl` (Décembre 2024)
+**Changement:** Ajout du champ `coverImageUrl` au modèle `Profile` pour supporter les photos de couverture.
+
+```prisma
+model Profile {
+  // ...
+  coverImageUrl String? // Photo de couverture sur Supabase Storage
+  // ...
+}
+```
+
+**Appliquer:**
+```bash
+bunx prisma db push
+bunx prisma generate
+```
+
+**Note:** Nécessite également la création du bucket `covers` dans Supabase Storage.
 
 ---
 

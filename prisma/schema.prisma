@@ -1,6 +1,6 @@
 // SmartLink - Prisma Schema
 // Database: Supabase PostgreSQL
-// ORM: Prisma 7.2.0
+// ORM: Prisma 6.19.1
 
 generator client {
   provider = "prisma-client-js"
@@ -93,6 +93,9 @@ model Profile {
   userId        String
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // Profile identification
+  label         String    @default("Mon Profil")  // Ex: "Professionnel", "Artistique", "Personnel"
+
   // Slug pour URL publique (ex: /u/jean-kouassi)
   slug          String    @unique
 
@@ -107,6 +110,7 @@ model Profile {
 
   // Médias
   avatarUrl     String?
+  coverImageUrl String?   // URL de la photo de couverture sur Supabase Storage
   cvFileUrl     String?   // URL du PDF sur Supabase Storage
   videoUrl      String?   // URL to video in Supabase Storage (PRO+)
 
@@ -115,6 +119,9 @@ model Profile {
   twitterUrl    String?
   facebookUrl   String?
   whatsappNumber String?
+
+  // Nouveau : Bio / À propos
+  bio           String?   @db.Text
 
   // Paramètres
   isPublic      Boolean   @default(true)
@@ -128,6 +135,11 @@ model Profile {
   // Premium features relations
   theme         ProfileTheme?
   visitors      ProfileVisitor[]
+  experiences   Experience[]
+  skills        Skill[]
+  projects      Project[]       // PRO only
+  testimonials  Testimonial[]   // PRO only
+  posts         Post[]          // PRO only
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -297,4 +309,180 @@ enum AnalyticsEvent {
   CV_DOWNLOAD
   CONTACT_SAVE
   QR_GENERATED
+}
+
+// ==========================================
+// PROFILE ENRICHMENT (Experience, Skills, Projects, etc.)
+// ==========================================
+
+// Professional Experience
+model Experience {
+  id          String    @id @default(cuid())
+  profileId   String
+  profile     Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  position    String                    // Job title (ex: "Développeur Full-Stack")
+  company     String                    // Company name
+  location    String?                   // City/Country
+  description String?   @db.Text        // Job description
+
+  startDate   DateTime                  // Start date
+  endDate     DateTime?                 // End date (null if current position)
+  isCurrent   Boolean   @default(false) // Currently working here
+
+  employmentType EmploymentType @default(FULL_TIME)
+
+  // Order in profile (manual sorting)
+  order       Int       @default(0)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([profileId, order])
+  @@index([profileId, startDate])
+}
+
+enum EmploymentType {
+  FULL_TIME     // CDI
+  PART_TIME     // Temps partiel
+  CONTRACT      // CDD
+  INTERNSHIP    // Stage
+  FREELANCE     // Indépendant
+  APPRENTICE    // Alternance
+}
+
+// Skills & Competencies
+model Skill {
+  id          String      @id @default(cuid())
+  profileId   String
+  profile     Profile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  name        String                  // Skill name (ex: "React", "Marketing Digital")
+  level       SkillLevel  @default(INTERMEDIATE)
+  category    SkillCategory @default(TECHNICAL)
+
+  // Order in profile
+  order       Int         @default(0)
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([profileId, category])
+  @@index([profileId, order])
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum SkillCategory {
+  TECHNICAL     // Compétences techniques
+  SOFT_SKILLS   // Soft skills
+  LANGUAGES     // Langues
+  TOOLS         // Outils/Logiciels
+  OTHER         // Autres
+}
+
+// Projects / Portfolio (PRO+ only)
+model Project {
+  id          String    @id @default(cuid())
+  profileId   String
+  profile     Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  title       String                    // Project title
+  description String    @db.Text        // Project description
+  url         String?                   // Live project URL
+
+  // Gallery images (stored in Supabase Storage)
+  images      String[]  @default([])    // Array of image URLs
+
+  // Technologies used
+  technologies String[] @default([])    // Array of tech names (ex: ["React", "Node.js"])
+
+  // Dates
+  startDate   DateTime?
+  endDate     DateTime?
+
+  // Featured project (show first)
+  isFeatured  Boolean   @default(false)
+
+  // Order in profile
+  order       Int       @default(0)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([profileId, isFeatured])
+  @@index([profileId, order])
+}
+
+// Testimonials / Recommendations (PRO+ only)
+model Testimonial {
+  id          String    @id @default(cuid())
+  profileId   String
+  profile     Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  // Author info
+  authorName  String                    // Name of person giving testimonial
+  authorTitle String?                   // Job title
+  authorCompany String?                 // Company name
+  authorPhoto String?                   // Photo URL (optional)
+
+  // Testimonial content
+  content     String    @db.Text        // The actual testimonial
+  rating      Int?                      // Rating out of 5 (optional)
+
+  // Relationship with profile owner
+  relationship String?                  // Ex: "Client", "Collègue", "Manager"
+
+  // Dates
+  date        DateTime  @default(now()) // When testimonial was given
+
+  // Visibility
+  isPublished Boolean   @default(true)  // Can be hidden
+
+  // Order in profile
+  order       Int       @default(0)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([profileId, isPublished])
+  @@index([profileId, order])
+}
+
+// Posts / News / Updates (PRO+ only)
+model Post {
+  id          String    @id @default(cuid())
+  profileId   String
+  profile     Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  title       String                    // Post title
+  slug        String                    // URL slug (ex: "mon-nouveau-projet")
+  content     String    @db.Text        // Post content (can be rich text/markdown)
+  excerpt     String?                   // Short summary for preview
+
+  // Media
+  coverImage  String?                   // Cover image URL
+
+  // Organization
+  tags        String[]  @default([])    // Array of tags
+
+  // Publishing
+  isPublished Boolean   @default(false) // Draft vs published
+  publishedAt DateTime?                 // Publication date
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([profileId, slug])
+  @@index([profileId, isPublished])
+  @@index([profileId, publishedAt])
 }
