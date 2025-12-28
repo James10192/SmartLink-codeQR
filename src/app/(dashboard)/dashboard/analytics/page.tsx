@@ -15,6 +15,8 @@ export const metadata: Metadata = {
   description: 'Suivez les performances de vos profils',
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function AnalyticsPage() {
   const session = await requireAuth()
 

@@ -8,6 +8,8 @@ import { formatDistanceToNow } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AnalyticsPage() {
   const session = await requireAuth()
 

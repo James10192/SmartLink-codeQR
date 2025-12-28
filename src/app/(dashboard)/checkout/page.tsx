@@ -41,6 +41,8 @@ const PLANS = {
   },
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function CheckoutPage({ searchParams }: CheckoutPageProps) {
   const session = await requireAuth()
   const params = await searchParams

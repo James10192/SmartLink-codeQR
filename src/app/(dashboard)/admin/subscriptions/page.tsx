@@ -6,6 +6,8 @@ import { SubscriptionsTable } from './subscriptions-table'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Users, TrendingUp, Crown, Sparkles } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminSubscriptionsPage() {
   const session = await requireAuth()
 
