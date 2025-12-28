@@ -8,11 +8,19 @@ import { cache } from "react"
 /**
  * Get current session (Server Components)
  * Cached to avoid multiple calls in the same request
+ *
+ * WORKAROUND for Better-Auth v1.4.9 bug #7008:
+ * Using disableCookieCache:true to force DB fetch and refresh cookie
+ * This ensures session cookie is always up-to-date
+ * @see https://github.com/better-auth/better-auth/issues/7008
  */
 export const getSession = cache(async () => {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
+      query: {
+        disableCookieCache: true, // Workaround: Force DB fetch to refresh cookie
+      },
     })
 
     return session

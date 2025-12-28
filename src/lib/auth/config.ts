@@ -70,6 +70,20 @@ export const auth = betterAuth({
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day (refresh session)
+    cookieCache: {
+      enabled: true,
+      maxAge: 60 * 60 * 24 * 7, // 7 days - match expiresIn
+      strategy: "compact", // Most performant, no JWT overhead
+    },
+  },
+
+  advanced: {
+    useSecureCookies: true, // Force secure cookies in all environments
+    defaultCookieAttributes: {
+      sameSite: "lax", // Allow OAuth redirects while maintaining security
+      secure: true,
+      httpOnly: true,
+    },
   },
 
   user: {
@@ -86,11 +100,14 @@ export const auth = betterAuth({
   },
 
   secret: process.env.BETTER_AUTH_SECRET || "",
-  baseURL: process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+
+  // CRITICAL: baseURL must be exact production URL for cookies to work
+  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
 
   trustedOrigins: [
-    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-  ],
+    process.env.BETTER_AUTH_URL || "http://localhost:3000",
+    ...(process.env.NEXT_PUBLIC_APP_URL ? [process.env.NEXT_PUBLIC_APP_URL] : []),
+  ].filter((url, index, self) => self.indexOf(url) === index), // Remove duplicates
 })
 
 // Export session and user types
