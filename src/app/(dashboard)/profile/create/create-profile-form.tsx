@@ -224,19 +224,19 @@ export default function CreateProfileForm() {
                 />
               </div>
 
-              <div className="flex gap-3 pt-4">
+              <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
                 <Button
                   type="button"
                   variant="outline"
                   asChild
-                  className="flex-1 cursor-pointer border-border hover:bg-muted"
+                  className="w-full sm:flex-1 cursor-pointer border-border hover:bg-muted"
                 >
                   <Link href="/dashboard/profiles">Annuler</Link>
                 </Button>
                 <Button
                   type="submit"
                   disabled={form.formState.isSubmitting}
-                  className="flex-1 cursor-pointer bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                  className="w-full sm:flex-1 cursor-pointer bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
                 >
                   {form.formState.isSubmitting ? (
                     <>
