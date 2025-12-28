@@ -22,31 +22,31 @@ interface PricingCardsModernProps {
 
 export default function PricingCardsModern({ plans }: PricingCardsModernProps) {
   return (
-    <div className="flex items-end justify-center px-8 pb-20 mt-12">
+    <div className="flex flex-col md:flex-row md:items-end justify-center gap-6 md:gap-0 px-4 sm:px-6 md:px-8 pb-12 md:pb-20 mt-8 md:mt-12">
       {plans.map((plan, index) => {
         // Tailles progressives : Free (petite), Pro (grande - highlighted), Starter (moyenne)
         const isHighlighted = plan.highlighted
         const heightClass = isHighlighted
-          ? 'min-h-[580px]' // Pro - la plus grande
+          ? 'md:min-h-[580px]' // Pro - la plus grande (desktop only)
           : index === 0
-            ? 'min-h-[520px]' // Free - petite
-            : 'min-h-[550px]' // Starter - moyenne
+            ? 'md:min-h-[520px]' // Free - petite (desktop only)
+            : 'md:min-h-[550px]' // Starter - moyenne (desktop only)
 
-        // Margins pour le chevauchement - overlap minimal pour tout voir
+        // Margins pour le chevauchement - overlap minimal pour tout voir (desktop only)
         const marginClass = index === 0
           ? '' // Première carte : pas de marge
           : index === 1
-            ? '-ml-4' // Carte du milieu : chevauche minimalement la première
-            : '-ml-4' // Dernière carte : chevauche minimalement la deuxième
+            ? 'md:-ml-4' // Carte du milieu : chevauche minimalement la première (desktop only)
+            : 'md:-ml-4' // Dernière carte : chevauche minimalement la deuxième (desktop only)
 
         return (
           <div
             key={plan.name}
             className={cn(
-              'relative w-full max-w-sm p-8 transition-all duration-300 rounded-2xl flex-shrink-0',
+              'relative w-full max-w-sm p-6 sm:p-8 transition-all duration-300 rounded-2xl flex-shrink-0',
               isHighlighted
-                ? 'bg-card text-foreground scale-105 shadow-2xl border-2 border-primary z-10'
-                : 'bg-card/50 text-foreground border border-border z-0',
+                ? 'bg-card text-foreground md:scale-105 shadow-2xl border-2 border-primary md:z-10'
+                : 'bg-card/50 text-foreground border border-border md:z-0',
               heightClass,
               marginClass
             )}
@@ -61,28 +61,28 @@ export default function PricingCardsModern({ plans }: PricingCardsModernProps) {
             )}
 
             {/* Plan Name */}
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold mb-2 text-primary">
+            <div className="mb-5 sm:mb-6">
+              <h3 className="text-base sm:text-lg font-semibold mb-2 text-primary">
                 {plan.name}
               </h3>
 
               {/* Price */}
               <div className="flex items-baseline gap-1 mb-3">
-                <span className="text-5xl font-bold">
+                <span className="text-4xl sm:text-5xl font-bold">
                   {plan.price.split(' ')[0]}
                 </span>
-                <span className="text-xl">
+                <span className="text-lg sm:text-xl">
                   {plan.price.split(' ')[1]}
                 </span>
                 {plan.period && (
-                  <span className="text-sm ml-1 text-muted-foreground">
+                  <span className="text-xs sm:text-sm ml-1 text-muted-foreground">
                     {plan.period}
                   </span>
                 )}
               </div>
 
               {/* Description */}
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 {plan.description}
               </p>
             </div>

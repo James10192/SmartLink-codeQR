@@ -289,15 +289,15 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-20 relative z-10">
-        <div className="mx-auto max-w-7xl text-center px-4 mb-4">
-          <div className="inline-block mb-4">
-            <span className="text-primary text-sm font-semibold uppercase tracking-wide">Tarifs</span>
+      <section className="py-12 sm:py-16 md:py-20 relative z-10">
+        <div className="mx-auto max-w-7xl text-center px-4 mb-6 sm:mb-8">
+          <div className="inline-block mb-3 sm:mb-4">
+            <span className="text-primary text-xs sm:text-sm font-semibold uppercase tracking-wide">Tarifs</span>
           </div>
-          <h2 className="text-5xl md:text-6xl font-bold text-foreground mb-6 tracking-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 sm:mb-6 tracking-tight">
             Choisissez le plan qui vous convient
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
             Commencez gratuitement, passez au Pro quand vous en avez besoin. Pas de frais cachés, uniquement des fonctionnalités essentielles.
           </p>
         </div>
