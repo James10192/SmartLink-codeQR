@@ -23,6 +23,8 @@ export const metadata: Metadata = {
   description: 'Gérez tous vos profils professionnels',
 }
 
+export const dynamic = 'force-dynamic'
+
 const PROFILE_LIMITS: Record<SubscriptionPlan, number> = {
   FREE: 1,
   PRO_DIGITAL: 3,

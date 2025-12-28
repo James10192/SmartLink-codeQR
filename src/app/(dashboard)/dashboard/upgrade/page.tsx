@@ -115,6 +115,8 @@ const PLANS: Plan[] = [
   },
 ]
 
+export const dynamic = 'force-dynamic'
+
 export default async function UpgradePage() {
   const session = await requireAuth()
 
