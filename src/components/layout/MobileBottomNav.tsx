@@ -51,7 +51,22 @@ export function MobileBottomNav({ userRole }: MobileBottomNavProps) {
   })
 
   return (
-    <nav className="!fixed !bottom-0 !left-0 !right-0 !z-50 md:hidden">
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-[9999] md:hidden will-change-transform"
+      style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        // Force GPU acceleration + prevent Safari mobile scroll bugs
+        transform: 'translate3d(0, 0, 0)',
+        WebkitTransform: 'translate3d(0, 0, 0)',
+        // Respect safe areas (iPhone notch, etc.)
+        paddingBottom: 'env(safe-area-inset-bottom)',
+        // Prevent WebKit touch callout
+        WebkitTouchCallout: 'none' as any,
+      }}
+    >
       {/* Liquid Glass Background - Séparé comme dans Vision */}
       <div className="absolute inset-0 bg-background/80 backdrop-blur-xl border-t border-border/20 shadow-[0_-4px_30px_rgba(0,0,0,0.1)]" />
 
