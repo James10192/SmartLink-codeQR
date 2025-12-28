@@ -3,6 +3,7 @@
 
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
+import { getSessionCookie } from "better-auth/cookies"
 
 // Public routes that don't require authentication
 const publicRoutes = [
@@ -42,9 +43,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // For protected routes, check for session cookie
-  // Better-Auth uses a cookie for session management
-  const sessionCookie = request.cookies.get('better-auth.session_token')
+  // For protected routes, check for session cookie using Better-Auth helper
+  // Note: This only checks cookie existence, not validity (validated in page/API routes)
+  const sessionCookie = getSessionCookie(request)
 
   // If no session cookie and trying to access protected route, redirect to login
   if (!sessionCookie && !pathname.startsWith('/login') && !pathname.startsWith('/signup')) {
