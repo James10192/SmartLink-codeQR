@@ -43,6 +43,8 @@ const MinimalProfileSchema = z.object({
 
 type MinimalProfileInput = z.infer<typeof MinimalProfileSchema>
 
+export const dynamic = 'force-dynamic'
+
 export default function CreateProfilePage() {
   const router = useRouter()
   const [error, setError] = useState('')

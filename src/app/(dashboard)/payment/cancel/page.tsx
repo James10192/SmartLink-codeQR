@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button'
 import { XCircle, ArrowLeft, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 export default function PaymentCancelPage() {
   return (
     <div className="container mx-auto px-4 py-16 max-w-2xl">

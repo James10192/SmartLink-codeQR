@@ -9,6 +9,8 @@ interface PaymentSuccessPageProps {
   }>
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function PaymentSuccessPage({
   searchParams,
 }: PaymentSuccessPageProps) {
