@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
-import { User, Mail, Calendar } from 'lucide-react'
+import { User, Mail, Calendar, Edit, KeyRound } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Paramètres',
@@ -90,11 +90,13 @@ export default async function SettingsPage() {
               </div>
             </div>
 
-            <div className="flex gap-2">
-              <Button variant="outline" disabled>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button variant="outline" disabled className="w-full sm:w-auto">
+                <Edit className="h-4 w-4 mr-2" />
                 Modifier le profil
               </Button>
-              <Button variant="outline" disabled>
+              <Button variant="outline" disabled className="w-full sm:w-auto">
+                <KeyRound className="h-4 w-4 mr-2" />
                 Changer le mot de passe
               </Button>
             </div>
