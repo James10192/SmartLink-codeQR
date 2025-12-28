@@ -85,7 +85,7 @@ export default async function DashboardPage() {
                 <Button asChild className="mt-4">
                   <Link href="/dashboard/upgrade">
                     <Sparkles className="mr-2 h-4 w-4" />
-                    Découvrir PRO - 9 900 FCFA/mois
+                    Découvrir PRO - 3 000 FCFA/mois
                   </Link>
                 </Button>
               </div>

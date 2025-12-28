@@ -98,10 +98,10 @@ export default function Home() {
       description: "Pour tester SmartLink",
       price: "0 FCFA",
       features: [
-        "1 profil",
-        "QR Code basique",
-        "vCard download",
-        "CV téléchargeable"
+        "1 profil numérique",
+        "QR Code personnalisé",
+        "Partage de contact (vCard)",
+        "Statistiques basiques (blurrées)"
       ],
       buttonText: "Commencer",
       buttonVariant: "secondary",
@@ -110,11 +110,13 @@ export default function Home() {
     {
       planName: "Pro Digital",
       description: "Pour les professionnels",
-      price: "1 000 FCFA",
+      price: "3 000 FCFA",
       features: [
-        "3 profils",
-        "QR Code personnalisable",
-        "Analytics avancés",
+        "3 profils numériques",
+        "Carte de visite vidéo (30s)",
+        "Personnalisation complète du thème",
+        "Statistiques détaillées",
+        "Visiteurs illimités",
         "Support prioritaire"
       ],
       buttonText: "Souscrire",
@@ -124,13 +126,14 @@ export default function Home() {
     },
     {
       planName: "Pack Starter",
-      description: "Digital + Physique",
-      price: "15 000 FCFA",
+      description: "PRO 1 an + Cartes physiques",
+      price: "29 900 FCFA",
       features: [
-        "Tout de Pro Digital",
-        "50 cartes papier QR",
-        "Design professionnel",
-        "Livraison incluse"
+        "Fonctionnalités PRO pendant 1 an",
+        "50 cartes papier avec QR Code",
+        "3 profils numériques",
+        "Design premium sur cartes",
+        "Livraison à Abidjan incluse"
       ],
       buttonText: "Souscrire",
       buttonVariant: "secondary",
@@ -142,12 +145,12 @@ export default function Home() {
     {
       name: "Gratuit",
       price: "0 FCFA",
-      description: "Idéal pour tester SmartLink et créer votre premier profil digital.",
+      description: "Pour tester SmartLink",
       features: [
-        "1 profil digital",
-        "QR Code téléchargeable",
-        "Enregistrement de contact en un clic",
-        "CV hébergé en ligne"
+        "1 profil numérique",
+        "QR Code personnalisé",
+        "Partage de contact (vCard)",
+        "Statistiques basiques (blurrées)"
       ],
       buttonText: "Commencer gratuitement",
       buttonVariant: "outline" as const,
@@ -158,14 +161,16 @@ export default function Home() {
       badge: "Le plus populaire",
       price: "3 000 FCFA",
       period: "/mois",
-      description: "Tout ce dont vous avez besoin pour gérer votre présence digitale professionnelle.",
+      description: "Pour les professionnels",
       features: [
-        "3 profils digitaux",
-        "QR Code personnalisable",
-        "Statistiques avancées",
-        "Thèmes premium",
+        "3 profils numériques",
+        "Carte de visite vidéo (30s)",
+        "Personnalisation complète du thème",
+        "Statistiques détaillées",
+        "Visiteurs illimités avec localisation",
+        "Upload CV illimité",
         "Support prioritaire",
-        "Badge PRO"
+        "Analyses de sources de trafic"
       ],
       buttonText: "Passer au Pro",
       buttonVariant: "primary" as const,
@@ -174,15 +179,18 @@ export default function Home() {
     },
     {
       name: "Pack Starter",
-      price: "15 000 FCFA",
-      period: "/one-time",
-      description: "Digital + Physique : profitez du Pro Digital et de 50 cartes papier.",
+      price: "29 900 FCFA",
+      period: "Paiement unique",
+      description: "PRO 1 an + Cartes physiques",
       features: [
-        "Pro Digital pendant 1 mois",
-        "50 cartes papier avec QR",
-        "Design professionnel",
-        "Livraison gratuite Abidjan",
-        "Révisions illimitées"
+        "Fonctionnalités PRO pendant 1 an",
+        "50 cartes papier avec QR Code",
+        "3 profils numériques",
+        "Carte de visite vidéo (30s)",
+        "Personnalisation complète du thème",
+        "Statistiques détaillées",
+        "Livraison à Abidjan incluse",
+        "Design premium sur cartes"
       ],
       buttonText: "Commander",
       buttonVariant: "outline" as const,
