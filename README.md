@@ -142,7 +142,7 @@ docs: update README with setup instructions
 
 ### Signature Commits
 
-Tous les commits doivent inclure :
+!!Très important Tous les commits ne doivent pas inclure :
 
 ```
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
