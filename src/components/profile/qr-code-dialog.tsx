@@ -131,10 +131,10 @@ export function QRCodeDialog({
         QR Code
       </Button>
 
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[95vh]">
         <DialogHeader>
-          <DialogTitle>Code QR du profil</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-lg sm:text-xl">Code QR du profil</DialogTitle>
+          <DialogDescription className="text-sm">
             {canDownload
               ? 'Téléchargez et partagez votre code QR dynamique'
               : 'Passez au plan PRO pour débloquer le téléchargement'}
@@ -165,15 +165,15 @@ export function QRCodeDialog({
           </div>
         )}
 
-        <div className="flex flex-col items-center gap-6 py-4">
+        <div className="flex flex-col items-center gap-4 sm:gap-6 py-2 sm:py-4">
           {/* QR Code Preview - Visible pour tous (FREE et PRO) */}
-          <div className="relative rounded-lg border bg-white p-4">
+          <div className="relative rounded-lg border bg-white p-3 sm:p-4">
             <Image
               src={`/api/qr/${profile.slug}`}
               alt={`QR Code pour ${profile.fullName}`}
               width={256}
               height={256}
-              className="h-64 w-64"
+              className="w-48 h-48 sm:w-64 sm:h-64"
               unoptimized
             />
           </div>
@@ -181,7 +181,7 @@ export function QRCodeDialog({
           {/* Actions */}
           {canDownload ? (
             <>
-              <div className="flex w-full gap-2">
+              <div className="flex flex-col sm:flex-row w-full gap-2">
                 <Button
                   variant="outline"
                   onClick={() => handleDownload('png')}

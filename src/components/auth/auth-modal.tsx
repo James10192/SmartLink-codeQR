@@ -105,17 +105,17 @@ export function AuthModal({ open, onOpenChange, defaultTab = 'login' }: AuthModa
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px] bg-zinc-950 border-zinc-800">
-        <DialogHeader className="flex flex-col items-center space-y-4">
+      <DialogContent className="sm:max-w-[480px] bg-zinc-950 border-zinc-800 max-h-[95vh]">
+        <DialogHeader className="flex flex-col items-center space-y-3 sm:space-y-4">
           <Image
             src="/logo.png"
             alt="SmartLink Logo"
             width={80}
             height={80}
-            className="rounded-lg"
+            className="rounded-lg w-16 h-16 sm:w-20 sm:h-20"
             priority
           />
-          <DialogTitle className="text-2xl">
+          <DialogTitle className="text-xl sm:text-2xl">
             {activeTab === 'login' ? 'Connexion' : 'Créer un compte'}
           </DialogTitle>
           <DialogDescription>
