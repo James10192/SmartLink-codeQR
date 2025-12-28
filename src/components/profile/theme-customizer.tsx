@@ -2,13 +2,13 @@
 
 import { useState } from 'react'
 import { useAction } from 'next-safe-action/hooks'
-import { saveThemeAction, THEME_PRESETS, DEFAULT_THEME } from '@/lib/actions/theme'
+import { saveThemeAction } from '@/lib/actions/theme'
+import { THEME_PRESETS, DEFAULT_THEME } from '@/lib/utils/theme'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import {
@@ -116,20 +116,8 @@ export function ThemeCustomizer({ profileId, initialTheme }: ThemeCustomizerProp
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="colors" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="colors">
-            <Palette className="mr-2 h-4 w-4" />
-            Couleurs
-          </TabsTrigger>
-          <TabsTrigger value="layout">
-            <LayoutTemplate className="mr-2 h-4 w-4" />
-            Mise en page
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Colors Tab */}
-        <TabsContent value="colors" className="space-y-4">
+      {/* Colors Section */}
+      <div className="space-y-4">
           {/* Presets */}
           <Card>
             <CardHeader>
@@ -284,10 +272,10 @@ export function ThemeCustomizer({ profileId, initialTheme }: ThemeCustomizerProp
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+        </div>
 
-        {/* Layout Tab */}
-        <TabsContent value="layout" className="space-y-4">
+        {/* Layout Section */}
+        <div className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Mise en page</CardTitle>
@@ -334,8 +322,7 @@ export function ThemeCustomizer({ profileId, initialTheme }: ThemeCustomizerProp
               </RadioGroup>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+        </div>
 
       {/* Preview */}
       <Card>

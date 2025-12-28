@@ -59,3 +59,36 @@ export async function generateQRCodeBuffer(
     throw new Error('Failed to generate QR code buffer')
   }
 }
+
+/**
+ * Generates a QR code as SVG string
+ *
+ * @param data - Data to encode in QR code
+ * @param options - QR code customization options
+ * @returns SVG string
+ */
+export async function generateQRCodeSVG(
+  data: string,
+  options: QRCodeOptions = {}
+): Promise<string> {
+  const {
+    color = { dark: '#000000', light: '#FFFFFF' },
+    width = 512,
+    margin = 4,
+  } = options
+
+  try {
+    const svgString = await QRCode.toString(data, {
+      type: 'svg',
+      color,
+      width,
+      margin,
+      errorCorrectionLevel: 'H',
+    })
+
+    return svgString
+  } catch (error) {
+    console.error('Error generating QR code SVG:', error)
+    throw new Error('Failed to generate QR code SVG')
+  }
+}

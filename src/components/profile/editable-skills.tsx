@@ -144,8 +144,16 @@ export function EditableSkills({ profileId, skills: initialSkills, onUpdate }: E
                 ({skill.level.toLowerCase()})
               </span>
             )}
+            {/* Desktop: Show on hover */}
             <button
-              className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="ml-2 hidden md:inline opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={() => handleDelete(skill.id)}
+            >
+              <X className="h-3 w-3" />
+            </button>
+            {/* Mobile: Always visible */}
+            <button
+              className="ml-2 md:hidden"
               onClick={() => handleDelete(skill.id)}
             >
               <X className="h-3 w-3" />

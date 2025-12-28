@@ -9,6 +9,8 @@ import { ProfileSchema, ProfileUpdateSchema } from '@/lib/validations/profile'
 import { revalidatePath } from 'next/cache'
 import { getGeoIPData, hashIP, hashUserAgent, getClientIP } from '@/lib/utils/geoip'
 import { headers } from 'next/headers'
+import { generateProfileSlug } from '@/lib/utils/slug'
+import { getEffectivePlan, getDegradedProfileData } from '@/lib/utils/tier-enforcement'
 
 const PROFILE_LIMITS = {
   FREE: 1,
@@ -19,22 +21,33 @@ const PROFILE_LIMITS = {
 
 const actionClient = createSafeActionClient()
 
+/**
+ * Generates a unique slug for a new profile
+ *
+ * New format: "firstname-lastname-xxxxx" (e.g., "marcel-djedje-x7k2m")
+ * Uses random suffix to ensure uniqueness while keeping URL short
+ *
+ * @param fullName - User's full name
+ * @returns Unique profile slug
+ */
 async function generateUniqueSlug(fullName: string): Promise<string> {
-  let baseSlug = fullName
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
+  let slug = generateProfileSlug(fullName)
+  let attempts = 0
+  const MAX_ATTEMPTS = 10
 
-  let slug = baseSlug
-  let counter = 1
+  // Ensure uniqueness (collision handling)
+  while (attempts < MAX_ATTEMPTS) {
+    const existing = await prisma.profile.findUnique({ where: { slug } })
 
-  while (await prisma.profile.findUnique({ where: { slug } })) {
-    slug = `${baseSlug}-${counter}`
-    counter++
+    if (!existing) break
+
+    // Generate new slug with different random suffix
+    slug = generateProfileSlug(fullName)
+    attempts++
+  }
+
+  if (attempts >= MAX_ATTEMPTS) {
+    throw new Error('Impossible de générer un slug unique, veuillez réessayer')
   }
 
   return slug
@@ -144,6 +157,13 @@ export async function getUserProfiles() {
   const session = await requireAuth()
   return await prisma.profile.findMany({
     where: { userId: session.user.id },
+    include: {
+      user: {
+        include: {
+          subscription: true,
+        },
+      },
+    },
     orderBy: { createdAt: 'desc' },
   })
 }
@@ -205,13 +225,14 @@ export async function getPublicProfile(slug: string) {
       cvDownloads: true,
       contactSaves: true,
       userId: true,
-      // Include user subscription for plan badge
+      // Include user subscription for plan badge and expiration check
       user: {
         select: {
           subscription: {
             select: {
               plan: true,
               status: true,
+              expiresAt: true,
             },
           },
         },
@@ -258,6 +279,24 @@ export async function getPublicProfile(slug: string) {
     // Track visitor (PRO+ feature - anonymous)
     // Pass userId to prevent owner from being tracked as visitor
     await trackProfileVisit(profile.id, profile.userId)
+
+    // Apply profile degradation if subscription expired
+    const effectivePlan = getEffectivePlan(profile.user.subscription)
+    const degradation = getDegradedProfileData(profile.user.subscription)
+
+    // Remove PRO features if subscription expired
+    if (degradation.hideVideo) {
+      profile.videoUrl = null
+    }
+
+    // Limit visible PRO features based on effective plan
+    // Note: Projects, testimonials, and posts are PRO-only features
+    // They will still be returned but frontend should check effective plan
+    return {
+      ...profile,
+      effectivePlan, // Add effective plan for frontend display
+      degradation, // Add degradation flags for conditional rendering
+    }
   }
 
   return profile

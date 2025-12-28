@@ -99,10 +99,20 @@ export function EditableBio({ profileId, initialBio, onUpdate }: EditableBioProp
         <p className="whitespace-pre-line text-foreground/80 leading-relaxed">
           {bio}
         </p>
+        {/* Desktop: Show on hover only */}
         <Button
           size="sm"
           variant="ghost"
-          className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+          className="hidden md:block absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+          onClick={() => setIsEditing(true)}
+        >
+          <Pencil className="h-4 w-4" />
+        </Button>
+        {/* Mobile: Always visible floating button */}
+        <Button
+          size="sm"
+          variant="default"
+          className="md:hidden absolute top-0 right-0 h-8 w-8 p-0 shadow-md cursor-pointer"
           onClick={() => setIsEditing(true)}
         >
           <Pencil className="h-4 w-4" />

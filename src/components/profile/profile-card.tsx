@@ -10,8 +10,10 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { QRCodeDialog } from '@/components/profile/qr-code-dialog'
 import { deleteProfileAction } from '@/lib/actions/profile'
+import { canDownloadQr, getDaysUntilExpiration } from '@/lib/utils/tier-enforcement'
 import { useRouter } from 'next/navigation'
 import { Eye, Download, UserPlus, ExternalLink, Pencil, Trash2, QrCode } from 'lucide-react'
+import type { Profile, User, Subscription } from '@prisma/client'
 
 interface ProfileCardProps {
   profile: {
@@ -27,6 +29,18 @@ interface ProfileCardProps {
     viewsCount: number
     cvDownloads: number
     contactSaves: number
+    userId: string
+    user: {
+      id: string
+      email: string
+      name: string | null
+      subscription: {
+        id: string
+        plan: string
+        status: string
+        expiresAt: Date | null
+      } | null
+    }
   }
 }
 
@@ -34,6 +48,11 @@ export function ProfileCard({ profile }: ProfileCardProps) {
   const router = useRouter()
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+
+  // Calculate subscription-based permissions
+  const subscription = profile.user.subscription
+  const canDownload = canDownloadQr(subscription as any)
+  const daysLeft = getDaysUntilExpiration(subscription as any)
 
   async function handleDelete() {
     setIsDeleting(true)
@@ -78,7 +97,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
                 {profile.fullName}
               </div>
               {profile.jobTitle && (
-                <div className="text-xs text-muted-foreground truncate">
+                <div className="text-xs text-muted-foreground break-words">
                   {profile.jobTitle}
                   {profile.company && ` · ${profile.company}`}
                 </div>
@@ -143,7 +162,11 @@ export function ProfileCard({ profile }: ProfileCardProps) {
             </Button>
           </div>
 
-          <QRCodeDialog slug={profile.slug} fullName={profile.fullName} />
+          <QRCodeDialog
+            profile={profile as any}
+            canDownload={canDownload}
+            daysUntilExpiration={daysLeft}
+          />
         </div>
       </CardContent>
 

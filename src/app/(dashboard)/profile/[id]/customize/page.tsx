@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { getProfileById, getProfileTheme } from '@/lib/actions/profile'
+import { getProfileById } from '@/lib/actions/profile'
 import { getProfileTheme as getTheme } from '@/lib/actions/theme'
 import { ThemeCustomizer } from '@/components/profile/theme-customizer'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'

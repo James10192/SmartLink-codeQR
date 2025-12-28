@@ -109,8 +109,8 @@ export function EditableAvatar({ profileId, currentAvatarUrl, fullName, onUpdate
         />
       </div>
 
-      {/* Overlay buttons on hover */}
-      <div className="absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+      {/* Desktop: Overlay buttons on hover */}
+      <div className="hidden md:flex absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity items-center justify-center gap-2">
         {isUploading ? (
           <Loader2 className="h-6 w-6 text-white animate-spin" />
         ) : (
@@ -134,6 +134,23 @@ export function EditableAvatar({ profileId, currentAvatarUrl, fullName, onUpdate
               </Button>
             )}
           </>
+        )}
+      </div>
+
+      {/* Mobile: Floating button always visible */}
+      <div className="md:hidden absolute -bottom-1 -right-1">
+        {isUploading ? (
+          <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center shadow-lg">
+            <Loader2 className="h-4 w-4 text-primary-foreground animate-spin" />
+          </div>
+        ) : (
+          <Button
+            size="sm"
+            className="cursor-pointer h-9 w-9 rounded-full p-0 shadow-lg"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <Camera className="h-4 w-4" />
+          </Button>
         )}
       </div>
 

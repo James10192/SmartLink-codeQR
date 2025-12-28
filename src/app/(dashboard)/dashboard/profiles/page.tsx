@@ -52,23 +52,23 @@ export default async function ProfilesPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       {/* Header Section */}
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
               Mes Profils
             </h1>
             <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
               {profiles.length} / {limit === Infinity ? '∞' : limit}
             </Badge>
           </div>
-          <p className="text-base text-muted-foreground">
+          <p className="text-sm md:text-base text-muted-foreground">
             Gérez vos profils professionnels SmartLink
           </p>
         </div>
         {canCreateMore ? (
           <Button
-            className="cursor-pointer bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-sm"
+            className="cursor-pointer bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-sm w-full md:w-auto"
             asChild
           >
             <Link href="/profile/create">
@@ -77,9 +77,9 @@ export default async function ProfilesPage() {
             </Link>
           </Button>
         ) : (
-          <div className="flex flex-col items-end gap-2">
+          <div className="flex flex-col items-stretch md:items-end gap-2">
             <Button
-              className="cursor-not-allowed bg-muted text-muted-foreground font-semibold shadow-sm"
+              className="cursor-not-allowed bg-muted text-muted-foreground font-semibold shadow-sm w-full md:w-auto"
               disabled
             >
               <Lock className="mr-2 h-5 w-5" />
@@ -88,7 +88,7 @@ export default async function ProfilesPage() {
             <Button
               variant="link"
               size="sm"
-              className="cursor-pointer text-primary hover:text-primary/80"
+              className="cursor-pointer text-primary hover:text-primary/80 w-full md:w-auto text-center md:text-right"
               asChild
             >
               <Link href="/dashboard/upgrade">

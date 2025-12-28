@@ -57,7 +57,7 @@ export function NotificationsDropdown({ count = 0 }: NotificationsDropdownProps)
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon" className="relative" suppressHydrationWarning>
           <Bell className="h-5 w-5" />
           {count > 0 && (
             <Badge

@@ -46,9 +46,9 @@ export default async function DashboardPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Tableau de bord</h1>
-        <p className="mt-2 text-muted-foreground">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Tableau de bord</h1>
+        <p className="mt-2 text-sm md:text-base text-muted-foreground">
           Bienvenue, {session.user.name || session.user.email}
         </p>
       </div>
@@ -61,9 +61,9 @@ export default async function DashboardPage() {
               <div className="flex-1 space-y-3">
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-primary" />
-                  <h3 className="text-lg font-semibold">Passez au PRO et débloquez tout le potentiel de SmartLink</h3>
+                  <h3 className="text-base md:text-lg font-semibold">Passez au PRO et débloquez tout le potentiel de SmartLink</h3>
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm md:text-base text-muted-foreground">
                   Créez jusqu'à 3 profils, ajoutez des vidéos, personnalisez votre thème et accédez aux statistiques complètes
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -100,8 +100,8 @@ export default async function DashboardPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{profiles.length}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-xl md:text-2xl font-bold">{profiles.length}</div>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Profil{profiles.length > 1 ? 's' : ''} actif{profiles.length > 1 ? 's' : ''}
             </p>
           </CardContent>
@@ -113,8 +113,8 @@ export default async function DashboardPage() {
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalViews}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-xl md:text-2xl font-bold">{totalViews}</div>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Vues sur tous vos profils
             </p>
           </CardContent>
@@ -126,8 +126,8 @@ export default async function DashboardPage() {
             <UserPlus className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalContacts}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-xl md:text-2xl font-bold">{totalContacts}</div>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Contacts sauvegardés
             </p>
           </CardContent>
@@ -139,8 +139,8 @@ export default async function DashboardPage() {
             <Download className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalCVDownloads}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-xl md:text-2xl font-bold">{totalCVDownloads}</div>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Téléchargements de CV
             </p>
           </CardContent>
@@ -266,8 +266,8 @@ export default async function DashboardPage() {
                   <p className="text-sm font-medium">Profil le plus vu</p>
                   <TrendingUp className="h-4 w-4 text-muted-foreground" />
                 </div>
-                <p className="text-lg font-bold">{mostViewedProfile.fullName}</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-base md:text-lg font-bold">{mostViewedProfile.fullName}</p>
+                <p className="text-sm md:text-base text-muted-foreground">
                   {mostViewedProfile.viewsCount} vues
                 </p>
                 <Button asChild variant="link" className="px-0 mt-2">

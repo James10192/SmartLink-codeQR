@@ -47,13 +47,13 @@ export function DashboardLayoutClient({
         <Navbar user={user} notificationCount={notificationCount} />
 
         {/* Contenu principal */}
-        <main className="p-6 pb-20 md:pb-6">
+        <main className="p-4 pb-20 md:p-6 md:pb-6">
           {children}
         </main>
       </div>
 
       {/* Mobile Bottom Nav */}
-      <MobileBottomNav />
+      <MobileBottomNav userRole={userRole} />
     </div>
   )
 }

@@ -130,7 +130,7 @@ export function CheckoutForm({
           {/* Mobile Money Operator Selection */}
           <div className="space-y-3">
             <Label>Opérateur Mobile Money</Label>
-            <RadioGroup value={operator} onValueChange={setOperator}>
+            <RadioGroup value={operator} onValueChange={(value) => setOperator(value as string)}>
               <div className="grid grid-cols-1 gap-3">
                 {MOBILE_MONEY_OPERATORS.map((op) => (
                   <div key={op.id}>

@@ -68,25 +68,37 @@ export function PreviewPageClient({ initialProfile }: PreviewPageClientProps) {
   const isPro = ['PRO_DIGITAL', 'PACK_STARTER', 'CORPORATE'].includes(userPlan)
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Top Bar - Edit Mode */}
       <div className="sticky top-0 z-50 border-b bg-card shadow-sm">
-        <div className="container mx-auto flex items-center justify-between px-4 py-3 max-w-7xl">
-          <div className="flex items-center gap-3">
-            <Sparkles className="h-5 w-5 text-primary" />
-            <span className="font-semibold text-foreground">Mode Édition</span>
-            <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+        <div className="container mx-auto flex items-center justify-between px-4 py-3 max-w-4xl">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-primary flex-shrink-0" />
+            <span className="font-semibold text-foreground text-sm md:text-base">Mode Édition</span>
+            <Badge variant="secondary" className="hidden sm:inline-flex bg-primary/10 text-primary border-primary/20">
               {profile.label}
             </Badge>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="cursor-pointer" asChild>
+            {/* Mobile: Icons only */}
+            <Button variant="outline" size="sm" className="cursor-pointer md:hidden" asChild>
+              <Link href={`/u/${profile.slug}`} target="_blank">
+                <Eye className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm" className="cursor-pointer md:hidden" asChild>
+              <Link href="/dashboard/profiles">
+                <ExternalLink className="h-4 w-4" />
+              </Link>
+            </Button>
+            {/* Desktop: Icons + Text */}
+            <Button variant="outline" size="sm" className="cursor-pointer hidden md:inline-flex" asChild>
               <Link href={`/u/${profile.slug}`} target="_blank">
                 <Eye className="h-4 w-4 mr-2" />
                 Prévisualiser
               </Link>
             </Button>
-            <Button variant="outline" size="sm" className="cursor-pointer" asChild>
+            <Button variant="outline" size="sm" className="cursor-pointer hidden md:inline-flex" asChild>
               <Link href="/dashboard/profiles">
                 Retour
               </Link>
@@ -96,7 +108,7 @@ export function PreviewPageClient({ initialProfile }: PreviewPageClientProps) {
       </div>
 
       {/* Main Container */}
-      <div className="container mx-auto px-4 py-6 max-w-7xl">
+      <div className="container mx-auto px-4 py-6 max-w-4xl">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Main Content Column */}
           <div className="lg:col-span-2 space-y-6">

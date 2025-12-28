@@ -11,10 +11,10 @@ export default function PaymentCancelPage() {
           <div className="flex items-center justify-center">
             <XCircle className="h-16 w-16 text-yellow-600" />
           </div>
-          <CardTitle className="text-center text-2xl">
+          <CardTitle className="text-center text-xl md:text-2xl">
             Paiement annulé
           </CardTitle>
-          <CardDescription className="text-center text-base">
+          <CardDescription className="text-center text-sm md:text-base">
             Vous avez annulé le processus de paiement
           </CardDescription>
         </CardHeader>

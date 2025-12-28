@@ -44,11 +44,13 @@ export function EditSubscriptionDialog({
   const [status, setStatus] = useState<string>(
     user.subscription?.status || 'ACTIVE'
   )
-  const [expiresAt, setExpiresAt] = useState<string>(
-    user.subscription?.expiresAt
-      ? new Date(user.subscription.expiresAt).toISOString().split('T')[0]
-      : ''
-  )
+  const [expiresAt, setExpiresAt] = useState<string>(() => {
+    if (user.subscription?.expiresAt && user.subscription.expiresAt !== null) {
+      const dateStr = new Date(user.subscription.expiresAt).toISOString().split('T')[0]
+      return dateStr || ''
+    }
+    return ''
+  })
 
   const { execute, isExecuting } = useAction(updateUserSubscriptionAction, {
     onSuccess: ({ data }) => {

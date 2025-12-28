@@ -25,8 +25,8 @@ export default function DashboardError({
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
             <AlertCircle className="h-8 w-8 text-destructive" />
           </div>
-          <CardTitle className="text-xl">Erreur du dashboard</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-lg md:text-xl">Erreur du dashboard</CardTitle>
+          <CardDescription className="text-sm md:text-base">
             Une erreur s'est produite lors du chargement de cette page.
           </CardDescription>
         </CardHeader>

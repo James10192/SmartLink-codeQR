@@ -189,7 +189,8 @@ export function EditableExperiences({ profileId, experiences: initialExperiences
                 <h3 className="text-lg font-semibold text-foreground">
                   {exp.position}
                 </h3>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                {/* Desktop: Show on hover */}
+                <div className="hidden md:flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <Button
                     size="sm"
                     variant="ghost"
@@ -202,6 +203,25 @@ export function EditableExperiences({ profileId, experiences: initialExperiences
                     size="sm"
                     variant="ghost"
                     className="cursor-pointer h-8 w-8 p-0 text-destructive hover:text-destructive"
+                    onClick={() => handleDelete(exp.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                {/* Mobile: Always visible */}
+                <div className="flex md:hidden gap-1">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="cursor-pointer h-8 w-8 p-0"
+                    onClick={() => handleEdit(exp)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="cursor-pointer h-8 w-8 p-0 text-destructive hover:bg-destructive/10"
                     onClick={() => handleDelete(exp.id)}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -235,6 +255,19 @@ export function EditableExperiences({ profileId, experiences: initialExperiences
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Bouton pour ajouter une nouvelle expérience */}
+      <div className="pt-4">
+        <Button
+          size="sm"
+          variant="outline"
+          className="cursor-pointer w-full border-dashed"
+          onClick={handleAdd}
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Ajouter une expérience
+        </Button>
       </div>
 
       <ExperienceDialog

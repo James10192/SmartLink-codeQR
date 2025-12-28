@@ -103,8 +103,8 @@ export function EditableCover({ profileId, currentCoverUrl, onUpdate }: Editable
         />
       )}
 
-      {/* Overlay buttons */}
-      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+      {/* Desktop: Overlay buttons on hover */}
+      <div className="hidden md:flex absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity items-center justify-center gap-2">
         {isUploading ? (
           <Loader2 className="h-6 w-6 text-white animate-spin" />
         ) : (
@@ -127,6 +127,35 @@ export function EditableCover({ profileId, currentCoverUrl, onUpdate }: Editable
               >
                 <X className="h-4 w-4 mr-2" />
                 Supprimer
+              </Button>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* Mobile: Floating buttons always visible */}
+      <div className="md:hidden absolute top-4 right-4 flex flex-col gap-2">
+        {isUploading ? (
+          <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center shadow-lg">
+            <Loader2 className="h-4 w-4 text-primary-foreground animate-spin" />
+          </div>
+        ) : (
+          <>
+            <Button
+              size="sm"
+              className="cursor-pointer h-10 w-10 rounded-full p-0 shadow-lg"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <ImagePlus className="h-4 w-4" />
+            </Button>
+            {coverUrl && (
+              <Button
+                size="sm"
+                variant="destructive"
+                className="cursor-pointer h-10 w-10 rounded-full p-0 shadow-lg"
+                onClick={handleRemoveCover}
+              >
+                <X className="h-4 w-4" />
               </Button>
             )}
           </>

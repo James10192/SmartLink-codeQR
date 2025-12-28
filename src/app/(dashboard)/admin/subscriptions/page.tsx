@@ -28,8 +28,8 @@ export default async function AdminSubscriptionsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Subscription Management</h1>
-        <p className="text-muted-foreground mt-2">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Subscription Management</h1>
+        <p className="text-sm md:text-base text-muted-foreground mt-2">
           Manage user subscriptions and plans manually
         </p>
       </div>
@@ -42,8 +42,8 @@ export default async function AdminSubscriptionsPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalUsers}</div>
-            <p className="text-xs text-muted-foreground">All registered users</p>
+            <div className="text-xl md:text-2xl font-bold">{stats.totalUsers}</div>
+            <p className="text-xs sm:text-sm text-muted-foreground">All registered users</p>
           </CardContent>
         </Card>
 
@@ -53,8 +53,8 @@ export default async function AdminSubscriptionsPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.freeUsers}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-xl md:text-2xl font-bold">{stats.freeUsers}</div>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               {((stats.freeUsers / stats.totalUsers) * 100).toFixed(1)}% of total
             </p>
           </CardContent>
@@ -66,8 +66,8 @@ export default async function AdminSubscriptionsPage() {
             <Crown className="h-4 w-4 text-yellow-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.paidUsers}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-xl md:text-2xl font-bold">{stats.paidUsers}</div>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               PRO: {stats.proUsers} | Starter: {stats.starterUsers} | Corporate: {stats.corporateUsers}
             </p>
           </CardContent>
@@ -79,8 +79,8 @@ export default async function AdminSubscriptionsPage() {
             <TrendingUp className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.conversionRate.toFixed(1)}%</div>
-            <p className="text-xs text-muted-foreground">FREE → Paid conversion</p>
+            <div className="text-xl md:text-2xl font-bold">{stats.conversionRate.toFixed(1)}%</div>
+            <p className="text-xs sm:text-sm text-muted-foreground">FREE → Paid conversion</p>
           </CardContent>
         </Card>
       </div>
