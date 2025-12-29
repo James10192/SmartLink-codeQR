@@ -302,12 +302,12 @@ function ExperienceDialog({
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[95vh] flex flex-col">
+      <DialogContent className="sm:max-w-2xl max-h-[95vh] flex flex-col max-w-[calc(100vw-2rem)]">
         <DialogHeader>
-          <DialogTitle>{isEditing ? 'Modifier' : 'Ajouter'} une expérience</DialogTitle>
+          <DialogTitle className="text-base sm:text-lg">{isEditing ? 'Modifier' : 'Ajouter'} une expérience</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 overflow-y-auto px-1 max-h-[60vh] sm:max-h-[70vh]">
+        <div className="space-y-4 overflow-y-auto overflow-x-hidden max-h-[60vh] sm:max-h-[70vh]">
           <div>
             <Label htmlFor="position">Poste *</Label>
             <Input
@@ -341,7 +341,7 @@ function ExperienceDialog({
           <div>
             <Label htmlFor="employmentType">Type de contrat *</Label>
             <Select value={formData.employmentType} onValueChange={(value) => setFormData({ ...formData, employmentType: value })}>
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
