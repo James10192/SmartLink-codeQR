@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
 import { generateVCard } from '@/lib/utils/generate-vcard'
+import { createContactSaveNotification } from '@/lib/notifications/create-notification'
+import { getEffectivePlan } from '@/lib/utils/tier-enforcement'
 
 export async function GET(
   request: NextRequest,
@@ -49,6 +51,23 @@ export async function GET(
       where: { id: profile.id },
       data: { contactSaves: { increment: 1 } },
     })
+
+    // Create notification for profile owner
+    const fullProfile = await prisma.profile.findUnique({
+      where: { id: profile.id },
+      include: {
+        user: {
+          include: {
+            subscription: true
+          }
+        }
+      }
+    })
+
+    if (fullProfile) {
+      const plan = getEffectivePlan(fullProfile.user.subscription)
+      await createContactSaveNotification(fullProfile.userId, profile.id, plan)
+    }
 
     // Retourner le fichier vCard
     return new NextResponse(vCardString, {

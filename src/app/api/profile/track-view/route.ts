@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/db/prisma'
-import { getClientIP, hashIP, hashUserAgent } from '@/lib/utils/geoip'
+import { getClientIP, hashIP, hashUserAgent, getGeoIPData } from '@/lib/utils/geoip'
 import { cookies } from 'next/headers'
+import { createProfileViewNotification } from '@/lib/notifications/create-notification'
+import { getEffectivePlan } from '@/lib/utils/tier-enforcement'
 
 const TrackViewSchema = z.object({
   profileId: z.string(),
@@ -76,18 +78,49 @@ export async function POST(request: NextRequest) {
       return response
     }
 
-    // 3. Nouvelle vue unique : créer un visitor record (sans nom/contact pour l'instant)
+    // 3. Get geographic location from IP
+    const geoData = await getGeoIPData(ip)
+
+    // 4. Nouvelle vue unique : créer un visitor record avec données géographiques
     await prisma.profileVisitor.create({
       data: {
         profileId,
         ipHash,
         userAgentHash,
         referrer: request.headers.get('referer') || null,
-        // city, country, etc. peuvent être ajoutés via geoip si nécessaire
+        city: geoData.city,
+        country: geoData.country,
+        countryCode: geoData.countryCode,
+        region: geoData.region,
       },
     })
 
-    // 4. Créer le cookie pour éviter de recompter
+    // 5. Create notification for profile owner
+    const profile = await prisma.profile.findUnique({
+      where: { id: profileId },
+      include: {
+        user: {
+          include: {
+            subscription: true
+          }
+        }
+      }
+    })
+
+    if (profile) {
+      const plan = getEffectivePlan(profile.user.subscription)
+      await createProfileViewNotification(
+        profile.userId,
+        profileId,
+        {
+          city: geoData.city,
+          country: geoData.country
+        },
+        plan
+      )
+    }
+
+    // 6. Créer le cookie pour éviter de recompter
     const response = NextResponse.json({
       success: true,
       counted: true,
