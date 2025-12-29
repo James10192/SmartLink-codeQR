@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useSession } from '@/lib/auth/client'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -54,6 +56,21 @@ export default function Home() {
   const [activePricingDialog, setActivePricingDialog] = useState<string | null>(null)
   const [authModalOpen, setAuthModalOpen] = useState(false)
   const [authModalTab, setAuthModalTab] = useState<'login' | 'signup'>('signup')
+
+  const { data: session, isPending: isSessionLoading } = useSession()
+  const router = useRouter()
+
+  // Smart handler: redirect to dashboard if logged in, show modal if not
+  const handleSignupClick = () => {
+    if (isSessionLoading) return // Wait for session load
+
+    if (session?.user) {
+      router.push('/dashboard') // Logged in → redirect
+    } else {
+      setAuthModalTab('signup')
+      setAuthModalOpen(true) // Not logged in → show modal
+    }
+  }
 
   const bentoItems: BentoItem[] = [
     {
@@ -211,10 +228,8 @@ export default function Home() {
         badge="SmartLink"
         title1="Votre contact enregistré"
         title2="en 1 scan"
-        onSignupClick={() => {
-          setAuthModalTab('signup')
-          setAuthModalOpen(true)
-        }}
+        onSignupClick={handleSignupClick}
+        signupButtonText={session?.user ? "Accéder au dashboard" : "Commencer gratuitement"}
       />
 
       {/* Bento Grid Features */}
@@ -327,12 +342,9 @@ export default function Home() {
             <Button
               size="lg"
               className="cursor-pointer"
-              onClick={() => {
-                setAuthModalTab('signup')
-                setAuthModalOpen(true)
-              }}
+              onClick={handleSignupClick}
             >
-              Créer mon profil gratuitement
+              {session?.user ? 'Accéder au dashboard' : 'Créer mon profil gratuitement'}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
@@ -389,14 +401,8 @@ export default function Home() {
             price={plan.price}
             features={plan.features}
             planType={planType}
-            onSignup={() => {
-              setAuthModalTab('signup')
-              setAuthModalOpen(true)
-            }}
-            onSubscribe={() => {
-              setAuthModalTab('signup')
-              setAuthModalOpen(true)
-            }}
+            onSignup={handleSignupClick}
+            onSubscribe={handleSignupClick}
           />
         )
       })}

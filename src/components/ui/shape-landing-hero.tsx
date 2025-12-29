@@ -80,11 +80,13 @@ function HeroGeometric({
     title1 = "Elevate Your Digital Vision",
     title2 = "Crafting Exceptional Websites",
     onSignupClick,
+    signupButtonText = "Commencer gratuitement",
 }: {
     badge?: string;
     title1?: string;
     title2?: string;
     onSignupClick?: () => void;
+    signupButtonText?: string;
 }) {
     const fadeUpVariants = {
         hidden: { opacity: 0, y: 30 },
@@ -213,7 +215,7 @@ function HeroGeometric({
                             className="bg-white text-black hover:bg-white/90 cursor-pointer"
                             onClick={onSignupClick}
                         >
-                            Commencer gratuitement
+                            {signupButtonText}
                             <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                         <Button
