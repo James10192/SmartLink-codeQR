@@ -1,5 +1,5 @@
-// Next.js Middleware for Route Protection
-// https://nextjs.org/docs/app/building-your-application/routing/middleware
+// Next.js Proxy for Route Protection (Next.js 16+)
+// https://nextjs.org/docs/app/api-reference/file-conventions/proxy
 
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
@@ -8,8 +8,6 @@ import { getSessionCookie } from "better-auth/cookies"
 // Public routes that don't require authentication
 const publicRoutes = [
   "/",
-  "/login",
-  "/signup",
   "/api/auth",
 ]
 
@@ -35,28 +33,33 @@ function isPublicRoute(pathname: string): boolean {
   return false
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Allow public routes without session check
+  // Check for session cookie using Better-Auth helper
+  // Note: This only checks cookie existence, not validity (validated in page/API routes)
+  const sessionCookie = getSessionCookie(request)
+
+  // Handle auth pages (/login, /signup) FIRST
+  if (pathname === "/login" || pathname === "/signup") {
+    // If has session cookie, redirect to dashboard
+    if (sessionCookie) {
+      return NextResponse.redirect(new URL("/dashboard", request.url))
+    }
+    // If no session, allow access to auth pages
+    return NextResponse.next()
+  }
+
+  // Allow other public routes without session check
   if (isPublicRoute(pathname)) {
     return NextResponse.next()
   }
 
-  // For protected routes, check for session cookie using Better-Auth helper
-  // Note: This only checks cookie existence, not validity (validated in page/API routes)
-  const sessionCookie = getSessionCookie(request)
-
-  // If no session cookie and trying to access protected route, redirect to login
-  if (!sessionCookie && !pathname.startsWith('/login') && !pathname.startsWith('/signup')) {
+  // For protected routes, redirect to login if no session
+  if (!sessionCookie) {
     const loginUrl = new URL("/login", request.url)
     loginUrl.searchParams.set("from", pathname)
     return NextResponse.redirect(loginUrl)
-  }
-
-  // If has session cookie and trying to access auth pages, redirect to dashboard
-  if (sessionCookie && (pathname === "/login" || pathname === "/signup")) {
-    return NextResponse.redirect(new URL("/dashboard", request.url))
   }
 
   return NextResponse.next()
