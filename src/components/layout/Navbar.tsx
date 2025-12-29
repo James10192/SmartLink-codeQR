@@ -11,9 +11,10 @@ interface NavbarProps {
     image?: string | null
   }
   notificationCount?: number
+  userPlan?: 'FREE' | 'PRO_DIGITAL' | 'PACK_STARTER' | 'CORPORATE'
 }
 
-export function Navbar({ user, notificationCount = 0 }: NavbarProps) {
+export function Navbar({ user, notificationCount = 0, userPlan = 'FREE' }: NavbarProps) {
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6">
       {/* Global Search (Cmd+K) */}
@@ -26,7 +27,7 @@ export function Navbar({ user, notificationCount = 0 }: NavbarProps) {
 
       {/* Actions: Notifications + User Profile */}
       <div className="flex items-center gap-2">
-        <NotificationsDropdown count={notificationCount} />
+        <NotificationsDropdown count={notificationCount} userPlan={userPlan} />
         <UserProfileDropdown user={user} />
       </div>
     </header>

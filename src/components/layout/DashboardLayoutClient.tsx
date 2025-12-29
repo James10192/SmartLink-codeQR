@@ -44,7 +44,11 @@ export function DashboardLayoutClient({
         )}
       >
         {/* Navbar sticky en haut */}
-        <Navbar user={user} notificationCount={notificationCount} />
+        <Navbar
+          user={user}
+          notificationCount={notificationCount}
+          userPlan={currentPlan as 'FREE' | 'PRO_DIGITAL' | 'PACK_STARTER' | 'CORPORATE'}
+        />
 
         {/* Contenu principal */}
         <main className="p-4 pb-20 md:p-6 md:pb-6">

@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { signOut } from '@/lib/auth/client'
+import { cn } from '@/lib/utils'
 
 interface UserProfileDropdownProps {
   user: {
@@ -51,7 +52,17 @@ export function UserProfileDropdown({ user }: UserProfileDropdownProps) {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-56" align="end">
+      <DropdownMenuContent
+        className={cn(
+          "w-[calc(100vw-2rem)] max-w-[224px]",
+          "md:w-56",
+          "z-50"
+        )}
+        align="end"
+        sideOffset={8}
+        collisionPadding={16}
+        avoidCollisions={true}
+      >
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">

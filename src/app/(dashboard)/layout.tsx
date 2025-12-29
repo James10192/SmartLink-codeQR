@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { SidebarProvider } from '@/contexts/sidebar-context'
 import { DashboardLayoutClient } from '@/components/layout/DashboardLayoutClient'
 import { prisma } from '@/lib/db/prisma'
+import { getUnreadNotificationCount } from '@/lib/actions/notifications'
 
 export default async function DashboardLayout({
   children,
@@ -22,8 +23,8 @@ export default async function DashboardLayout({
     redirect('/login')
   }
 
-  // 3. Mock notification count (TODO: remplacer par vraie requête DB)
-  const notificationCount = 3
+  // 3. Fetch unread notification count
+  const notificationCount = await getUnreadNotificationCount()
 
   const currentPlan = user.subscription?.plan || 'FREE'
   const userRole = user.role
