@@ -213,6 +213,7 @@ export async function getPublicProfile(slug: string) {
       website: true,
       address: true,
       avatarUrl: true,
+      coverImageUrl: true,
       cvFileUrl: true,
       videoUrl: true,
       linkedinUrl: true,

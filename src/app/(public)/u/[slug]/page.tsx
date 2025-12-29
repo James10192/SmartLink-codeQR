@@ -165,6 +165,14 @@ export default async function PublicProfilePage({
                     playsInline
                     className="h-full w-full object-cover"
                   />
+                ) : profile.coverImageUrl ? (
+                  <Image
+                    src={profile.coverImageUrl}
+                    alt="Cover"
+                    fill
+                    className="object-cover"
+                    unoptimized={profile.coverImageUrl.includes('supabase.co')}
+                  />
                 ) : (
                   <div
                     className="h-full w-full bg-gradient-to-br from-primary/20 via-primary/10 to-transparent"
