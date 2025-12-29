@@ -392,7 +392,7 @@ export default async function ProfilePreviewPage({
                       Présentez vos projets et réalisations avec des images et des liens. Disponible avec le plan PRO.
                     </p>
                     <Button className="cursor-pointer bg-amber-600 hover:bg-amber-700 text-white" asChild>
-                      <Link href="/pricing">
+                      <Link href="/dashboard/upgrade">
                         <Sparkles className="h-4 w-4 mr-2" />
                         Passer au PRO
                       </Link>
@@ -544,7 +544,7 @@ export default async function ProfilePreviewPage({
                           <li>✨ Statistiques avancées</li>
                         </ul>
                         <Button size="sm" className="w-full mt-3 cursor-pointer bg-primary hover:bg-primary/90" asChild>
-                          <Link href="/pricing">
+                          <Link href="/dashboard/upgrade">
                             Découvrir PRO
                           </Link>
                         </Button>

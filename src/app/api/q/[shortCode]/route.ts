@@ -171,7 +171,7 @@ export async function GET(
               <strong>Bonne nouvelle :</strong> Si le propriétaire renouvelle son abonnement dans les 30 jours, ce QR code redeviendra automatiquement actif !
             </p>
             <a href="/" class="cta">Créer mon SmartLink</a>
-            <a href="/pricing" class="secondary">Voir les tarifs</a>
+            <a href="/dashboard/upgrade" class="secondary">Voir les tarifs</a>
           </div>
         </body>
       </html>

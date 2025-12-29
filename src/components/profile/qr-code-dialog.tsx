@@ -155,7 +155,7 @@ export function QRCodeDialog({
                   Les QR codes téléchargés cesseront de fonctionner après expiration.
                 </p>
                 <Link
-                  href="/pricing"
+                  href="/dashboard/upgrade"
                   className="mt-2 inline-block text-xs font-medium text-orange-600 underline hover:text-orange-700 dark:text-orange-400"
                 >
                   Renouveler maintenant
@@ -220,7 +220,7 @@ export function QRCodeDialog({
                 Vous pouvez voir votre QR code mais pas le télécharger avec le plan FREE
               </p>
 
-              <Link href="/pricing" className="block w-full">
+              <Link href="/dashboard/upgrade" className="block w-full">
                 <Button className="w-full gap-2" size="lg">
                   Passer au plan PRO pour télécharger
                 </Button>

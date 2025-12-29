@@ -40,7 +40,7 @@ export const NAV_ITEMS: NavItem[] = [
   },
   {
     title: 'Abonnement',
-    href: '/dashboard/subscription',
+    href: '/dashboard/upgrade',
     icon: CreditCard,
   },
   {

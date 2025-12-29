@@ -50,7 +50,7 @@ export function NotificationsDropdown({ count = 0 }: NotificationsDropdownProps)
       description: 'Vous approchez de la limite (1/1 profils)',
       time: 'Il y a 2h',
       read: true,
-      href: '/dashboard/subscription',
+      href: '/dashboard/upgrade',
     },
   ]
 
