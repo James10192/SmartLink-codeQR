@@ -200,7 +200,7 @@ function SkillDialog({
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Ajouter une compétence</DialogTitle>
         </DialogHeader>
@@ -232,11 +232,11 @@ function SkillDialog({
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={isSaving} className="cursor-pointer">
+        <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+          <Button variant="outline" onClick={onClose} disabled={isSaving} className="cursor-pointer w-full sm:w-auto">
             Annuler
           </Button>
-          <Button onClick={onSave} disabled={isSaving} className="cursor-pointer bg-primary hover:bg-primary/90">
+          <Button onClick={onSave} disabled={isSaving} className="cursor-pointer bg-primary hover:bg-primary/90 w-full sm:w-auto">
             {isSaving ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
             ) : null}

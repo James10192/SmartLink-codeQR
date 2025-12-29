@@ -302,12 +302,12 @@ function ExperienceDialog({
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl max-h-[95vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Modifier' : 'Ajouter'} une expérience</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 overflow-y-auto px-1 max-h-[60vh] sm:max-h-[70vh]">
           <div>
             <Label htmlFor="position">Poste *</Label>
             <Input
@@ -354,7 +354,7 @@ function ExperienceDialog({
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="startDate">Date de début *</Label>
               <Input
@@ -400,11 +400,11 @@ function ExperienceDialog({
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={isSaving} className="cursor-pointer">
+        <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+          <Button variant="outline" onClick={onClose} disabled={isSaving} className="cursor-pointer w-full sm:w-auto">
             Annuler
           </Button>
-          <Button onClick={onSave} disabled={isSaving} className="cursor-pointer bg-primary hover:bg-primary/90">
+          <Button onClick={onSave} disabled={isSaving} className="cursor-pointer bg-primary hover:bg-primary/90 w-full sm:w-auto">
             {isSaving ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
             ) : null}
