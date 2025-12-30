@@ -60,6 +60,7 @@
     "zod": "^4.2.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4.1.18",
     "@tanstack/react-query-devtools": "^5.91.1",
     "@types/bun": "latest",

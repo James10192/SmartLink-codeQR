@@ -23,7 +23,7 @@ import {
   createPaymentSuccessNotification,
   createPaymentFailedNotification,
 } from '@/lib/notifications/create-notification'
-import { posthog } from '@/lib/analytics/posthog'
+import { captureEvent } from '@/lib/analytics/posthog'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -165,7 +165,7 @@ async function handleOrderCreated(event: any): Promise<void> {
     await createPaymentSuccessNotification(userId, plan, amount)
 
     // Track event in PostHog
-    posthog.capture({
+    captureEvent({
       distinctId: userId,
       event: 'subscription_activated',
       properties: {
@@ -185,7 +185,7 @@ async function handleOrderCreated(event: any): Promise<void> {
     await createPaymentFailedNotification(userId, order.id)
 
     // Track failure
-    posthog.capture({
+    captureEvent({
       distinctId: userId,
       event: 'payment_failed',
       properties: {
@@ -248,7 +248,7 @@ async function handleSubscriptionCreated(event: any): Promise<void> {
   })
 
   // Track subscription creation
-  posthog.capture({
+  captureEvent({
     distinctId: userId,
     event: 'subscription_created',
     properties: {
@@ -297,7 +297,7 @@ async function handleSubscriptionUpdated(event: any): Promise<void> {
       })
 
       // Track renewal
-      posthog.capture({
+      captureEvent({
         distinctId: userId,
         event: 'subscription_renewed',
         properties: {
@@ -340,7 +340,7 @@ async function handleSubscriptionCancelled(event: any): Promise<void> {
   })
 
   // Track cancellation
-  posthog.capture({
+  captureEvent({
     distinctId: userId,
     event: 'subscription_cancelled',
     properties: {
