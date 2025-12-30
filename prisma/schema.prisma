@@ -116,6 +116,14 @@ enum NotificationType {
   CV_DOWNLOAD
   CONTACT_SAVE
   SUBSCRIPTION_LIMIT
+
+  // Payment-related notifications
+  SUBSCRIPTION_EXPIRING_SOON  // 7j, 3j, 1j avant expiration
+  SUBSCRIPTION_EXPIRED        // Jour d'expiration
+  PAYMENT_SUCCESSFUL          // Confirmation paiement
+  PAYMENT_FAILED              // Échec paiement
+  PAYMENT_RETRY_REMINDER      // Rappel J+3, J+7 après échec
+  SUBSCRIPTION_RENEWED        // Renouvellement réussi
 }
 
 // ==========================================

@@ -326,3 +326,251 @@ export async function createSubscriptionLimitNotification(
     console.error('[Notification] Failed to create SUBSCRIPTION_LIMIT notification:', error)
   }
 }
+
+// ==================== PAYMENT-RELATED NOTIFICATIONS ====================
+
+/**
+ * Create notification for subscription expiring soon (7j, 3j, 1j, 0j)
+ * Creates one notification per daysLeft value (no aggregation)
+ */
+export async function createSubscriptionExpiringNotification(
+  userId: string,
+  daysLeft: number,
+  expiresAt: Date
+): Promise<void> {
+  try {
+    // Check if notification for this specific daysLeft already exists (last 24h)
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
+
+    const existingNotif = await prisma.notification.findFirst({
+      where: {
+        userId,
+        type: 'SUBSCRIPTION_EXPIRING_SOON',
+        createdAt: {
+          gte: twentyFourHoursAgo
+        },
+        metadata: {
+          path: ['daysLeft'],
+          equals: daysLeft
+        }
+      }
+    })
+
+    if (existingNotif) {
+      // Already notified today for this daysLeft value
+      return
+    }
+
+    const dateStr = expiresAt.toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'long'
+    })
+
+    let title = ''
+    let description = ''
+
+    if (daysLeft === 0) {
+      title = '⚠️ Dernier jour !'
+      description = `Votre abonnement expire aujourd'hui (${dateStr}). Renouvelez maintenant pour garder vos QR codes actifs.`
+    } else if (daysLeft === 1) {
+      title = '⏰ Plus qu\'1 jour'
+      description = `Votre abonnement expire demain (${dateStr}). N'oubliez pas de renouveler !`
+    } else if (daysLeft === 3) {
+      title = '📅 Plus que 3 jours'
+      description = `Votre abonnement expire dans 3 jours (${dateStr}). Pensez à le renouveler.`
+    } else {
+      title = `🔔 Plus que ${daysLeft} jours`
+      description = `Votre abonnement expire dans ${daysLeft} jours (${dateStr}).`
+    }
+
+    await prisma.notification.create({
+      data: {
+        userId,
+        type: 'SUBSCRIPTION_EXPIRING_SOON',
+        title,
+        description,
+        actionUrl: '/dashboard/upgrade',
+        metadata: {
+          daysLeft,
+          expiresAt: expiresAt.toISOString()
+        },
+        isRead: false
+      }
+    })
+  } catch (error) {
+    console.error('[Notification] Failed to create SUBSCRIPTION_EXPIRING_SOON notification:', error)
+  }
+}
+
+/**
+ * Create notification when subscription has expired
+ */
+export async function createSubscriptionExpiredNotification(
+  userId: string
+): Promise<void> {
+  try {
+    // Check if already notified in last 24h
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
+
+    const existingNotif = await prisma.notification.findFirst({
+      where: {
+        userId,
+        type: 'SUBSCRIPTION_EXPIRED',
+        createdAt: {
+          gte: twentyFourHoursAgo
+        }
+      }
+    })
+
+    if (existingNotif) {
+      return
+    }
+
+    await prisma.notification.create({
+      data: {
+        userId,
+        type: 'SUBSCRIPTION_EXPIRED',
+        title: '⚠️ Abonnement expiré',
+        description: 'Votre abonnement a expiré. Vos QR codes sont désactivés. Réactivez votre abonnement dans les 30 jours pour tout récupérer.',
+        actionUrl: '/dashboard/upgrade',
+        metadata: {
+          expiredAt: new Date().toISOString()
+        },
+        isRead: false
+      }
+    })
+  } catch (error) {
+    console.error('[Notification] Failed to create SUBSCRIPTION_EXPIRED notification:', error)
+  }
+}
+
+/**
+ * Create notification for successful payment
+ */
+export async function createPaymentSuccessNotification(
+  userId: string,
+  plan: string,
+  amount: number
+): Promise<void> {
+  try {
+    const planNames: Record<string, string> = {
+      FREE: 'Gratuit',
+      PRO_DIGITAL: 'Pro',
+      PACK_STARTER: 'Pack Starter',
+      CORPORATE: 'Corporate'
+    }
+
+    const planName = planNames[plan] || plan
+
+    await prisma.notification.create({
+      data: {
+        userId,
+        type: 'PAYMENT_SUCCESSFUL',
+        title: '✅ Paiement confirmé',
+        description: `Votre paiement de ${amount.toLocaleString('fr-FR')} FCFA a été confirmé. Bienvenue dans SmartLink ${planName} !`,
+        actionUrl: '/dashboard',
+        metadata: {
+          plan,
+          amount,
+          paidAt: new Date().toISOString()
+        },
+        isRead: false
+      }
+    })
+  } catch (error) {
+    console.error('[Notification] Failed to create PAYMENT_SUCCESSFUL notification:', error)
+  }
+}
+
+/**
+ * Create notification for failed payment
+ */
+export async function createPaymentFailedNotification(
+  userId: string,
+  transactionId: string,
+  errorMessage?: string
+): Promise<void> {
+  try {
+    // Check if notification for this transaction already exists
+    const existingNotif = await prisma.notification.findFirst({
+      where: {
+        userId,
+        type: 'PAYMENT_FAILED',
+        metadata: {
+          path: ['transactionId'],
+          equals: transactionId
+        }
+      }
+    })
+
+    if (existingNotif) {
+      // Already notified for this transaction
+      return
+    }
+
+    const description = errorMessage
+      ? `Votre paiement a échoué : ${errorMessage}. Veuillez réessayer.`
+      : 'Votre paiement a échoué. Veuillez vérifier vos informations et réessayer.'
+
+    await prisma.notification.create({
+      data: {
+        userId,
+        type: 'PAYMENT_FAILED',
+        title: '⚠️ Paiement échoué',
+        description,
+        actionUrl: '/dashboard/upgrade',
+        metadata: {
+          transactionId,
+          errorMessage,
+          failedAt: new Date().toISOString()
+        },
+        isRead: false
+      }
+    })
+  } catch (error) {
+    console.error('[Notification] Failed to create PAYMENT_FAILED notification:', error)
+  }
+}
+
+/**
+ * Create notification for payment retry reminder (J+3, J+7)
+ */
+export async function createPaymentRetryReminderNotification(
+  userId: string
+): Promise<void> {
+  try {
+    // Check if already sent a retry reminder in last 24h
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
+
+    const existingNotif = await prisma.notification.findFirst({
+      where: {
+        userId,
+        type: 'PAYMENT_RETRY_REMINDER',
+        createdAt: {
+          gte: twentyFourHoursAgo
+        }
+      }
+    })
+
+    if (existingNotif) {
+      // Already sent reminder today
+      return
+    }
+
+    await prisma.notification.create({
+      data: {
+        userId,
+        type: 'PAYMENT_RETRY_REMINDER',
+        title: '🔔 Rappel de paiement',
+        description: 'Votre paiement est toujours en attente. Finalisez votre abonnement SmartLink dès maintenant.',
+        actionUrl: '/dashboard/upgrade',
+        metadata: {
+          reminderSentAt: new Date().toISOString()
+        },
+        isRead: false
+      }
+    })
+  } catch (error) {
+    console.error('[Notification] Failed to create PAYMENT_RETRY_REMINDER notification:', error)
+  }
+}

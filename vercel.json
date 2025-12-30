@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/check-expiring-subscriptions",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/expire-subscriptions",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/retry-failed-payments",
+      "schedule": "0 10 * * *"
+    }
+  ]
+}
