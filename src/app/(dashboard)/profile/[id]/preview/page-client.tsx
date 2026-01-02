@@ -12,7 +12,6 @@ import {
   Calendar,
   Building2,
   MapPin,
-  Plus,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -22,9 +21,10 @@ import { EditableCover } from '@/components/profile/editable-cover'
 import { EditableBio } from '@/components/profile/editable-bio'
 import { EditableExperiences } from '@/components/profile/editable-experiences'
 import { EditableSkills } from '@/components/profile/editable-skills'
+import { EditableProjects } from '@/components/profile/editable-projects'
+import { EditableVideo } from '@/components/profile/editable-video'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import Image from 'next/image'
 import type { Profile } from '@prisma/client'
 
 interface ProfileWithRelations extends Profile {
@@ -235,6 +235,14 @@ export function PreviewPageClient({ initialProfile }: PreviewPageClientProps) {
               </CardContent>
             </Card>
 
+            {/* Video Section - PRO Feature */}
+            <EditableVideo
+              profileId={profile.id}
+              currentVideoUrl={profile.videoUrl}
+              userPlan={userPlan}
+              onUpdate={(videoUrl) => setProfile({ ...profile, videoUrl })}
+            />
+
             {/* Projects Section - PRO Feature */}
             <Card className="border-border bg-card">
               <CardHeader className="flex flex-row items-center justify-between">
@@ -247,14 +255,6 @@ export function PreviewPageClient({ initialProfile }: PreviewPageClientProps) {
                     </Badge>
                   )}
                 </div>
-                {isPro && (
-                  <Button size="sm" className="cursor-pointer bg-primary hover:bg-primary/90" asChild>
-                    <Link href={`/profile/${profile.id}/edit#projects`}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Ajouter
-                    </Link>
-                  </Button>
-                )}
               </CardHeader>
               <CardContent>
                 {!isPro ? (
@@ -273,42 +273,12 @@ export function PreviewPageClient({ initialProfile }: PreviewPageClientProps) {
                       </Link>
                     </Button>
                   </div>
-                ) : profile.projects.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {profile.projects.map((project) => (
-                      <div key={project.id} className="rounded-lg border overflow-hidden group hover:shadow-lg transition-shadow">
-                        {project.images[0] && (
-                          <div className="relative h-40 bg-muted">
-                            <Image
-                              src={project.images[0]}
-                              alt={project.title}
-                              fill
-                              className="object-cover"
-                              unoptimized={project.images[0].includes('supabase.co')}
-                            />
-                          </div>
-                        )}
-                        <div className="p-4">
-                          <h3 className="font-semibold text-foreground">{project.title}</h3>
-                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                            {project.description}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
                 ) : (
-                  <div className="rounded-lg border-2 border-dashed border-border bg-muted/30 p-8 text-center">
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Ajoutez vos projets pour mettre en valeur vos réalisations
-                    </p>
-                    <Button size="sm" className="cursor-pointer bg-primary hover:bg-primary/90" asChild>
-                      <Link href={`/profile/${profile.id}/edit#projects`}>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Ajouter un projet
-                      </Link>
-                    </Button>
-                  </div>
+                  <EditableProjects
+                    profileId={profile.id}
+                    projects={profile.projects}
+                    onUpdate={(projects) => setProfile({ ...profile, projects })}
+                  />
                 )}
               </CardContent>
             </Card>
