@@ -6,6 +6,7 @@ import { Loader2 } from 'lucide-react'
 interface PaymentSuccessPageProps {
   searchParams: Promise<{
     transaction_id?: string
+    order_id?: string // Lemon Squeezy parameter
   }>
 }
 
@@ -15,7 +16,8 @@ export default async function PaymentSuccessPage({
   searchParams,
 }: PaymentSuccessPageProps) {
   const params = await searchParams
-  const transactionId = params.transaction_id
+  // Support both CinetPay (transaction_id) and Lemon Squeezy (order_id)
+  const transactionId = params.transaction_id || params.order_id
 
   if (!transactionId) {
     return (

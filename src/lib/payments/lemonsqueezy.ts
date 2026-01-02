@@ -66,6 +66,9 @@ export async function initLemonSqueezyCheckout(
                 user_id: userId,
               },
             },
+            checkout_options: {
+              redirect_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/success?order_id={order_id}`,
+            },
           },
           relationships: {
             store: {
