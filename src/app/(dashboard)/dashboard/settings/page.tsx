@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import { User, Mail, Calendar, Edit, KeyRound } from 'lucide-react'
+import { prisma } from '@/lib/db/prisma'
+import { SubscriptionStatusCard } from '@/components/dashboard/subscription-status-card'
 
 export const metadata: Metadata = {
   title: 'Paramètres',
@@ -19,6 +21,16 @@ export default async function SettingsPage() {
   const session = await getSession()
 
   if (!session) {
+    redirect('/login')
+  }
+
+  // Fetch user with subscription
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    include: { subscription: true },
+  })
+
+  if (!user) {
     redirect('/login')
   }
 
@@ -104,33 +116,10 @@ export default async function SettingsPage() {
         </Card>
 
         {/* Abonnement */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Abonnement</CardTitle>
-            <CardDescription>
-              Gérez votre plan et votre facturation
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Plan actuel</p>
-                  <p className="text-sm text-muted-foreground">
-                    Vous êtes actuellement sur le plan gratuit
-                  </p>
-                </div>
-                <Badge variant="outline">FREE</Badge>
-              </div>
-
-              <Separator />
-
-              <Button variant="default" disabled>
-                Mettre à niveau
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Abonnement</h2>
+          <SubscriptionStatusCard subscription={user.subscription} />
+        </div>
 
         {/* Préférences */}
         <Card>

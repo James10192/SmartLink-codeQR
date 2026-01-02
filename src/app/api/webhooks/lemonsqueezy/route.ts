@@ -9,6 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/db/prisma'
 import {
   verifyLemonSqueezySignature,
@@ -178,6 +179,11 @@ async function handleOrderCreated(event: any): Promise<void> {
       },
     })
 
+    // Revalidate dashboard pages to show updated subscription
+    revalidatePath('/dashboard')
+    revalidatePath('/dashboard/billing')
+    revalidatePath('/dashboard/settings')
+
     console.log(`[Lemon Squeezy] Order completed: ${userId} -> ${plan}`)
   } else {
     // Payment failed
@@ -259,6 +265,11 @@ async function handleSubscriptionCreated(event: any): Promise<void> {
     },
   })
 
+  // Revalidate dashboard pages to show updated subscription
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/billing')
+  revalidatePath('/dashboard/settings')
+
   console.log(`[Lemon Squeezy] Subscription activated: ${userId} -> ${plan}`)
 }
 
@@ -278,8 +289,9 @@ async function handleSubscriptionUpdated(event: any): Promise<void> {
 
   console.log(`[Lemon Squeezy] Subscription updated: ${userId} (status: ${status})`)
 
-  // Handle renewal
-  if (status === 'active') {
+  // Handle renewal or trial activation
+  // Treat 'active' and 'on_trial' as active subscriptions
+  if (status === 'active' || status === 'on_trial') {
     const variantId = subscription.attributes.variant_id
     const product = getProductFromVariantId(variantId)
 
@@ -287,27 +299,61 @@ async function handleSubscriptionUpdated(event: any): Promise<void> {
       const plan = getSubscriptionPlan(product)
       const expiresAt = calculateExpirationDate(product)
 
-      await prisma.subscription.update({
+      // Check if subscription already exists
+      const existingSubscription = await prisma.subscription.findUnique({
         where: { userId },
-        data: {
-          status: 'ACTIVE',
-          expiresAt,
-          updatedAt: new Date(),
-        },
       })
 
-      // Track renewal
-      captureEvent({
-        distinctId: userId,
-        event: 'subscription_renewed',
-        properties: {
-          plan,
-          product,
-          expiresAt: expiresAt.toISOString(),
-        },
-      })
+      if (existingSubscription) {
+        // Update existing subscription
+        await prisma.subscription.update({
+          where: { userId },
+          data: {
+            status: 'ACTIVE',
+            plan,
+            expiresAt,
+            updatedAt: new Date(),
+          },
+        })
 
-      console.log(`[Lemon Squeezy] Subscription renewed: ${userId}`)
+        // Track renewal
+        captureEvent({
+          distinctId: userId,
+          event: 'subscription_renewed',
+          properties: {
+            plan,
+            product,
+            status,
+            expiresAt: expiresAt.toISOString(),
+          },
+        })
+
+        // Revalidate dashboard pages to show updated subscription
+        revalidatePath('/dashboard')
+        revalidatePath('/dashboard/billing')
+        revalidatePath('/dashboard/settings')
+
+        console.log(`[Lemon Squeezy] Subscription renewed/activated: ${userId} (${status})`)
+      } else {
+        // Create new subscription if it doesn't exist
+        // This can happen if subscription_created webhook was missed
+        await prisma.subscription.create({
+          data: {
+            userId,
+            plan,
+            status: 'ACTIVE',
+            expiresAt,
+            paymentMethod: 'LEMONSQUEEZY',
+          },
+        })
+
+        // Revalidate dashboard pages to show new subscription
+        revalidatePath('/dashboard')
+        revalidatePath('/dashboard/billing')
+        revalidatePath('/dashboard/settings')
+
+        console.log(`[Lemon Squeezy] Subscription created from update event: ${userId} (${status})`)
+      }
     }
   }
 }
@@ -347,6 +393,11 @@ async function handleSubscriptionCancelled(event: any): Promise<void> {
       subscriptionId: subscription.id,
     },
   })
+
+  // Revalidate dashboard pages to show cancelled status
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/billing')
+  revalidatePath('/dashboard/settings')
 
   console.log(`[Lemon Squeezy] Subscription marked as cancelled: ${userId}`)
 }

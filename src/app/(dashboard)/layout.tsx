@@ -5,6 +5,8 @@ import { DashboardLayoutClient } from '@/components/layout/DashboardLayoutClient
 import { prisma } from '@/lib/db/prisma'
 import { getUnreadNotificationCount } from '@/lib/actions/notifications'
 
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardLayout({
   children,
 }: {
