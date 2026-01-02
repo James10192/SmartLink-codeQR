@@ -44,7 +44,7 @@ export default async function SettingsPage() {
     : session.user.email.charAt(0).toUpperCase()
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Paramètres</h1>
         <p className="mt-2 text-muted-foreground">
@@ -52,9 +52,11 @@ export default async function SettingsPage() {
         </p>
       </div>
 
-      <div className="mx-auto max-w-2xl space-y-6">
-        {/* Informations du compte */}
-        <Card>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column: Account Info + Preferences */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Informations du compte */}
+          <Card>
           <CardHeader>
             <CardTitle>Informations du compte</CardTitle>
             <CardDescription>
@@ -115,12 +117,6 @@ export default async function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Abonnement */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Abonnement</h2>
-          <SubscriptionStatusCard subscription={user.subscription} />
-        </div>
-
         {/* Préférences */}
         <Card>
           <CardHeader>
@@ -159,9 +155,18 @@ export default async function SettingsPage() {
             </div>
           </CardContent>
         </Card>
+        </div>
 
-        {/* Zone de danger */}
-        <Card className="border-destructive/50">
+        {/* Right Column: Subscription + Danger Zone */}
+        <div className="lg:col-span-1 space-y-6">
+          {/* Abonnement */}
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Abonnement</h2>
+            <SubscriptionStatusCard subscription={user.subscription} />
+          </div>
+
+          {/* Zone de danger */}
+          <Card className="border-destructive/50">
           <CardHeader>
             <CardTitle className="text-destructive">Zone de danger</CardTitle>
             <CardDescription>
@@ -184,6 +189,7 @@ export default async function SettingsPage() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   )
