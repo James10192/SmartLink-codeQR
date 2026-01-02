@@ -39,8 +39,15 @@ export function SubscriptionStatusCard({ subscription }: SubscriptionStatusCardP
     )
   }
 
-  const { plan, status, expiresAt } = subscription
-  const daysLeft = getDaysUntilExpiration(subscription)
+  const { plan, status, expiresAt, trialEndsAt } = subscription
+
+  // Check if currently on trial
+  const isOnTrial = trialEndsAt && new Date(trialEndsAt) > new Date()
+
+  // Calculate days left (trial or paid subscription)
+  const daysLeft = isOnTrial
+    ? Math.ceil((new Date(trialEndsAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+    : getDaysUntilExpiration(subscription)
 
   // Determine card styling based on status and days left
   const getCardStyle = () => {
@@ -121,38 +128,86 @@ export function SubscriptionStatusCard({ subscription }: SubscriptionStatusCardP
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {expiresAt && daysLeft !== null && status === 'ACTIVE' && (
+        {status === 'ACTIVE' && daysLeft !== null && (
           <>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Jours restants</span>
-                <span
-                  className={`font-semibold ${
-                    daysLeft <= 3
-                      ? 'text-red-500'
-                      : daysLeft <= 7
-                        ? 'text-orange-500'
-                        : 'text-green-500'
-                  }`}
-                >
-                  {daysLeft} {daysLeft === 1 ? 'jour' : 'jours'}
-                </span>
-              </div>
-              <Progress value={getProgressPercentage()} className="h-2" />
-            </div>
+            {isOnTrial && trialEndsAt ? (
+              <>
+                <div className="rounded-lg bg-blue-50 p-3 text-sm dark:bg-blue-950">
+                  <p className="font-semibold text-blue-800 dark:text-blue-200">
+                    Période d'essai gratuite
+                  </p>
+                  <p className="mt-1 text-xs text-blue-700 dark:text-blue-300">
+                    Profitez de toutes les fonctionnalités PRO gratuitement
+                  </p>
+                </div>
 
-            <div className="rounded-lg bg-muted p-3 text-sm">
-              <p className="text-muted-foreground">
-                Expire le{' '}
-                <span className="font-semibold text-foreground">
-                  {expiresAt.toLocaleDateString('fr-FR', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                  })}
-                </span>
-              </p>
-            </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Jours restants</span>
+                    <span
+                      className={`font-semibold ${
+                        daysLeft <= 3
+                          ? 'text-red-500'
+                          : daysLeft <= 7
+                            ? 'text-orange-500'
+                            : 'text-blue-500'
+                      }`}
+                    >
+                      {daysLeft} {daysLeft === 1 ? 'jour' : 'jours'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="rounded-lg bg-muted p-3 text-sm">
+                  <p className="text-muted-foreground">
+                    Période d'essai se termine le{' '}
+                    <span className="font-semibold text-foreground">
+                      {new Date(trialEndsAt).toLocaleDateString('fr-FR', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                      })}
+                    </span>
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Vous serez débité puis bénéficierez d'un mois d'accès
+                  </p>
+                </div>
+              </>
+            ) : expiresAt ? (
+              <>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Jours restants</span>
+                    <span
+                      className={`font-semibold ${
+                        daysLeft <= 3
+                          ? 'text-red-500'
+                          : daysLeft <= 7
+                            ? 'text-orange-500'
+                            : 'text-green-500'
+                      }`}
+                    >
+                      {daysLeft} {daysLeft === 1 ? 'jour' : 'jours'}
+                    </span>
+                  </div>
+                  <Progress value={getProgressPercentage()} className="h-2" />
+                </div>
+
+                <div className="rounded-lg bg-muted p-3 text-sm">
+                  <p className="text-muted-foreground">
+                    Expire le{' '}
+                    <span className="font-semibold text-foreground">
+                      {expiresAt.toLocaleDateString('fr-FR', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                      })}
+                    </span>
+                  </p>
+                </div>
+              </>
+            ) : null}
           </>
         )}
 

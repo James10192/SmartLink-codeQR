@@ -233,6 +233,11 @@ async function handleSubscriptionCreated(event: any): Promise<void> {
   const plan = getSubscriptionPlan(product)
   const expiresAt = calculateExpirationDate(product)
 
+  // Extract trial end date if present
+  const trialEndsAt = subscription.attributes.trial_ends_at
+    ? new Date(subscription.attributes.trial_ends_at)
+    : null
+
   // Update or create subscription
   await prisma.subscription.upsert({
     where: { userId },
@@ -241,6 +246,7 @@ async function handleSubscriptionCreated(event: any): Promise<void> {
       plan,
       status: 'ACTIVE',
       expiresAt,
+      trialEndsAt,
       paymentMethod: 'LEMONSQUEEZY',
       paymentId: subscription.id,
     },
@@ -248,6 +254,7 @@ async function handleSubscriptionCreated(event: any): Promise<void> {
       plan,
       status: 'ACTIVE',
       expiresAt,
+      trialEndsAt,
       paymentMethod: 'LEMONSQUEEZY',
       paymentId: subscription.id,
     },
@@ -299,6 +306,11 @@ async function handleSubscriptionUpdated(event: any): Promise<void> {
       const plan = getSubscriptionPlan(product)
       const expiresAt = calculateExpirationDate(product)
 
+      // Extract trial end date if present
+      const trialEndsAt = subscription.attributes.trial_ends_at
+        ? new Date(subscription.attributes.trial_ends_at)
+        : null
+
       // Check if subscription already exists
       const existingSubscription = await prisma.subscription.findUnique({
         where: { userId },
@@ -312,6 +324,7 @@ async function handleSubscriptionUpdated(event: any): Promise<void> {
             status: 'ACTIVE',
             plan,
             expiresAt,
+            trialEndsAt,
             updatedAt: new Date(),
           },
         })
@@ -343,6 +356,7 @@ async function handleSubscriptionUpdated(event: any): Promise<void> {
             plan,
             status: 'ACTIVE',
             expiresAt,
+            trialEndsAt,
             paymentMethod: 'LEMONSQUEEZY',
           },
         })

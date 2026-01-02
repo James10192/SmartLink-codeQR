@@ -17,14 +17,14 @@ datasource db {
 // ==========================================
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  emailVerified Boolean   @default(false)
+  id            String   @id @default(cuid())
+  email         String   @unique
+  emailVerified Boolean  @default(false)
   name          String?
   image         String?
-  role          UserRole  @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  role          UserRole @default(USER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   // Relations
   profiles      Profile[]
@@ -50,20 +50,20 @@ model Session {
 }
 
 model Account {
-  id                       String    @id @default(cuid())
-  accountId                String
-  providerId               String
-  userId                   String
-  user                     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken              String?
-  refreshToken             String?
-  idToken                  String?
-  accessTokenExpiresAt     DateTime?
-  refreshTokenExpiresAt    DateTime?
-  scope                    String?
-  password                 String?
-  createdAt                DateTime  @default(now())
-  updatedAt                DateTime  @updatedAt
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
   @@unique([providerId, accountId])
   @@index([userId])
@@ -90,22 +90,22 @@ enum UserRole {
 // ==========================================
 
 model Notification {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  type        NotificationType
-  profileId   String?
-  profile     Profile? @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  profileId String?
+  profile   Profile?         @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   title       String
   description String
-  metadata    Json?    // { city, country, count, visitorName }
-  actionUrl   String?  // /dashboard/analytics or /dashboard/upgrade
-  isRead      Boolean  @default(false)
+  metadata    Json? // { city, country, count, visitorName }
+  actionUrl   String? // /dashboard/analytics or /dashboard/upgrade
+  isRead      Boolean @default(false)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId, isRead, createdAt])
   @@index([profileId, type, createdAt])
@@ -118,12 +118,12 @@ enum NotificationType {
   SUBSCRIPTION_LIMIT
 
   // Payment-related notifications
-  SUBSCRIPTION_EXPIRING_SOON  // 7j, 3j, 1j avant expiration
-  SUBSCRIPTION_EXPIRED        // Jour d'expiration
-  PAYMENT_SUCCESSFUL          // Confirmation paiement
-  PAYMENT_FAILED              // Échec paiement
-  PAYMENT_RETRY_REMINDER      // Rappel J+3, J+7 après échec
-  SUBSCRIPTION_RENEWED        // Renouvellement réussi
+  SUBSCRIPTION_EXPIRING_SOON // 7j, 3j, 1j avant expiration
+  SUBSCRIPTION_EXPIRED // Jour d'expiration
+  PAYMENT_SUCCESSFUL // Confirmation paiement
+  PAYMENT_FAILED // Échec paiement
+  PAYMENT_RETRY_REMINDER // Rappel J+3, J+7 après échec
+  SUBSCRIPTION_RENEWED // Renouvellement réussi
 }
 
 // ==========================================
@@ -131,63 +131,63 @@ enum NotificationType {
 // ==========================================
 
 model Profile {
-  id            String    @id @default(cuid())
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Profile identification
-  label         String    @default("Mon Profil")  // Ex: "Professionnel", "Artistique", "Personnel"
+  label String @default("Mon Profil") // Ex: "Professionnel", "Artistique", "Personnel"
 
   // Slug pour URL publique (ex: /u/jean-kouassi)
-  slug          String    @unique
+  slug String @unique
 
   // Données vCard
-  fullName      String
-  jobTitle      String?
-  company       String?
-  phoneNumber   String
-  email         String
-  website       String?
-  address       String?
+  fullName    String
+  jobTitle    String?
+  company     String?
+  phoneNumber String
+  email       String
+  website     String?
+  address     String?
 
   // Médias
   avatarUrl     String?
-  coverImageUrl String?   // URL de la photo de couverture sur Supabase Storage
-  cvFileUrl     String?   // URL du PDF sur Supabase Storage
-  videoUrl      String?   // URL to video in Supabase Storage (PRO+)
+  coverImageUrl String? // URL de la photo de couverture sur Supabase Storage
+  cvFileUrl     String? // URL du PDF sur Supabase Storage
+  videoUrl      String? // URL to video in Supabase Storage (PRO+)
 
   // Réseaux sociaux
-  linkedinUrl   String?
-  twitterUrl    String?
-  facebookUrl   String?
+  linkedinUrl    String?
+  twitterUrl     String?
+  facebookUrl    String?
   whatsappNumber String?
 
   // Nouveau : Bio / À propos
-  bio           String?   @db.Text
+  bio String? @db.Text
 
   // Paramètres
-  isPublic      Boolean   @default(true)
-  showCV        Boolean   @default(true)
+  isPublic Boolean @default(true)
+  showCV   Boolean @default(true)
 
   // Analytics (compteurs en DB)
-  viewsCount    Int       @default(0)  // Total page views (Option A)
-  uniqueVisitors Int      @default(0)  // Unique visitors per day (Option B)
-  cvDownloads   Int       @default(0)
-  contactSaves  Int       @default(0)  // Téléchargements vCard
+  viewsCount     Int @default(0) // Total page views (Option A)
+  uniqueVisitors Int @default(0) // Unique visitors per day (Option B)
+  cvDownloads    Int @default(0)
+  contactSaves   Int @default(0) // Téléchargements vCard
 
   // Premium features relations
   theme         ProfileTheme?
   visitors      ProfileVisitor[]
   experiences   Experience[]
   skills        Skill[]
-  projects      Project[]       // PRO only
-  testimonials  Testimonial[]   // PRO only
-  posts         Post[]          // PRO only
-  qrLinks       QrLink[]        // Dynamic QR codes with expiration
+  projects      Project[] // PRO only
+  testimonials  Testimonial[] // PRO only
+  posts         Post[] // PRO only
+  qrLinks       QrLink[] // Dynamic QR codes with expiration
   notifications Notification[]
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([slug])
@@ -200,19 +200,19 @@ model Profile {
 // Dynamic QR links with expiration control
 // Allows revoking QR codes when subscription expires
 model QrLink {
-  id             String    @id @default(cuid())
-  shortCode      String    @unique @db.VarChar(10)  // 8-char unique code for /q/[shortCode]
-  profileId      String
-  profile        Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  shortCode String  @unique @db.VarChar(10) // 8-char unique code for /q/[shortCode]
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   // Activation status
-  isActive       Boolean   @default(true)
-  createdAt      DateTime  @default(now())
-  deactivatedAt  DateTime?  // When subscription expired
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  deactivatedAt DateTime? // When subscription expired
 
   // Analytics
-  scanCount      Int       @default(0)
-  lastScannedAt  DateTime?
+  scanCount     Int       @default(0)
+  lastScannedAt DateTime?
 
   @@index([shortCode])
   @@index([profileId])
@@ -224,41 +224,42 @@ model QrLink {
 // ==========================================
 
 model Subscription {
-  id            String    @id @default(cuid())
-  userId        String    @unique
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  plan          SubscriptionPlan @default(FREE)
-  status        SubscriptionStatus @default(ACTIVE)
+  plan   SubscriptionPlan   @default(FREE)
+  status SubscriptionStatus @default(ACTIVE)
 
   // Paiement
   paymentMethod PaymentMethod?
-  paymentId     String?           // CinetPay transaction_id ou Lemon Squeezy order_id
-  expiresAt     DateTime?         // Date d'expiration de l'abonnement
+  paymentId     String? // CinetPay transaction_id ou Lemon Squeezy order_id
+  expiresAt     DateTime? // Date d'expiration de l'abonnement
+  trialEndsAt   DateTime? // Date de fin de la période d'essai (Lemon Squeezy trial)
 
-  startDate     DateTime  @default(now())
-  endDate       DateTime?
+  startDate DateTime  @default(now())
+  endDate   DateTime?
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // Payment transaction history
 model Payment {
-  id            String    @id @default(cuid())
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  transactionId String    @unique  // CinetPay transaction_id or external ID
-  amount        Int                 // Amount in smallest currency unit (FCFA)
-  currency      String    @default("XOF")
+  transactionId String           @unique // CinetPay transaction_id or external ID
+  amount        Int // Amount in smallest currency unit (FCFA)
+  currency      String           @default("XOF")
   plan          SubscriptionPlan
-  provider      String              // CINETPAY or LEMONSQUEEZY
+  provider      String // CINETPAY or LEMONSQUEEZY
   status        PaymentStatus
   paidAt        DateTime?
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([transactionId])
@@ -274,23 +275,23 @@ enum PaymentStatus {
 }
 
 enum SubscriptionPlan {
-  FREE             // 1 profil
-  PRO_DIGITAL      // 3 profils, stats, personnalisation
-  PACK_STARTER     // 3 profils + 50 cartes papier
-  CORPORATE        // Profils illimités, gestion entreprise
+  FREE // 1 profil
+  PRO_DIGITAL // 3 profils, stats, personnalisation
+  PACK_STARTER // 3 profils + 50 cartes papier
+  CORPORATE // Profils illimités, gestion entreprise
 }
 
 enum SubscriptionStatus {
   ACTIVE
   EXPIRED
   CANCELLED
-  PENDING         // En attente de confirmation paiement
+  PENDING // En attente de confirmation paiement
 }
 
 enum PaymentMethod {
-  CINETPAY              // Mobile Money via CinetPay (tous opérateurs)
-  LEMONSQUEEZY          // Carte bancaire via Lemon Squeezy
-  MANUAL                // Attribution manuelle par admin
+  CINETPAY // Mobile Money via CinetPay (tous opérateurs)
+  LEMONSQUEEZY // Carte bancaire via Lemon Squeezy
+  MANUAL // Attribution manuelle par admin
 }
 
 // ==========================================
@@ -299,65 +300,65 @@ enum PaymentMethod {
 
 // Theme customization (PRO+ only)
 model ProfileTheme {
-  id                String        @id @default(cuid())
-  profileId         String        @unique
-  profile           Profile       @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  profileId String  @unique
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   // Brand colors (hex format)
-  primaryColor      String        @default("#000000")
-  secondaryColor    String?
-  backgroundColor   String        @default("#ffffff")
-  textColor         String        @default("#000000")
+  primaryColor    String  @default("#000000")
+  secondaryColor  String?
+  backgroundColor String  @default("#ffffff")
+  textColor       String  @default("#000000")
 
   // Layout settings
-  layout            ThemeLayout   @default(CENTERED)
-  fontFamily        String?       // "Inter", "Poppins", etc.
+  layout     ThemeLayout @default(CENTERED)
+  fontFamily String? // "Inter", "Poppins", etc.
 
   // Custom sections (JSON array)
-  customSections    Json?         // [{ type: "portfolio", title: "Mes projets", items: [...] }]
+  customSections Json? // [{ type: "portfolio", title: "Mes projets", items: [...] }]
 
   // Logo/branding
-  logoUrl           String?
+  logoUrl String?
 
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([profileId])
 }
 
 enum ThemeLayout {
-  CENTERED      // Default: content centered, minimal
-  LEFT_ALIGNED  // Content left, visual right
-  CARD_GRID     // Card-based layout
-  MINIMAL       // Ultra minimalist, text-focused
+  CENTERED // Default: content centered, minimal
+  LEFT_ALIGNED // Content left, visual right
+  CARD_GRID // Card-based layout
+  MINIMAL // Ultra minimalist, text-focused
 }
 
 // Visitor tracking (anonymous, RGPD-compliant)
 model ProfileVisitor {
-  id            String    @id @default(cuid())
-  profileId     String
-  profile       Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   // Anonymous tracking data
-  city          String?
-  country       String?
-  countryCode   String?   // ISO 2-letter code (CI, FR, etc.)
-  region        String?
+  city        String?
+  country     String?
+  countryCode String? // ISO 2-letter code (CI, FR, etc.)
+  region      String?
 
   // Technical metadata (hashed, not personal)
-  ipHash        String?   // SHA256 hash of IP (not the actual IP)
-  userAgentHash String?   // Hashed to detect unique visitors
+  ipHash        String? // SHA256 hash of IP (not the actual IP)
+  userAgentHash String? // Hashed to detect unique visitors
 
   // Visitor identification (optional, self-provided)
-  visitorName   String?   // Name provided by visitor (QR scan modal)
-  visitorContact String?  // Email or phone provided by visitor
+  visitorName    String? // Name provided by visitor (QR scan modal)
+  visitorContact String? // Email or phone provided by visitor
 
   // Event tracking
-  visitedAt     DateTime  @default(now())
-  referrer      String?   // Where did they come from?
+  visitedAt DateTime @default(now())
+  referrer  String? // Where did they come from?
 
-  @@index([profileId, visitedAt])   // Fast recent visitors query
-  @@index([profileId, ipHash])      // Fast visitor deduplication
+  @@index([profileId, visitedAt]) // Fast recent visitors query
+  @@index([profileId, ipHash]) // Fast visitor deduplication
 }
 
 // ==========================================
@@ -368,13 +369,13 @@ model ProfileVisitor {
 // Cette table Analytics est optionnelle (peut être retirée si PostHog suffit)
 
 model Analytics {
-  id            String    @id @default(cuid())
-  profileId     String
+  id        String @id @default(cuid())
+  profileId String
 
-  event         AnalyticsEvent
-  metadata      Json?     // IP, User-Agent, pays, etc.
+  event    AnalyticsEvent
+  metadata Json? // IP, User-Agent, pays, etc.
 
-  createdAt     DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   @@index([profileId, createdAt])
 }
@@ -392,55 +393,55 @@ enum AnalyticsEvent {
 
 // Professional Experience
 model Experience {
-  id          String    @id @default(cuid())
-  profileId   String
-  profile     Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  position    String                    // Job title (ex: "Développeur Full-Stack")
-  company     String                    // Company name
-  location    String?                   // City/Country
-  description String?   @db.Text        // Job description
+  position    String // Job title (ex: "Développeur Full-Stack")
+  company     String // Company name
+  location    String? // City/Country
+  description String? @db.Text // Job description
 
-  startDate   DateTime                  // Start date
-  endDate     DateTime?                 // End date (null if current position)
-  isCurrent   Boolean   @default(false) // Currently working here
+  startDate DateTime // Start date
+  endDate   DateTime? // End date (null if current position)
+  isCurrent Boolean   @default(false) // Currently working here
 
   employmentType EmploymentType @default(FULL_TIME)
 
   // Order in profile (manual sorting)
-  order       Int       @default(0)
+  order Int @default(0)
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([profileId, order])
   @@index([profileId, startDate])
 }
 
 enum EmploymentType {
-  FULL_TIME     // CDI
-  PART_TIME     // Temps partiel
-  CONTRACT      // CDD
-  INTERNSHIP    // Stage
-  FREELANCE     // Indépendant
-  APPRENTICE    // Alternance
+  FULL_TIME // CDI
+  PART_TIME // Temps partiel
+  CONTRACT // CDD
+  INTERNSHIP // Stage
+  FREELANCE // Indépendant
+  APPRENTICE // Alternance
 }
 
 // Skills & Competencies
 model Skill {
-  id          String      @id @default(cuid())
-  profileId   String
-  profile     Profile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  name        String                  // Skill name (ex: "React", "Marketing Digital")
-  level       SkillLevel  @default(INTERMEDIATE)
-  category    SkillCategory @default(TECHNICAL)
+  name     String // Skill name (ex: "React", "Marketing Digital")
+  level    SkillLevel    @default(INTERMEDIATE)
+  category SkillCategory @default(TECHNICAL)
 
   // Order in profile
-  order       Int         @default(0)
+  order Int @default(0)
 
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([profileId, category])
   @@index([profileId, order])
@@ -454,41 +455,41 @@ enum SkillLevel {
 }
 
 enum SkillCategory {
-  TECHNICAL     // Compétences techniques
-  SOFT_SKILLS   // Soft skills
-  LANGUAGES     // Langues
-  TOOLS         // Outils/Logiciels
-  OTHER         // Autres
+  TECHNICAL // Compétences techniques
+  SOFT_SKILLS // Soft skills
+  LANGUAGES // Langues
+  TOOLS // Outils/Logiciels
+  OTHER // Autres
 }
 
 // Projects / Portfolio (PRO+ only)
 model Project {
-  id          String    @id @default(cuid())
-  profileId   String
-  profile     Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  title       String                    // Project title
-  description String    @db.Text        // Project description
-  url         String?                   // Live project URL
+  title       String // Project title
+  description String  @db.Text // Project description
+  url         String? // Live project URL
 
   // Gallery images (stored in Supabase Storage)
-  images      String[]  @default([])    // Array of image URLs
+  images String[] @default([]) // Array of image URLs
 
   // Technologies used
-  technologies String[] @default([])    // Array of tech names (ex: ["React", "Node.js"])
+  technologies String[] @default([]) // Array of tech names (ex: ["React", "Node.js"])
 
   // Dates
-  startDate   DateTime?
-  endDate     DateTime?
+  startDate DateTime?
+  endDate   DateTime?
 
   // Featured project (show first)
-  isFeatured  Boolean   @default(false)
+  isFeatured Boolean @default(false)
 
   // Order in profile
-  order       Int       @default(0)
+  order Int @default(0)
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([profileId, isFeatured])
   @@index([profileId, order])
@@ -496,34 +497,34 @@ model Project {
 
 // Testimonials / Recommendations (PRO+ only)
 model Testimonial {
-  id          String    @id @default(cuid())
-  profileId   String
-  profile     Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   // Author info
-  authorName  String                    // Name of person giving testimonial
-  authorTitle String?                   // Job title
-  authorCompany String?                 // Company name
-  authorPhoto String?                   // Photo URL (optional)
+  authorName    String // Name of person giving testimonial
+  authorTitle   String? // Job title
+  authorCompany String? // Company name
+  authorPhoto   String? // Photo URL (optional)
 
   // Testimonial content
-  content     String    @db.Text        // The actual testimonial
-  rating      Int?                      // Rating out of 5 (optional)
+  content String @db.Text // The actual testimonial
+  rating  Int? // Rating out of 5 (optional)
 
   // Relationship with profile owner
-  relationship String?                  // Ex: "Client", "Collègue", "Manager"
+  relationship String? // Ex: "Client", "Collègue", "Manager"
 
   // Dates
-  date        DateTime  @default(now()) // When testimonial was given
+  date DateTime @default(now()) // When testimonial was given
 
   // Visibility
-  isPublished Boolean   @default(true)  // Can be hidden
+  isPublished Boolean @default(true) // Can be hidden
 
   // Order in profile
-  order       Int       @default(0)
+  order Int @default(0)
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([profileId, isPublished])
   @@index([profileId, order])
@@ -531,31 +532,31 @@ model Testimonial {
 
 // Posts / News / Updates (PRO+ only)
 model Post {
-  id          String    @id @default(cuid())
-  profileId   String
-  profile     Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  title       String                    // Post title
-  slug        String                    // URL slug (ex: "mon-nouveau-projet")
-  content     String    @db.Text        // Post content (can be rich text/markdown)
-  excerpt     String?                   // Short summary for preview
+  title   String // Post title
+  slug    String // URL slug (ex: "mon-nouveau-projet")
+  content String  @db.Text // Post content (can be rich text/markdown)
+  excerpt String? // Short summary for preview
 
   // Media
-  coverImage  String?                   // Cover image URL
+  coverImage String? // Cover image URL
 
   // Organization
-  tags        String[]  @default([])    // Array of tags
+  tags String[] @default([]) // Array of tags
 
   // Publishing
   isPublished Boolean   @default(false) // Draft vs published
-  publishedAt DateTime?                 // Publication date
+  publishedAt DateTime? // Publication date
 
   // SEO
   metaTitle       String?
   metaDescription String?
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([profileId, slug])
   @@index([profileId, isPublished])
