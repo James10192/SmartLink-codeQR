@@ -27,6 +27,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { VisitorCaptureModal } from '@/components/profile/visitor-capture-modal'
 import { ViewTracker } from '@/components/profile/view-tracker'
+import { ThemePreviewWrapper } from '@/components/profile/theme-preview-wrapper'
+import { canAccessFeature, isSubscriptionActive } from '@/lib/utils/tier-enforcement'
 import Link from 'next/link'
 import Image from 'next/image'
 import { format } from 'date-fns'
@@ -79,24 +81,33 @@ export async function generateMetadata({
 
 export default async function PublicProfilePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>
+  searchParams: Promise<{ preview?: string }>
 }) {
   const { slug } = await params
+  const { preview } = await searchParams
+  const isPreviewMode = preview === 'true'
+
   const profile = await getPublicProfile(slug)
 
   if (!profile) {
     notFound()
   }
 
-  // Fetch custom theme (PRO+ feature)
-  const theme = await getPublicProfileTheme(slug)
-  const themeVars = theme ? generateThemeVars(theme) : {}
-  const fontFamily = theme?.fontFamily || 'Inter'
-
   // Get user plan for badges and feature access
   const userPlan = profile.user.subscription?.plan || 'FREE'
   const isPro = ['PRO_DIGITAL', 'PACK_STARTER', 'CORPORATE'].includes(userPlan)
+
+  // Check if subscription is active (not expired)
+  const subscriptionActive = isSubscriptionActive(profile.user.subscription)
+
+  // Fetch custom theme (PRO+ feature) - only apply if subscription is active
+  const canUseTheme = canAccessFeature(userPlan, 'themeCustomization') && subscriptionActive
+  const theme = canUseTheme ? await getPublicProfileTheme(slug) : null
+  const themeVars = theme ? generateThemeVars(theme) : {}
+  const fontFamily = theme?.fontFamily || 'Inter'
 
   // Generate DiceBear avatar URL if no custom avatar
   const avatarUrl = profile.avatarUrl ||
@@ -140,13 +151,14 @@ export default async function PublicProfilePage({
     }))
 
   return (
-    <div
-      className="min-h-screen bg-background"
-      style={{
-        ...themeVars,
-        fontFamily,
-      } as React.CSSProperties}
-    >
+    <ThemePreviewWrapper isPreviewMode={isPreviewMode} defaultThemeVars={themeVars}>
+      <div
+        className="min-h-screen bg-background"
+        style={{
+          ...themeVars,
+          fontFamily,
+        } as React.CSSProperties}
+      >
       {/* Main Container - LinkedIn-style 2 Column Layout */}
       <div className="mx-auto max-w-7xl px-4 py-6">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -697,6 +709,7 @@ export default async function PublicProfilePage({
         profileId={profile.id}
         profileOwnerName={profile.fullName}
       />
-    </div>
+      </div>
+    </ThemePreviewWrapper>
   )
 }

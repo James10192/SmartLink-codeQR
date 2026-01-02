@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { getProfileById } from '@/lib/actions/profile'
 import { getProfileTheme as getTheme } from '@/lib/actions/theme'
-import { ThemeCustomizer } from '@/components/profile/theme-customizer'
+import { CustomizePageClient } from './page-client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Paintbrush, Eye, ArrowLeft } from 'lucide-react'
@@ -103,49 +103,11 @@ export default async function CustomizeProfilePage({ params }: CustomizeProfileP
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Customizer (2/3) */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Paintbrush className="h-5 w-5" />
-                  Personnalisation du thème
-                </CardTitle>
-                <CardDescription>
-                  Modifiez les couleurs et la mise en page de votre profil
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ThemeCustomizer profileId={id} initialTheme={theme} />
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Live Preview (1/3) */}
-          <div className="lg:col-span-1">
-            <Card className="sticky top-6">
-              <CardHeader>
-                <CardTitle className="text-base">Aperçu en direct</CardTitle>
-                <CardDescription>
-                  Visualisez les changements en temps réel
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="aspect-[9/16] rounded-lg border overflow-hidden bg-muted">
-                  <iframe
-                    src={`/u/${profile.slug}`}
-                    className="w-full h-full"
-                    title="Profile preview"
-                  />
-                </div>
-                <p className="mt-3 text-xs text-muted-foreground text-center">
-                  Actualisez pour voir les changements
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+        <CustomizePageClient
+          profileId={id}
+          slug={profile.slug}
+          initialTheme={theme}
+        />
       </div>
     )
   } catch (error) {

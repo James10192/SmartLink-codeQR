@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAction } from 'next-safe-action/hooks'
 import { saveThemeAction } from '@/lib/actions/theme'
 import { THEME_PRESETS, DEFAULT_THEME } from '@/lib/utils/theme'
@@ -32,9 +32,17 @@ interface ThemeCustomizerProps {
     layout: ThemeLayout
     fontFamily?: string | null
   } | null
+  onThemeChange?: (theme: {
+    primaryColor: string
+    secondaryColor?: string | null
+    backgroundColor: string
+    textColor: string
+    layout: ThemeLayout
+    fontFamily?: string | null
+  }) => void
 }
 
-export function ThemeCustomizer({ profileId, initialTheme }: ThemeCustomizerProps) {
+export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: ThemeCustomizerProps) {
   const [primaryColor, setPrimaryColor] = useState(
     initialTheme?.primaryColor || DEFAULT_THEME.primaryColor
   )
@@ -46,6 +54,20 @@ export function ThemeCustomizer({ profileId, initialTheme }: ThemeCustomizerProp
   )
   const [textColor, setTextColor] = useState(initialTheme?.textColor || DEFAULT_THEME.textColor)
   const [layout, setLayout] = useState<ThemeLayout>(initialTheme?.layout || DEFAULT_THEME.layout)
+
+  // Notify parent of theme changes for live preview
+  useEffect(() => {
+    if (onThemeChange) {
+      onThemeChange({
+        primaryColor,
+        secondaryColor: secondaryColor || null,
+        backgroundColor,
+        textColor,
+        layout,
+        fontFamily: null,
+      })
+    }
+  }, [primaryColor, secondaryColor, backgroundColor, textColor, layout, onThemeChange])
 
   const { execute, isExecuting } = useAction(saveThemeAction, {
     onSuccess: () => {
