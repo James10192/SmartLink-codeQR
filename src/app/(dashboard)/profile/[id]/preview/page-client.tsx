@@ -70,8 +70,8 @@ export function PreviewPageClient({ initialProfile }: PreviewPageClientProps) {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Top Bar - Edit Mode */}
-      <div className="sticky top-0 z-50 border-b bg-card shadow-sm">
-        <div className="container mx-auto flex items-center justify-between px-4 py-3 max-w-4xl">
+      <div className="sticky top-0 z-20 border-b bg-card shadow-sm">
+        <div className="container mx-auto flex items-center justify-between px-4 py-3 max-w-7xl">
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary flex-shrink-0" />
             <span className="font-semibold text-foreground text-sm md:text-base">Mode Édition</span>
@@ -108,7 +108,7 @@ export function PreviewPageClient({ initialProfile }: PreviewPageClientProps) {
       </div>
 
       {/* Main Container */}
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
+      <div className="container mx-auto px-4 py-6 max-w-7xl">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Main Content Column */}
           <div className="lg:col-span-2 space-y-6">
