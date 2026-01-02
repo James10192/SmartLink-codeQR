@@ -103,8 +103,12 @@ export default async function PublicProfilePage({
   // Check if subscription is active (not expired)
   const subscriptionActive = isSubscriptionActive(profile.user.subscription)
 
-  // Fetch custom theme (PRO+ feature) - only apply if subscription is active
+  // PRO features - only available with active subscription
+  const canUseVideo = canAccessFeature(userPlan, 'video') && subscriptionActive
   const canUseTheme = canAccessFeature(userPlan, 'themeCustomization') && subscriptionActive
+  const canUseProFeatures = isPro && subscriptionActive // For projects, testimonials, posts
+
+  // Fetch custom theme (PRO+ feature) - only apply if subscription is active
   const theme = canUseTheme ? await getPublicProfileTheme(slug) : null
   const themeVars = theme ? generateThemeVars(theme) : {}
   const fontFamily = theme?.fontFamily || 'Inter'
@@ -168,7 +172,7 @@ export default async function PublicProfilePage({
             <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
               {/* Cover Image/Video */}
               <div className="relative h-48 overflow-hidden bg-muted">
-                {profile.videoUrl ? (
+                {canUseVideo && profile.videoUrl ? (
                   <video
                     src={profile.videoUrl}
                     autoPlay
@@ -390,7 +394,7 @@ export default async function PublicProfilePage({
             )}
 
             {/* Projects Section (Only show if user has projects) */}
-            {isPro && profile.projects.length > 0 && (
+            {canUseProFeatures && profile.projects.length > 0 && (
               <div className="rounded-xl border bg-card p-6 shadow-sm">
                 <h2 className="mb-6 text-xl font-semibold text-foreground">
                   Projets & Réalisations
@@ -451,7 +455,7 @@ export default async function PublicProfilePage({
             )}
 
             {/* Testimonials Section (PRO Only) */}
-            {isPro && profile.testimonials.length > 0 && (
+            {canUseProFeatures && profile.testimonials.length > 0 && (
               <div className="rounded-xl border bg-card p-6 shadow-sm">
                 <h2 className="mb-6 text-xl font-semibold text-foreground">
                   Témoignages & Recommandations
@@ -507,7 +511,7 @@ export default async function PublicProfilePage({
             )}
 
             {/* Posts Section (PRO Only) */}
-            {isPro && profile.posts.length > 0 && (
+            {canUseProFeatures && profile.posts.length > 0 && (
               <div className="rounded-xl border bg-card p-6 shadow-sm">
                 <h2 className="mb-6 text-xl font-semibold text-foreground">
                   Actualités & Publications
