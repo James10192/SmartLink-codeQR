@@ -1,11 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/cron/check-expiring-subscriptions",
-      "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/cron/expire-subscriptions",
+      "path": "/api/cron/subscription-lifecycle",
       "schedule": "0 0 * * *"
     },
     {
