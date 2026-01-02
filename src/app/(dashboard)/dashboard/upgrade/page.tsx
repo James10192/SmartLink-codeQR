@@ -21,6 +21,7 @@ export default async function UpgradePage() {
 
   const currentPlan = user?.subscription?.plan || 'FREE'
   const expiresAt = user?.subscription?.expiresAt
+  const trialEndsAt = user?.subscription?.trialEndsAt
 
   return (
     <UpgradePageClient
@@ -28,6 +29,7 @@ export default async function UpgradePage() {
       userEmail={session.user.email}
       currentPlan={currentPlan}
       expiresAt={expiresAt}
+      trialEndsAt={trialEndsAt}
     />
   )
 }

@@ -15,9 +15,10 @@ interface UpgradePageClientProps {
   userEmail: string | null
   currentPlan: SubscriptionPlan
   expiresAt: Date | null | undefined
+  trialEndsAt: Date | null | undefined
 }
 
-export function UpgradePageClient({ userId, userEmail, currentPlan, expiresAt }: UpgradePageClientProps) {
+export function UpgradePageClient({ userId, userEmail, currentPlan, expiresAt, trialEndsAt }: UpgradePageClientProps) {
   const [selectedProduct, setSelectedProduct] = useState<LemonSqueezyProduct>('PRO_YEARLY')
   const [isLoading, setIsLoading] = useState(false)
 
@@ -143,6 +144,22 @@ export function UpgradePageClient({ userId, userEmail, currentPlan, expiresAt }:
 
   const selectedProductData = products.find((p) => p.id === selectedProduct)
 
+  // Check if currently on trial
+  const isOnTrial = trialEndsAt && new Date(trialEndsAt) > new Date()
+
+  // Calculate days left (trial or paid subscription)
+  const getDaysLeft = (): number | null => {
+    if (isOnTrial && trialEndsAt) {
+      return Math.ceil((new Date(trialEndsAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+    }
+    if (expiresAt) {
+      return Math.ceil((new Date(expiresAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+    }
+    return null
+  }
+
+  const daysLeft = getDaysLeft()
+
   return (
     <div className="container max-w-6xl space-y-8 py-8">
       {/* Header */}
@@ -164,24 +181,66 @@ export function UpgradePageClient({ userId, userEmail, currentPlan, expiresAt }:
               </CardTitle>
               <CardDescription className="mt-2">
                 {currentPlan === 'FREE' && 'Vous êtes sur le plan gratuit'}
-                {currentPlan === 'PRO_DIGITAL' && expiresAt && (
+                {currentPlan === 'PRO_DIGITAL' && (
                   <>
-                    Expire le{' '}
-                    {new Date(expiresAt).toLocaleDateString('fr-FR', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
-                    })}
+                    {isOnTrial && trialEndsAt ? (
+                      <>
+                        <span className="inline-flex items-center gap-1.5">
+                          <span className="inline-block h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
+                          Période d'essai gratuite - {daysLeft} {daysLeft === 1 ? 'jour' : 'jours'} restant
+                          {daysLeft !== 1 ? 's' : ''}
+                        </span>
+                        <br />
+                        <span className="text-xs">
+                          Se termine le{' '}
+                          {new Date(trialEndsAt).toLocaleDateString('fr-FR', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                          })}
+                        </span>
+                      </>
+                    ) : expiresAt ? (
+                      <>
+                        Expire le{' '}
+                        {new Date(expiresAt).toLocaleDateString('fr-FR', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        })}
+                      </>
+                    ) : null}
                   </>
                 )}
-                {currentPlan === 'PACK_STARTER' && expiresAt && (
+                {currentPlan === 'PACK_STARTER' && (
                   <>
-                    Expire le{' '}
-                    {new Date(expiresAt).toLocaleDateString('fr-FR', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
-                    })}
+                    {isOnTrial && trialEndsAt ? (
+                      <>
+                        <span className="inline-flex items-center gap-1.5">
+                          <span className="inline-block h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
+                          Période d'essai gratuite - {daysLeft} {daysLeft === 1 ? 'jour' : 'jours'} restant
+                          {daysLeft !== 1 ? 's' : ''}
+                        </span>
+                        <br />
+                        <span className="text-xs">
+                          Se termine le{' '}
+                          {new Date(trialEndsAt).toLocaleDateString('fr-FR', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                          })}
+                        </span>
+                      </>
+                    ) : expiresAt ? (
+                      <>
+                        Expire le{' '}
+                        {new Date(expiresAt).toLocaleDateString('fr-FR', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        })}
+                      </>
+                    ) : null}
                   </>
                 )}
               </CardDescription>
