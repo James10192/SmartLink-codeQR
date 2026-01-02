@@ -39,11 +39,6 @@ export const NAV_ITEMS: NavItem[] = [
     icon: TrendingUp,
   },
   {
-    title: 'Abonnement',
-    href: '/dashboard/upgrade',
-    icon: CreditCard,
-  },
-  {
     title: 'Admin',
     href: '/admin/subscriptions',
     icon: Shield,

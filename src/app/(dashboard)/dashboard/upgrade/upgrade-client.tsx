@@ -3,22 +3,53 @@
 import { useState } from 'react'
 import { ProductCard } from '@/components/upgrade/product-card'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { CreditCard, Smartphone, ArrowRight } from 'lucide-react'
+import { CreditCard, Smartphone, ArrowRight, CheckCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { type LemonSqueezyProduct } from '@/lib/payments/lemonsqueezy'
+import { type SubscriptionPlan } from '@prisma/client'
 
 interface UpgradePageClientProps {
   userId: string
   userEmail: string | null
+  currentPlan: SubscriptionPlan
+  expiresAt: Date | null | undefined
 }
 
-export function UpgradePageClient({ userId, userEmail }: UpgradePageClientProps) {
+export function UpgradePageClient({ userId, userEmail, currentPlan, expiresAt }: UpgradePageClientProps) {
   const [selectedProduct, setSelectedProduct] = useState<LemonSqueezyProduct>('PRO_YEARLY')
   const [isLoading, setIsLoading] = useState(false)
 
-  const products = [
+  // Plan hierarchy for upgrade logic
+  const planHierarchy: Record<SubscriptionPlan, number> = {
+    FREE: 0,
+    PRO_DIGITAL: 1,
+    PACK_STARTER: 2,
+    CORPORATE: 3,
+  }
+
+  // Map products to plan hierarchy
+  const productPlanLevel: Record<LemonSqueezyProduct, number> = {
+    PRO_MONTHLY: 1,
+    PRO_YEARLY: 1,
+    PACK_STARTER: 2,
+  }
+
+  const currentPlanLevel = planHierarchy[currentPlan]
+
+  // Get plan display name
+  const getPlanName = (plan: SubscriptionPlan): string => {
+    const names: Record<SubscriptionPlan, string> = {
+      FREE: 'Gratuit',
+      PRO_DIGITAL: 'Pro',
+      PACK_STARTER: 'Pack Starter',
+      CORPORATE: 'Corporate',
+    }
+    return names[plan]
+  }
+
+  const allProducts = [
     {
       id: 'PRO_MONTHLY' as LemonSqueezyProduct,
       name: 'Pro Monthly',
@@ -68,6 +99,11 @@ export function UpgradePageClient({ userId, userEmail }: UpgradePageClientProps)
     },
   ]
 
+  // Filter products to show only upgrades
+  const products = allProducts.filter(
+    (product) => productPlanLevel[product.id] > currentPlanLevel
+  )
+
   async function handleCheckout() {
     if (!selectedProduct) {
       toast.error('Veuillez sélectionner un produit')
@@ -111,27 +147,83 @@ export function UpgradePageClient({ userId, userEmail }: UpgradePageClientProps)
     <div className="container max-w-6xl space-y-8 py-8">
       {/* Header */}
       <div className="space-y-4 text-center">
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Choisissez votre plan</h1>
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Mettre à niveau votre plan</h1>
         <p className="mx-auto max-w-2xl text-muted-foreground">
-          Débloquez toutes les fonctionnalités de SmartLink
+          Passez au plan supérieur pour débloquer plus de fonctionnalités
         </p>
       </div>
 
-      {/* Product Cards */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            {...product}
-            selected={selectedProduct === product.id}
-            onSelect={() => setSelectedProduct(product.id)}
-          />
-        ))}
-      </div>
+      {/* Current Plan Card */}
+      <Card className="border-2 border-primary/20 bg-primary/5">
+        <CardHeader>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                Plan actuel : {getPlanName(currentPlan)}
+              </CardTitle>
+              <CardDescription className="mt-2">
+                {currentPlan === 'FREE' && 'Vous êtes sur le plan gratuit'}
+                {currentPlan === 'PRO_DIGITAL' && expiresAt && (
+                  <>
+                    Expire le{' '}
+                    {new Date(expiresAt).toLocaleDateString('fr-FR', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                    })}
+                  </>
+                )}
+                {currentPlan === 'PACK_STARTER' && expiresAt && (
+                  <>
+                    Expire le{' '}
+                    {new Date(expiresAt).toLocaleDateString('fr-FR', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                    })}
+                  </>
+                )}
+              </CardDescription>
+            </div>
+            <Badge variant="default">{getPlanName(currentPlan)}</Badge>
+          </div>
+        </CardHeader>
+      </Card>
 
-      {/* Payment Methods Section */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Méthode de paiement</h2>
+      {/* No upgrades available */}
+      {products.length === 0 && (
+        <Card>
+          <CardContent className="py-12 text-center">
+            <CheckCircle className="mx-auto h-12 w-12 text-green-500 mb-4" />
+            <h2 className="text-2xl font-bold mb-2">Vous avez le meilleur plan !</h2>
+            <p className="text-muted-foreground">
+              Vous profitez déjà de toutes les fonctionnalités disponibles.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Product Cards - Only show if upgrades available */}
+      {products.length > 0 && (
+        <>
+          <div>
+            <h2 className="text-2xl font-semibold mb-4">Plans disponibles</h2>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  {...product}
+                  selected={selectedProduct === product.id}
+                  onSelect={() => setSelectedProduct(product.id)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Payment Methods Section */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Méthode de paiement</h2>
 
         <div className="grid gap-4 sm:grid-cols-2">
           {/* Card Payment - Available */}
@@ -175,10 +267,10 @@ export function UpgradePageClient({ userId, userEmail }: UpgradePageClientProps)
             </CardContent>
           </Card>
         </div>
-      </div>
+          </div>
 
-      {/* CTA Button */}
-      <div className="flex flex-col items-center gap-4">
+          {/* CTA Button */}
+          <div className="flex flex-col items-center gap-4">
         <Button
           size="lg"
           className="w-full sm:w-auto sm:min-w-[320px]"
@@ -195,10 +287,12 @@ export function UpgradePageClient({ userId, userEmail }: UpgradePageClientProps)
           )}
         </Button>
 
-        <p className="text-center text-xs text-muted-foreground">
-          Paiement sécurisé par Lemon Squeezy • Annulation possible à tout moment
-        </p>
-      </div>
+            <p className="text-center text-xs text-muted-foreground">
+              Paiement sécurisé par Lemon Squeezy • Annulation possible à tout moment
+            </p>
+          </div>
+        </>
+      )}
     </div>
   )
 }

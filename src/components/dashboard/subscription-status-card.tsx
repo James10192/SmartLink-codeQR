@@ -199,6 +199,15 @@ export function SubscriptionStatusCard({ subscription }: SubscriptionStatusCardP
             </Link>
           </Button>
         )}
+
+        {status === 'ACTIVE' && plan !== 'PACK_STARTER' && plan !== 'CORPORATE' && (
+          <Button asChild variant="default" className="w-full">
+            <Link href="/dashboard/upgrade">
+              Mettre à niveau
+              <ArrowUpRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        )}
       </CardContent>
     </Card>
   )

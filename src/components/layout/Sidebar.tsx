@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -122,43 +122,6 @@ export function Sidebar({ currentPlan, userRole }: SidebarProps) {
             return <div key={item.href}>{linkContent}</div>
           })}
         </nav>
-
-        {/* Upgrade CTA for FREE users */}
-        {isFree && (
-          <div className={cn('absolute left-0 right-0 px-2', 'bottom-16')}>
-            {isCollapsed ? (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    asChild
-                    variant="default"
-                    size="sm"
-                    className="w-full px-2 bg-gradient-to-r from-primary to-primary/80"
-                  >
-                    <Link href="/dashboard/upgrade">
-                      <Sparkles className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="right" className="font-medium">
-                  Passer au PRO
-                </TooltipContent>
-              </Tooltip>
-            ) : (
-              <Button
-                asChild
-                variant="default"
-                size="sm"
-                className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
-              >
-                <Link href="/dashboard/upgrade" className="flex items-center justify-center gap-2">
-                  <Sparkles className="h-4 w-4" />
-                  <span className="font-medium">Passer au PRO</span>
-                </Link>
-              </Button>
-            )}
-          </div>
-        )}
 
         {/* Toggle Button (Bottom) */}
         <div className="absolute bottom-4 left-0 right-0 px-2">
