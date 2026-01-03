@@ -192,37 +192,42 @@ export function generateThemeVars(theme: {
   const backgroundHsl = hexToHsl(theme.backgroundColor)
   const foregroundHsl = hexToHsl(theme.textColor)
 
-  // Base Tailwind variables
-  const vars: Record<string, string> = {
-    // Primary color and its contrast
-    '--primary': primaryHsl,
-    '--primary-foreground': getContrastColor(primaryHsl),
+  // Parse lightness values to determine if theme is light or dark
+  const bgLightnessMatch = backgroundHsl.match(/(\d+)%$/)
+  const bgLightness = bgLightnessMatch && bgLightnessMatch[1] ? parseInt(bgLightnessMatch[1], 10) : 50
+  const isDarkTheme = bgLightness < 50
 
-    // Background and foreground (text)
+  // Base Tailwind variables - use user's colors directly
+  const vars: Record<string, string> = {
+    // Primary color and its contrast (use textColor for better readability)
+    '--primary': primaryHsl,
+    '--primary-foreground': foregroundHsl,
+
+    // Background and foreground (text) - exact user colors
     '--background': backgroundHsl,
     '--foreground': foregroundHsl,
 
-    // Card colors (match background for consistency)
+    // Card colors - use background with slight variation for depth
     '--card': backgroundHsl,
     '--card-foreground': foregroundHsl,
 
-    // Muted colors (slightly adjusted background)
-    '--muted': adjustLightness(backgroundHsl, foregroundHsl.startsWith('0 0% 0') ? 5 : -5),
-    '--muted-foreground': adjustLightness(foregroundHsl, foregroundHsl.startsWith('0 0% 0') ? 40 : -40),
+    // Muted colors - subtle adjustments based on theme type
+    '--muted': adjustLightness(backgroundHsl, isDarkTheme ? 10 : -10),
+    '--muted-foreground': adjustLightness(foregroundHsl, isDarkTheme ? -15 : 15),
 
-    // Border color (subtle)
-    '--border': adjustLightness(backgroundHsl, foregroundHsl.startsWith('0 0% 0') ? 10 : -10),
+    // Border color - very subtle based on background
+    '--border': adjustLightness(backgroundHsl, isDarkTheme ? 15 : -15),
   }
 
   // Add secondary color as accent if provided
   if (theme.secondaryColor && typeof theme.secondaryColor === 'string') {
     const accentHsl = hexToHsl(theme.secondaryColor)
     vars['--accent'] = accentHsl
-    vars['--accent-foreground'] = getContrastColor(accentHsl)
+    vars['--accent-foreground'] = foregroundHsl // Use text color for consistency
   } else {
     // Use primary as accent if no secondary
     vars['--accent'] = primaryHsl
-    vars['--accent-foreground'] = getContrastColor(primaryHsl)
+    vars['--accent-foreground'] = foregroundHsl
   }
 
   return vars
