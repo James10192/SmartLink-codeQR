@@ -58,6 +58,18 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
   const [textColor, setTextColor] = useState(initialTheme?.textColor || DEFAULT_THEME.textColor)
   const [layout, setLayout] = useState<ThemeLayout>(initialTheme?.layout || DEFAULT_THEME.layout)
 
+  // Track selected preset (null = custom)
+  const [selectedPreset, setSelectedPreset] = useState<string | null>(() => {
+    // Find if current theme matches a preset
+    const matchingPreset = THEME_PRESETS.find(
+      (p) =>
+        p.primaryColor === (initialTheme?.primaryColor || DEFAULT_THEME.primaryColor) &&
+        p.backgroundColor === (initialTheme?.backgroundColor || DEFAULT_THEME.backgroundColor) &&
+        p.textColor === (initialTheme?.textColor || DEFAULT_THEME.textColor)
+    )
+    return matchingPreset?.id || null
+  })
+
   // Collapsible sections state (mobile-first)
   const [openSections, setOpenSections] = useState({
     presets: true,
@@ -122,8 +134,18 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
       setBackgroundColor(preset.backgroundColor)
       setTextColor(preset.textColor)
       setLayout(preset.layout)
+      setSelectedPreset(presetId)
       toast.success(`Thème "${preset.name}" appliqué`)
     }
+  }
+
+  // Detect manual color changes and switch to custom
+  const handleManualColorChange = (
+    setter: React.Dispatch<React.SetStateAction<string>>,
+    value: string
+  ) => {
+    setter(value)
+    setSelectedPreset(null) // Switch to custom when manually changing colors
   }
 
   const resetToDefaults = () => {
@@ -187,11 +209,46 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
           <CollapsibleContent>
             <CardContent>
               <div className="grid grid-cols-2 gap-3">
+                {/* Custom Theme Card */}
+                <button
+                  onClick={() => setSelectedPreset(null)}
+                  className={cn(
+                    'group relative overflow-hidden rounded-lg border-2 p-4 text-left transition-all hover:border-primary hover:shadow-md',
+                    selectedPreset === null
+                      ? 'border-primary bg-primary/5'
+                      : 'border-muted'
+                  )}
+                >
+                  {/* Color preview */}
+                  <div className="mb-2 flex gap-1">
+                    <div
+                      className="h-6 w-6 rounded-full border"
+                      style={{ backgroundColor: primaryColor }}
+                    />
+                    <div
+                      className="h-6 w-6 rounded-full border"
+                      style={{ backgroundColor: backgroundColor }}
+                    />
+                    <div
+                      className="h-6 w-6 rounded-full border"
+                      style={{ backgroundColor: textColor }}
+                    />
+                  </div>
+                  <h4 className="font-medium text-sm">Personnalisé</h4>
+                  <p className="text-xs text-muted-foreground">Couleurs personnalisées</p>
+                </button>
+
+                {/* Preset Themes */}
                 {THEME_PRESETS.map((preset) => (
                   <button
                     key={preset.id}
                     onClick={() => applyPreset(preset.id)}
-                    className="group relative overflow-hidden rounded-lg border-2 border-muted p-4 text-left transition-all hover:border-primary hover:shadow-md"
+                    className={cn(
+                      'group relative overflow-hidden rounded-lg border-2 p-4 text-left transition-all hover:border-primary hover:shadow-md',
+                      selectedPreset === preset.id
+                        ? 'border-primary bg-primary/5'
+                        : 'border-muted'
+                    )}
                   >
                     {/* Color preview */}
                     <div className="mb-2 flex gap-1">
@@ -247,7 +304,7 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
                     type="color"
                     id="primaryColor"
                     value={primaryColor}
-                    onChange={(e) => setPrimaryColor(e.target.value)}
+                    onChange={(e) => handleManualColorChange(setPrimaryColor, e.target.value)}
                     className="h-12 w-20 cursor-pointer"
                   />
                   <Input
@@ -256,7 +313,7 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
                     onChange={(e) => {
                       const value = e.target.value
                       if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
-                        setPrimaryColor(value)
+                        handleManualColorChange(setPrimaryColor, value)
                       }
                     }}
                     placeholder="#000000"
@@ -303,7 +360,7 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
                     type="color"
                     id="backgroundColor"
                     value={backgroundColor}
-                    onChange={(e) => setBackgroundColor(e.target.value)}
+                    onChange={(e) => handleManualColorChange(setBackgroundColor, e.target.value)}
                     className="h-12 w-20 cursor-pointer"
                   />
                   <Input
@@ -312,7 +369,7 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
                     onChange={(e) => {
                       const value = e.target.value
                       if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
-                        setBackgroundColor(value)
+                        handleManualColorChange(setBackgroundColor, value)
                       }
                     }}
                     placeholder="#ffffff"
@@ -330,7 +387,7 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
                     type="color"
                     id="textColor"
                     value={textColor}
-                    onChange={(e) => setTextColor(e.target.value)}
+                    onChange={(e) => handleManualColorChange(setTextColor, e.target.value)}
                     className="h-12 w-20 cursor-pointer"
                   />
                   <Input
@@ -339,7 +396,7 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
                     onChange={(e) => {
                       const value = e.target.value
                       if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
-                        setTextColor(value)
+                        handleManualColorChange(setTextColor, value)
                       }
                     }}
                     placeholder="#000000"
@@ -442,8 +499,8 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
         </CardContent>
       </Card>
 
-      {/* Actions - Sticky on mobile */}
-      <div className="sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t p-4 -mx-4 -mb-4 flex gap-3 lg:static lg:bg-transparent lg:border-0 lg:p-0 lg:m-0">
+      {/* Actions */}
+      <div className="flex gap-3 pt-2">
         <Button onClick={resetToDefaults} variant="outline" className="flex-1">
           Réinitialiser
         </Button>
