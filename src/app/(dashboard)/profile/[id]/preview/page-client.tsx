@@ -23,9 +23,11 @@ import { EditableExperiences } from '@/components/profile/editable-experiences'
 import { EditableSkills } from '@/components/profile/editable-skills'
 import { EditableProjects } from '@/components/profile/editable-projects'
 import { EditableVideo } from '@/components/profile/editable-video'
+import { EditableTestimonials } from '@/components/profile/editable-testimonials'
+import { EditablePosts } from '@/components/profile/editable-posts'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import type { Profile } from '@prisma/client'
+import type { Profile, Testimonial, Post } from '@prisma/client'
 
 interface ProfileWithRelations extends Profile {
   user: {
@@ -55,6 +57,8 @@ interface ProfileWithRelations extends Profile {
     description: string | null
     images: string[]
   }>
+  testimonials: Testimonial[]
+  posts: Post[]
 }
 
 interface PreviewPageClientProps {
@@ -282,6 +286,22 @@ export function PreviewPageClient({ initialProfile }: PreviewPageClientProps) {
                 )}
               </CardContent>
             </Card>
+
+            {/* Testimonials Section - PRO Feature */}
+            <EditableTestimonials
+              profileId={profile.id}
+              initialTestimonials={profile.testimonials}
+              isOwner={true}
+              isPro={isPro}
+            />
+
+            {/* Posts Section - PRO Feature */}
+            <EditablePosts
+              profileId={profile.id}
+              initialPosts={profile.posts}
+              isOwner={true}
+              isPro={isPro}
+            />
           </div>
 
           {/* Right Sidebar */}

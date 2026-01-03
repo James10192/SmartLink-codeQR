@@ -193,6 +193,16 @@ export async function getProfileById(profileId: string) {
           createdAt: 'desc',
         },
       },
+      testimonials: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
+      posts: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
     },
   })
   if (!profile) throw new Error('Profil non trouvé')

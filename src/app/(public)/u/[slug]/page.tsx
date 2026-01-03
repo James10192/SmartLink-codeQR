@@ -28,14 +28,11 @@ import { Badge } from '@/components/ui/badge'
 import { VisitorCaptureModal } from '@/components/profile/visitor-capture-modal'
 import { ViewTracker } from '@/components/profile/view-tracker'
 import { ThemePreviewWrapper } from '@/components/profile/theme-preview-wrapper'
-import { EditableTestimonials } from '@/components/profile/editable-testimonials'
-import { EditablePosts } from '@/components/profile/editable-posts'
 import { canAccessFeature, isSubscriptionActive } from '@/lib/utils/tier-enforcement'
 import Link from 'next/link'
 import Image from 'next/image'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { auth } from '@/lib/auth/config'
 
 export async function generateMetadata({
   params,
@@ -98,12 +95,6 @@ export default async function PublicProfilePage({
   if (!profile) {
     notFound()
   }
-
-  // Check if current user is the profile owner
-  const session = await auth.api.getSession({
-    headers: await import('next/headers').then((mod) => mod.headers()),
-  })
-  const isOwner = session?.user?.id === profile.userId
 
   // Get user plan for badges and feature access
   const userPlan = profile.user.subscription?.plan || 'FREE'
@@ -463,24 +454,97 @@ export default async function PublicProfilePage({
               </div>
             )}
 
-            {/* Testimonials Section (PRO Only) */}
-            {(canUseProFeatures || isOwner) && (
-              <EditableTestimonials
-                profileId={profile.id}
-                initialTestimonials={profile.testimonials}
-                isOwner={isOwner}
-                isPro={canUseProFeatures}
-              />
+            {/* Testimonials Section - Display only if testimonials exist */}
+            {profile.testimonials.length > 0 && (
+              <div className="rounded-xl border bg-card p-6 shadow-sm">
+                <h2 className="mb-6 text-xl font-semibold text-foreground">
+                  Témoignages
+                </h2>
+                <div className="space-y-4">
+                  {profile.testimonials.map((testimonial) => (
+                    <div key={testimonial.id} className="rounded-lg border bg-muted/30 p-4">
+                      {testimonial.rating && (
+                        <div className="flex gap-1 mb-2">
+                          {Array.from({ length: testimonial.rating }).map((_, i) => (
+                            <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                          ))}
+                        </div>
+                      )}
+                      <p className="text-sm italic mb-4">&ldquo;{testimonial.content}&rdquo;</p>
+                      <div className="flex items-center gap-3">
+                        {testimonial.authorPhoto && (
+                          <Image
+                            src={testimonial.authorPhoto}
+                            alt={testimonial.authorName}
+                            width={40}
+                            height={40}
+                            className="rounded-full object-cover"
+                            unoptimized={testimonial.authorPhoto.includes('supabase.co')}
+                          />
+                        )}
+                        <div>
+                          <p className="font-medium text-sm">{testimonial.authorName}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {[testimonial.authorTitle, testimonial.authorCompany]
+                              .filter(Boolean)
+                              .join(' • ')}
+                          </p>
+                          {testimonial.relationship && (
+                            <p className="text-xs text-muted-foreground">
+                              {testimonial.relationship}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
 
-            {/* Posts Section (PRO Only) */}
-            {(canUseProFeatures || isOwner) && (
-              <EditablePosts
-                profileId={profile.id}
-                initialPosts={profile.posts}
-                isOwner={isOwner}
-                isPro={canUseProFeatures}
-              />
+            {/* Posts Section - Display only if posts exist */}
+            {profile.posts.filter((p) => p.isPublished).length > 0 && (
+              <div className="rounded-xl border bg-card p-6 shadow-sm">
+                <h2 className="mb-6 text-xl font-semibold text-foreground">
+                  Articles
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {profile.posts.filter((p) => p.isPublished).map((post) => (
+                    <div key={post.id} className="rounded-lg border bg-muted/30 overflow-hidden">
+                      {post.coverImage && (
+                        <Image
+                          src={post.coverImage}
+                          alt={post.title}
+                          width={400}
+                          height={200}
+                          className="w-full h-32 object-cover"
+                          unoptimized={post.coverImage.includes('supabase.co')}
+                        />
+                      )}
+                      <div className="p-4">
+                        <h4 className="font-semibold text-base line-clamp-2 mb-2">{post.title}</h4>
+                        {post.excerpt && (
+                          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                            {post.excerpt}
+                          </p>
+                        )}
+                        {post.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {post.tags.map((tag, i) => (
+                              <span
+                                key={i}
+                                className="inline-block px-2 py-1 text-xs bg-primary/10 text-primary rounded"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
 
             {/* Contact Information Section */}
