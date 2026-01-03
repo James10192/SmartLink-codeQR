@@ -82,8 +82,62 @@ export const THEME_PRESETS = [
 ] as const
 
 /**
+ * Convert hex color to OKLCH format (Tailwind v4)
+ * Tailwind v4 uses OKLCH color space by default
+ * Conversion: Hex → sRGB → Linear RGB → XYZ → OKLab → OKLCH
+ *
+ * @param hex - Hex color string (e.g., "#6366f1")
+ * @returns OKLCH string (e.g., "oklch(0.623 0.188 259.8)")
+ */
+export function hexToOklch(hex: string): string {
+  // Remove # if present
+  const sanitized = hex.replace('#', '')
+
+  // 1. Hex → sRGB (0-1 range)
+  const r = parseInt(sanitized.substring(0, 2), 16) / 255
+  const g = parseInt(sanitized.substring(2, 4), 16) / 255
+  const b = parseInt(sanitized.substring(4, 6), 16) / 255
+
+  // 2. sRGB → Linear RGB (gamma correction inverse)
+  const toLinear = (c: number) => {
+    return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
+  }
+  const rLinear = toLinear(r)
+  const gLinear = toLinear(g)
+  const bLinear = toLinear(b)
+
+  // 3. Linear RGB → XYZ (D65 illuminant transformation matrix)
+  const x = 0.4124564 * rLinear + 0.3575761 * gLinear + 0.1804375 * bLinear
+  const y = 0.2126729 * rLinear + 0.7151522 * gLinear + 0.0721750 * bLinear
+  const z = 0.0193339 * rLinear + 0.1191920 * gLinear + 0.9503041 * bLinear
+
+  // 4. XYZ → OKLab (Oklab color space)
+  const l_ = Math.cbrt(0.8189330101 * x + 0.3618667424 * y - 0.1288597137 * z)
+  const m_ = Math.cbrt(0.0329845436 * x + 0.9293118715 * y + 0.0361456387 * z)
+  const s_ = Math.cbrt(0.0482003018 * x + 0.2643662691 * y + 0.6338517070 * z)
+
+  const L = 0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_
+  const a = 1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_
+  const b_ = 0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_
+
+  // 5. OKLab → OKLCH (cylindrical coordinates)
+  const C = Math.sqrt(a * a + b_ * b_)
+  let H = Math.atan2(b_, a) * (180 / Math.PI)
+  if (H < 0) H += 360
+
+  // 6. Round and format for Tailwind OKLCH
+  const LRounded = Math.round(L * 1000) / 1000
+  const CRounded = Math.round(C * 1000) / 1000
+  const HRounded = Math.round(H * 10) / 10
+
+  // Return in Tailwind OKLCH format (space-separated, no commas)
+  return `oklch(${LRounded} ${CRounded} ${HRounded})`
+}
+
+/**
  * Convert hex color to HSL format
- * Tailwind v4 requires HSL format for CSS variables
+ * DEPRECATED: Use hexToOklch() instead for Tailwind v4
+ * Kept for backward compatibility
  *
  * @param hex - Hex color string (e.g., "#ff0000")
  * @returns HSL string (e.g., "0 100% 50%")
@@ -148,7 +202,31 @@ export function getContrastColor(hsl: string): string {
 }
 
 /**
+ * Adjust lightness of OKLCH color
+ *
+ * @param oklch - OKLCH string (e.g., "oklch(0.623 0.188 259.8)")
+ * @param adjustment - Amount to adjust lightness (-1 to 1, typically -0.2 to 0.2)
+ * @returns Adjusted OKLCH string
+ */
+export function adjustOklchLightness(oklch: string, adjustment: number): string {
+  const match = oklch.match(/oklch\(([\d.]+)\s+([\d.]+)\s+([\d.]+)\)/)
+  if (!match || !match[1] || !match[2] || !match[3]) return oklch
+
+  let L = parseFloat(match[1])
+  const C = match[2]
+  const H = match[3]
+
+  // Adjust lightness and clamp between 0-1
+  L = Math.max(0, Math.min(1, L + adjustment))
+  const LRounded = Math.round(L * 1000) / 1000
+
+  return `oklch(${LRounded} ${C} ${H})`
+}
+
+/**
  * Adjust lightness of HSL color
+ * DEPRECATED: Use adjustOklchLightness() instead for Tailwind v4
+ * Kept for backward compatibility
  *
  * @param hsl - HSL string (e.g., "0 100% 50%")
  * @param adjustment - Percentage to adjust (-100 to 100)
@@ -187,47 +265,47 @@ export function generateThemeVars(theme: {
   backgroundColor: string
   textColor: string
 }): Record<string, string> {
-  // Convert hex to HSL for Tailwind v4 compatibility
-  const primaryHsl = hexToHsl(theme.primaryColor)
-  const backgroundHsl = hexToHsl(theme.backgroundColor)
-  const foregroundHsl = hexToHsl(theme.textColor)
+  // Convert hex to OKLCH for Tailwind v4 compatibility
+  const primaryOklch = hexToOklch(theme.primaryColor)
+  const backgroundOklch = hexToOklch(theme.backgroundColor)
+  const foregroundOklch = hexToOklch(theme.textColor)
 
   // Parse lightness values to determine if theme is light or dark
-  const bgLightnessMatch = backgroundHsl.match(/(\d+)%$/)
-  const bgLightness = bgLightnessMatch && bgLightnessMatch[1] ? parseInt(bgLightnessMatch[1], 10) : 50
-  const isDarkTheme = bgLightness < 50
+  const bgLightnessMatch = backgroundOklch.match(/oklch\(([\d.]+)/)
+  const bgLightness = bgLightnessMatch && bgLightnessMatch[1] ? parseFloat(bgLightnessMatch[1]) : 0.5
+  const isDarkTheme = bgLightness < 0.5
 
   // Base Tailwind variables - use user's colors directly
   const vars: Record<string, string> = {
     // Primary color and its contrast (use textColor for better readability)
-    '--primary': primaryHsl,
-    '--primary-foreground': foregroundHsl,
+    '--primary': primaryOklch,
+    '--primary-foreground': foregroundOklch,
 
     // Background and foreground (text) - exact user colors
-    '--background': backgroundHsl,
-    '--foreground': foregroundHsl,
+    '--background': backgroundOklch,
+    '--foreground': foregroundOklch,
 
     // Card colors - use background with slight variation for depth
-    '--card': backgroundHsl,
-    '--card-foreground': foregroundHsl,
+    '--card': backgroundOklch,
+    '--card-foreground': foregroundOklch,
 
     // Muted colors - subtle adjustments based on theme type
-    '--muted': adjustLightness(backgroundHsl, isDarkTheme ? 10 : -10),
-    '--muted-foreground': adjustLightness(foregroundHsl, isDarkTheme ? -15 : 15),
+    '--muted': adjustOklchLightness(backgroundOklch, isDarkTheme ? 0.05 : -0.05),
+    '--muted-foreground': adjustOklchLightness(foregroundOklch, isDarkTheme ? -0.15 : 0.15),
 
     // Border color - very subtle based on background
-    '--border': adjustLightness(backgroundHsl, isDarkTheme ? 15 : -15),
+    '--border': adjustOklchLightness(backgroundOklch, isDarkTheme ? 0.1 : -0.1),
   }
 
   // Add secondary color as accent if provided
   if (theme.secondaryColor && typeof theme.secondaryColor === 'string') {
-    const accentHsl = hexToHsl(theme.secondaryColor)
-    vars['--accent'] = accentHsl
-    vars['--accent-foreground'] = foregroundHsl // Use text color for consistency
+    const accentOklch = hexToOklch(theme.secondaryColor)
+    vars['--accent'] = accentOklch
+    vars['--accent-foreground'] = foregroundOklch // Use text color for consistency
   } else {
     // Use primary as accent if no secondary
-    vars['--accent'] = primaryHsl
-    vars['--accent-foreground'] = foregroundHsl
+    vars['--accent'] = primaryOklch
+    vars['--accent-foreground'] = foregroundOklch
   }
 
   return vars

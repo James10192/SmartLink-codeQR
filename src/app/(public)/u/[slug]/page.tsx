@@ -112,6 +112,7 @@ export default async function PublicProfilePage({
   const theme = canUseTheme ? await getPublicProfileTheme(slug) : null
   const themeVars = theme ? generateThemeVars(theme) : {}
   const fontFamily = theme?.fontFamily || 'Inter'
+  const layout = theme?.layout || 'CENTERED'
 
   // Generate DiceBear avatar URL if no custom avatar
   const avatarUrl = profile.avatarUrl ||
@@ -163,11 +164,21 @@ export default async function PublicProfilePage({
           fontFamily,
         } as React.CSSProperties}
       >
-      {/* Main Container - LinkedIn-style 2 Column Layout */}
-      <div className="mx-auto max-w-7xl px-4 py-6">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      {/* Main Container - Dynamic Layout */}
+      <div className={layout === 'CENTERED' || layout === 'MINIMAL' ? "mx-auto max-w-4xl px-4 py-6" : "mx-auto max-w-7xl px-4 py-6"}>
+        <div className={
+          layout === 'CENTERED' ? "space-y-6" :
+          layout === 'CARD_GRID' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" :
+          layout === 'MINIMAL' ? "space-y-8 py-6" :
+          "grid grid-cols-1 gap-6 lg:grid-cols-3"  // LEFT_ALIGNED (default)
+        }>
           {/* Main Content Column */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className={
+            layout === 'CENTERED' ? "space-y-6" :
+            layout === 'MINIMAL' ? "space-y-8" :
+            layout === 'CARD_GRID' ? "col-span-full space-y-6" :
+            "lg:col-span-2 space-y-6"  // LEFT_ALIGNED
+          }>
             {/* Profile Header Card - LinkedIn Style */}
             <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
               {/* Cover Image/Video */}
@@ -627,8 +638,9 @@ export default async function PublicProfilePage({
             )}
           </div>
 
-          {/* Right Sidebar - Sticky */}
-          <div className="lg:col-span-1">
+          {/* Right Sidebar - Sticky (Hidden in CENTERED and MINIMAL layouts) */}
+          {layout !== 'CENTERED' && layout !== 'MINIMAL' && (
+          <div className={layout === 'CARD_GRID' ? "md:col-span-2 lg:col-span-1" : "lg:col-span-1"}>
             <div className="sticky top-6 space-y-6">
               {/* QR Code Card */}
               <div className="rounded-xl border bg-card p-6 shadow-sm text-center">
@@ -692,6 +704,7 @@ export default async function PublicProfilePage({
               </div>
             </div>
           </div>
+          )}
         </div>
       </div>
 
