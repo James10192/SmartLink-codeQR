@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { ThemeCustomizer } from '@/components/profile/theme-customizer'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -88,9 +88,9 @@ export function CustomizePageClient({ profileId, slug, initialTheme }: Customize
     }
   }, [currentTheme, isIframeReady])
 
-  const handleThemeChange = (theme: typeof currentTheme) => {
+  const handleThemeChange = useCallback((theme: typeof currentTheme) => {
     setCurrentTheme(theme)
-  }
+  }, [])
 
   return (
     <>

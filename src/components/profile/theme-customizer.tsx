@@ -168,7 +168,7 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
       <Collapsible open={openSections.presets} onOpenChange={() => toggleSection('presets')}>
         <Card>
           <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors lg:cursor-default">
+            <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-primary" />
@@ -176,7 +176,7 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
                 </div>
                 <ChevronDown
                   className={cn(
-                    'h-5 w-5 transition-transform lg:hidden',
+                    'h-5 w-5 transition-transform',
                     openSections.presets && 'rotate-180'
                   )}
                 />
@@ -222,7 +222,7 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
       <Collapsible open={openSections.colors} onOpenChange={() => toggleSection('colors')}>
         <Card>
           <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors lg:cursor-default">
+            <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Palette className="h-5 w-5 text-primary" />
@@ -230,7 +230,7 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
                 </div>
                 <ChevronDown
                   className={cn(
-                    'h-5 w-5 transition-transform lg:hidden',
+                    'h-5 w-5 transition-transform',
                     openSections.colors && 'rotate-180'
                   )}
                 />
@@ -357,7 +357,7 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
       <Collapsible open={openSections.layout} onOpenChange={() => toggleSection('layout')}>
         <Card>
           <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors lg:cursor-default">
+            <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <LayoutTemplate className="h-5 w-5 text-primary" />
@@ -365,7 +365,7 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
                 </div>
                 <ChevronDown
                   className={cn(
-                    'h-5 w-5 transition-transform lg:hidden',
+                    'h-5 w-5 transition-transform',
                     openSections.layout && 'rotate-180'
                   )}
                 />
