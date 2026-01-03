@@ -28,11 +28,14 @@ import { Badge } from '@/components/ui/badge'
 import { VisitorCaptureModal } from '@/components/profile/visitor-capture-modal'
 import { ViewTracker } from '@/components/profile/view-tracker'
 import { ThemePreviewWrapper } from '@/components/profile/theme-preview-wrapper'
+import { EditableTestimonials } from '@/components/profile/editable-testimonials'
+import { EditablePosts } from '@/components/profile/editable-posts'
 import { canAccessFeature, isSubscriptionActive } from '@/lib/utils/tier-enforcement'
 import Link from 'next/link'
 import Image from 'next/image'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import { auth } from '@/lib/auth/config'
 
 export async function generateMetadata({
   params,
@@ -95,6 +98,12 @@ export default async function PublicProfilePage({
   if (!profile) {
     notFound()
   }
+
+  // Check if current user is the profile owner
+  const session = await auth.api.getSession({
+    headers: await import('next/headers').then((mod) => mod.headers()),
+  })
+  const isOwner = session?.user?.id === profile.userId
 
   // Get user plan for badges and feature access
   const userPlan = profile.user.subscription?.plan || 'FREE'
@@ -455,106 +464,23 @@ export default async function PublicProfilePage({
             )}
 
             {/* Testimonials Section (PRO Only) */}
-            {canUseProFeatures && profile.testimonials.length > 0 && (
-              <div className="rounded-xl border bg-card p-6 shadow-sm">
-                <h2 className="mb-6 text-xl font-semibold text-foreground">
-                  Témoignages & Recommandations
-                </h2>
-                <div className="space-y-6">
-                  {profile.testimonials.map((testimonial) => (
-                    <div key={testimonial.id} className="rounded-lg border bg-muted/50 p-6">
-                      <div className="flex items-start gap-4">
-                        {testimonial.authorPhoto && (
-                          <Image
-                            src={testimonial.authorPhoto}
-                            alt={testimonial.authorName}
-                            width={56}
-                            height={56}
-                            className="rounded-full"
-                          />
-                        )}
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <p className="font-semibold text-foreground">
-                                {testimonial.authorName}
-                              </p>
-                              {testimonial.authorTitle && (
-                                <p className="text-sm text-muted-foreground">
-                                  {testimonial.authorTitle}
-                                  {testimonial.authorCompany && ` · ${testimonial.authorCompany}`}
-                                </p>
-                              )}
-                            </div>
-                            {testimonial.rating && (
-                              <div className="flex gap-0.5">
-                                {Array.from({ length: testimonial.rating }).map((_, i) => (
-                                  <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                          <p className="mt-3 text-foreground/80 leading-relaxed">
-                            "{testimonial.content}"
-                          </p>
-                          {testimonial.relationship && (
-                            <Badge variant="outline" className="mt-2">
-                              {testimonial.relationship}
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            {(canUseProFeatures || isOwner) && (
+              <EditableTestimonials
+                profileId={profile.id}
+                initialTestimonials={profile.testimonials}
+                isOwner={isOwner}
+                isPro={canUseProFeatures}
+              />
             )}
 
             {/* Posts Section (PRO Only) */}
-            {canUseProFeatures && profile.posts.length > 0 && (
-              <div className="rounded-xl border bg-card p-6 shadow-sm">
-                <h2 className="mb-6 text-xl font-semibold text-foreground">
-                  Actualités & Publications
-                </h2>
-                <div className="space-y-6">
-                  {profile.posts.map((post) => (
-                    <article key={post.id} className="border-b border-border pb-6 last:border-0 last:pb-0">
-                      {post.coverImage && (
-                        <div className="relative mb-4 h-48 overflow-hidden rounded-lg">
-                          <Image
-                            src={post.coverImage}
-                            alt={post.title}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      )}
-                      <h3 className="text-lg font-semibold text-foreground">
-                        {post.title}
-                      </h3>
-                      {post.excerpt && (
-                        <p className="mt-2 text-foreground/70">
-                          {post.excerpt}
-                        </p>
-                      )}
-                      {post.tags.length > 0 && (
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {post.tags.map((tag) => (
-                            <Badge key={tag} variant="outline" className="text-xs">
-                              #{tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
-                      {post.publishedAt && (
-                        <p className="mt-2 text-sm text-muted-foreground">
-                          Publié le {format(new Date(post.publishedAt), 'dd MMMM yyyy', { locale: fr })}
-                        </p>
-                      )}
-                    </article>
-                  ))}
-                </div>
-              </div>
+            {(canUseProFeatures || isOwner) && (
+              <EditablePosts
+                profileId={profile.id}
+                initialPosts={profile.posts}
+                isOwner={isOwner}
+                isPro={canUseProFeatures}
+              />
             )}
 
             {/* Contact Information Section */}

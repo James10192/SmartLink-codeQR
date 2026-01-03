@@ -21,22 +21,52 @@ interface CustomizePageClientProps {
 export function CustomizePageClient({ profileId, slug, initialTheme }: CustomizePageClientProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const [currentTheme, setCurrentTheme] = useState(initialTheme)
+  const [isIframeReady, setIsIframeReady] = useState(false)
+  const messageQueueRef = useRef<Array<{ type: string; theme: unknown }>>([])
 
-  // Send theme updates to iframe
+  // Listen for iframe ready signal
   useEffect(() => {
-    if (iframeRef.current && currentTheme) {
-      const message = {
-        type: 'THEME_UPDATE',
-        theme: currentTheme,
-      }
+    const handleMessage = (event: MessageEvent) => {
+      // Security: Only accept messages from same origin
+      if (event.origin !== window.location.origin) return
 
-      // Wait for iframe to load before sending message
-      const iframe = iframeRef.current
-      if (iframe.contentWindow) {
-        iframe.contentWindow.postMessage(message, window.location.origin)
+      if (event.data.type === 'IFRAME_READY') {
+        setIsIframeReady(true)
+
+        // Send all queued messages
+        if (iframeRef.current?.contentWindow) {
+          messageQueueRef.current.forEach((msg) => {
+            iframeRef.current!.contentWindow!.postMessage(msg, window.location.origin)
+          })
+          messageQueueRef.current = []
+        }
       }
     }
-  }, [currentTheme])
+
+    window.addEventListener('message', handleMessage)
+
+    return () => {
+      window.removeEventListener('message', handleMessage)
+    }
+  }, [])
+
+  // Send theme updates to iframe (with queue support)
+  useEffect(() => {
+    if (!currentTheme) return
+
+    const message = {
+      type: 'THEME_UPDATE',
+      theme: currentTheme,
+    }
+
+    if (isIframeReady && iframeRef.current?.contentWindow) {
+      // Send immediately if iframe is ready
+      iframeRef.current.contentWindow.postMessage(message, window.location.origin)
+    } else {
+      // Queue message if iframe not ready yet
+      messageQueueRef.current.push(message)
+    }
+  }, [currentTheme, isIframeReady])
 
   const handleThemeChange = (theme: typeof currentTheme) => {
     setCurrentTheme(theme)
@@ -87,7 +117,7 @@ export function CustomizePageClient({ profileId, slug, initialTheme }: Customize
               />
             </div>
             <p className="mt-3 text-xs text-muted-foreground text-center">
-              Aperçu en temps réel activé
+              {isIframeReady ? '✓ Aperçu en temps réel activé' : 'Chargement de l\'aperçu...'}
             </p>
           </CardContent>
         </Card>

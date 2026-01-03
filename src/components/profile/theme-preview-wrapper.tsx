@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import type { ThemeLayout } from '@prisma/client'
+import { generateThemeVars } from '@/lib/utils/theme'
 
 interface ThemePreviewWrapperProps {
   children: React.ReactNode
@@ -15,9 +16,14 @@ export function ThemePreviewWrapper({
   defaultThemeVars = {},
 }: ThemePreviewWrapperProps) {
   const [currentThemeVars, setCurrentThemeVars] = useState(defaultThemeVars)
+  const [isReady, setIsReady] = useState(false)
 
   useEffect(() => {
     if (!isPreviewMode) return
+
+    // Signal parent that iframe is ready to receive messages
+    window.parent.postMessage({ type: 'IFRAME_READY' }, window.location.origin)
+    setIsReady(true)
 
     const handleMessage = (event: MessageEvent) => {
       // Security: Only accept messages from same origin
@@ -25,12 +31,15 @@ export function ThemePreviewWrapper({
 
       if (event.data.type === 'THEME_UPDATE' && event.data.theme) {
         const theme = event.data.theme
-        const themeVars = {
-          '--theme-primary': theme.primaryColor,
-          '--theme-secondary': theme.secondaryColor || theme.primaryColor,
-          '--theme-background': theme.backgroundColor,
-          '--theme-text': theme.textColor,
-        }
+
+        // Generate Tailwind-compatible CSS variables
+        const themeVars = generateThemeVars({
+          primaryColor: theme.primaryColor,
+          secondaryColor: theme.secondaryColor,
+          backgroundColor: theme.backgroundColor,
+          textColor: theme.textColor,
+        })
+
         setCurrentThemeVars(themeVars)
       }
     }
@@ -44,7 +53,7 @@ export function ThemePreviewWrapper({
 
   // Apply theme vars to document root
   useEffect(() => {
-    if (!isPreviewMode) return
+    if (!isPreviewMode || !isReady) return
 
     const root = document.documentElement
     Object.entries(currentThemeVars).forEach(([key, value]) => {
@@ -57,7 +66,7 @@ export function ThemePreviewWrapper({
         root.style.removeProperty(key)
       })
     }
-  }, [currentThemeVars, isPreviewMode])
+  }, [currentThemeVars, isPreviewMode, isReady])
 
   return <>{children}</>
 }
