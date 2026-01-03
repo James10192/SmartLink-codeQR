@@ -34,7 +34,9 @@ export default async function CustomizeProfilePage({ params }: CustomizeProfileP
               <ArrowLeft className="mr-2 h-4 w-4" />
               Retour au profil
             </Link>
-            <h1 className="mt-4 text-3xl font-bold tracking-tight">Personnalisation du thème</h1>
+            <h1 className="mt-4 text-2xl font-bold tracking-tight lg:text-3xl">
+              Personnalisation du thème
+            </h1>
           </div>
 
           <div className="mx-auto max-w-2xl">
@@ -87,14 +89,16 @@ export default async function CustomizeProfilePage({ params }: CustomizeProfileP
             <ArrowLeft className="mr-2 h-4 w-4" />
             Retour au profil
           </Link>
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Personnaliser {profile.fullName}</h1>
-              <p className="mt-2 text-muted-foreground">
+              <h1 className="text-2xl font-bold tracking-tight lg:text-3xl">
+                Personnaliser {profile.fullName}
+              </h1>
+              <p className="mt-2 text-sm text-muted-foreground lg:text-base">
                 Créez un profil unique à votre image
               </p>
             </div>
-            <Button asChild variant="outline">
+            <Button asChild variant="outline" className="w-full lg:w-auto">
               <Link href={`/u/${profile.slug}`} target="_blank">
                 <Eye className="mr-2 h-4 w-4" />
                 Aperçu public
