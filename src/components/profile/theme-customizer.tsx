@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import {
@@ -19,6 +20,8 @@ import {
   Grid3x3,
   Minus,
   Loader2,
+  ChevronDown,
+  Sparkles,
 } from 'lucide-react'
 import { ThemeLayout } from '@prisma/client'
 
@@ -54,6 +57,29 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
   )
   const [textColor, setTextColor] = useState(initialTheme?.textColor || DEFAULT_THEME.textColor)
   const [layout, setLayout] = useState<ThemeLayout>(initialTheme?.layout || DEFAULT_THEME.layout)
+
+  // Collapsible sections state (mobile-first)
+  const [openSections, setOpenSections] = useState({
+    presets: true,
+    colors: false,
+    layout: false,
+  })
+
+  const toggleSection = (section: keyof typeof openSections) => {
+    setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }))
+  }
+
+  // On desktop, open all sections by default
+  useEffect(() => {
+    const isDesktop = window.innerWidth >= 1024
+    if (isDesktop) {
+      setOpenSections({
+        presets: true,
+        colors: true,
+        layout: true,
+      })
+    }
+  }, [])
 
   // Notify parent of theme changes for live preview
   useEffect(() => {
@@ -137,15 +163,28 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
   ]
 
   return (
-    <div className="space-y-6">
-      {/* Colors Section */}
-      <div className="space-y-4">
-          {/* Presets */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Thèmes prédéfinis</CardTitle>
+    <div className="space-y-4">
+      {/* Presets Section - Collapsible on mobile */}
+      <Collapsible open={openSections.presets} onOpenChange={() => toggleSection('presets')}>
+        <Card>
+          <CollapsibleTrigger asChild>
+            <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors lg:cursor-default">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  <CardTitle className="text-base">Thèmes prédéfinis</CardTitle>
+                </div>
+                <ChevronDown
+                  className={cn(
+                    'h-5 w-5 transition-transform lg:hidden',
+                    openSections.presets && 'rotate-180'
+                  )}
+                />
+              </div>
               <CardDescription>Choisissez un thème pour commencer rapidement</CardDescription>
             </CardHeader>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
             <CardContent>
               <div className="grid grid-cols-2 gap-3">
                 {THEME_PRESETS.map((preset) => (
@@ -175,13 +214,30 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
                 ))}
               </div>
             </CardContent>
-          </Card>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
 
-          {/* Custom Colors */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Couleurs personnalisées</CardTitle>
+      {/* Colors Section - Collapsible on mobile */}
+      <Collapsible open={openSections.colors} onOpenChange={() => toggleSection('colors')}>
+        <Card>
+          <CollapsibleTrigger asChild>
+            <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors lg:cursor-default">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Palette className="h-5 w-5 text-primary" />
+                  <CardTitle className="text-base">Couleurs personnalisées</CardTitle>
+                </div>
+                <ChevronDown
+                  className={cn(
+                    'h-5 w-5 transition-transform lg:hidden',
+                    openSections.colors && 'rotate-180'
+                  )}
+                />
+              </div>
             </CardHeader>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
             <CardContent className="space-y-4">
               {/* Primary Color */}
               <div className="space-y-2">
@@ -293,16 +349,31 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
                 </div>
               </div>
             </CardContent>
-          </Card>
-        </div>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
 
-        {/* Layout Section */}
-        <div className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Mise en page</CardTitle>
+      {/* Layout Section - Collapsible on mobile */}
+      <Collapsible open={openSections.layout} onOpenChange={() => toggleSection('layout')}>
+        <Card>
+          <CollapsibleTrigger asChild>
+            <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors lg:cursor-default">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <LayoutTemplate className="h-5 w-5 text-primary" />
+                  <CardTitle className="text-base">Mise en page</CardTitle>
+                </div>
+                <ChevronDown
+                  className={cn(
+                    'h-5 w-5 transition-transform lg:hidden',
+                    openSections.layout && 'rotate-180'
+                  )}
+                />
+              </div>
               <CardDescription>Choisissez la disposition de votre profil</CardDescription>
             </CardHeader>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
             <CardContent>
               <RadioGroup value={layout} onValueChange={(val) => setLayout(val as ThemeLayout)}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -343,11 +414,12 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
                 </div>
               </RadioGroup>
             </CardContent>
-          </Card>
-        </div>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
 
-      {/* Preview */}
-      <Card>
+      {/* Preview Card - Always visible on desktop, hidden on mobile (moved to bottom sheet) */}
+      <Card className="hidden lg:block">
         <CardHeader>
           <CardTitle className="text-base">Aperçu</CardTitle>
         </CardHeader>
@@ -370,8 +442,8 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
         </CardContent>
       </Card>
 
-      {/* Actions */}
-      <div className="flex gap-3">
+      {/* Actions - Sticky on mobile */}
+      <div className="sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t p-4 -mx-4 -mb-4 flex gap-3 lg:static lg:bg-transparent lg:border-0 lg:p-0 lg:m-0">
         <Button onClick={resetToDefaults} variant="outline" className="flex-1">
           Réinitialiser
         </Button>
@@ -382,7 +454,7 @@ export function ThemeCustomizer({ profileId, initialTheme, onThemeChange }: Them
               Sauvegarde...
             </>
           ) : (
-            'Sauvegarder le thème'
+            'Sauvegarder'
           )}
         </Button>
       </div>

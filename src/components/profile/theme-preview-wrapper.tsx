@@ -60,12 +60,8 @@ export function ThemePreviewWrapper({
       root.style.setProperty(key, value)
     })
 
-    return () => {
-      // Cleanup: restore original values
-      Object.keys(currentThemeVars).forEach((key) => {
-        root.style.removeProperty(key)
-      })
-    }
+    // No cleanup needed - CSS variables will be overwritten by next theme update
+    // and automatically removed when user navigates away from the page
   }, [currentThemeVars, isPreviewMode, isReady])
 
   return <>{children}</>

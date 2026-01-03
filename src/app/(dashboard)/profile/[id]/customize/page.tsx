@@ -28,7 +28,7 @@ export default async function CustomizeProfilePage({ params }: CustomizeProfileP
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8">
             <Link
-              href={`/profile/${id}/edit`}
+              href={`/profile/${id}/preview`}
               className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -81,7 +81,7 @@ export default async function CustomizeProfilePage({ params }: CustomizeProfileP
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <Link
-            href={`/profile/${id}/edit`}
+            href={`/profile/${id}/preview`}
             className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
